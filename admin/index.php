@@ -3,7 +3,7 @@
     if (isset($_SESSION['pseudoPsv']) ) {
         header("location: dashboard.php") ;
     } //else die("ok");
-    include'../sync/db.php';
+    include'./Metier/User.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -38,69 +38,42 @@
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="index.php"><b>Croissance</b> HUB</a>
+    <a href="index.php"><b>PPEMU</b>Admin</a>
   </div>
   <!-- /.login-logo -->
   <div class="login-box-body">
 <?php 
+//echo password_hash("123", PASSWORD_BCRYPT);
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($_POST['password'])) {
 
-if (isset($_POST['submit'])) {
-
-  $username = htmlspecialchars($_POST['psodo']);
-  $password = htmlspecialchars(sha1($_POST['password']));
-
-  $stmt_login = $db->prepare("SELECT * FROM utilisateurs WHERE pseudo=:username and psword=:password");
-  $stmt_login->bindParam (':username' , $username , PDO::PARAM_STR );
-  $stmt_login->bindParam (':password' , $password , PDO::PARAM_STR );
-  $stmt_login->execute();
-
-  if ($stmt_login->rowCount() == 1) {
-    
-    $row = $stmt_login->fetch() ;
-    $noms = $row ['noms'];
-    $user = $row ['pseudo'];
-    $pass = $row ['psword'];
-    $avatar = $row ['avatar'];
-    $role = $row ['role'];
-    $token = $row ['token'];
-
-    if ($user == $username && $pass == $password) {
-
-      $_SESSION['pseudoPsv'] = $user;
-      $_SESSION['nomsPsv'] = $noms;
-      $_SESSION['avatarPsv'] = $avatar;
-      $_SESSION['rolePsv'] = $role;
-
-      $_SESSION['tokenPsv'] = $token;
-
-      //header ("location:dashboard");
-      echo "<meta http-equiv='refresh' content='0; url = dashboard.php' />";
+  try {
+    $user = new User();
       
-    }
-    
-  }
-
-  else { echo "<span style='color:red'>MOT DE PASSE ou Nom d'Utilisateur</span> "; //$user; echo $pass;
-/*   header ("location: login?login=error");   
-   echo "<meta http-equiv='refresh' content='0; url = login?login=error' />";      
- */ }
-  
+    if($user->signin($_POST['username'],$_POST['password']))
+      echo "<meta http-equiv='refresh' content='0; url = dashboard.php' />";
+    else
+      echo "<span style='color:red'>Mot de passe ou nom d'utilisateur</span> ";
+      
+  } catch (\Throwable $th) {
+      echo $th->getMessage();
+      echo "<span style='color:red'>Echec de connexion</span> ";
+  }  
 }
 
 ?>
-    <p class="login-box-msg">Sign in to start your session</p>
+    <p class="login-box-msg">Connectez-vous</p>
 
     <form action="index.php" method="post" >
       <div class="form-group has-feedback">
-        <input type="text" name="psodo" class="form-control" placeholder="Pseudo" autocomplete="off" >
+        <input type="text" name="username" class="form-control" placeholder="Nom d'utilisateur" autocomplete="off" required="required">
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
-        <input type="password" name="password" class="form-control" placeholder="Mot de passe" autocomplete="off">
+        <input type="password" name="password" class="form-control" placeholder="Mot de passe" autocomplete="off" required="required">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
       <div class="row">
-        <div class="col-xs-8">
+        <div class="hidden col-xs-8">
           <div class="checkbox icheck">
             <label>
               <input type="checkbox"> Remember Me
@@ -108,16 +81,17 @@ if (isset($_POST['submit'])) {
           </div>
         </div>
         <!-- /.col -->
-        <div class="col-xs-4">
-          <button type="submit" name="submit" class="btn btn-primary btn-block btn-flat">Connexion</button>
+        <div class="col-xs-12">
+          <button type="submit" class="btn btn-primary btn-block btn-flat">Connexion</button>
         </div>
         <!-- /.col -->
       </div>
     </form>
 
+    <div class="" style="margin-top: 2em"></div>
     <!-- /.social-auth-links -->
 
-    <a href="#">Mot de passe oublié.</a><br><br>
+    <a href="#">J'ai oublié mon mot de passe</a><br>
 <!--    <a href="inscription.php" class="text-center">S'inscrire ...</a>-->
 <!--    <a href="../index.php" class="text-center pull-right" style="color:orange" >Accueil</a>-->
 

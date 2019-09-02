@@ -13,7 +13,7 @@
 
 $servername = 'localhost';
 $usr = "root";
-$psw = "";
+$psw = "root";
 $dbname = "db_portal_test2";
 
 try {
