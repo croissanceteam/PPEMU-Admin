@@ -232,7 +232,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Cleaning DATA
+        Cleaning DATA (Répérage et Réalisation)
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -248,10 +248,10 @@
 
       <div class="row">
        
-        <div class="col-md-11">
+        <div class="col-md-6">
           <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title">Liste des donnée(s) Brut(s)</h3>
+              <h3 class="box-title">Liste des donnée(s) Brut(s) Répérage</h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -276,11 +276,12 @@
                             $cleanQ=$db->query("SELECT DISTINCT lot, date_export, (select count(*) from t_reperage_import t2 where t2.lot=t1.lot) as ligne  FROM t_reperage_import t1 ");
                             
                             $nb=0;
+                            if ($cleanQ->rowCount() > 0) {
                             while($rClean=$cleanQ->fetch(PDO::FETCH_ASSOC)){
                                 $nb++;
                         ?>
                         <tr>
-                            <td><?php echo $nb ?></td>
+                            <td><img src="./dist/img/ajax-loader.gif" align="center" class="loading" style="display:none"></td>
                             <td><?php echo 'Lot '.$rClean['lot'] ?></td>
                             <td><?php echo $rClean['date_export'] ?></td>
                             <td>
@@ -289,13 +290,139 @@
                                 ?>
                             </td>
                             <td>
-                                <a <?php echo "href='cleanData.php?lot=$rClean[lot]&exportDate=$rClean[date_export]'" ?>  class="btn btn-warning" >Clean</a>
+                                <a class="btn btn-warning cleanDataReper" dir="<?php echo $rClean['lot'] ?>" >Clean</a>
                             </td>
                         </tr>
                         <?php 
                             }
+                            }
+                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune donnée à Nétoyer</h3></td></tr>"
                         ?>
                       </table>
+                    </div>
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+            </div>
+            <!-- ./box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+       
+        <div class="col-md-6">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">Rapport d'exécution</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+              </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <div class="row">
+                <div class="col-md-12">
+                    <div class="box-body table-responsive no-padding" id="rapportCleaningReper">
+                      
+                    </div>
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+            </div>
+            <!-- ./box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+       
+        
+        <!-- /.col -->
+      </div>
+
+      <div class="row">
+       
+        <div class="col-md-6">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">Liste des donnée(s) Brut(s) Réalisation</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+              </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <div class="row">
+                <div class="col-md-12">
+                    <div class="box-body table-responsive no-padding">
+                      <table class="table table table-bordered table-striped table-hover">
+                        <tr>
+                          <th></th>
+                          <th>Lot</th>
+                          <th>Date Export</th>
+                          <th>Description</th>
+                          <th width="80"></th>
+                        </tr>
+                        <?php 
+                            $cleanQ=$db->query("SELECT DISTINCT lot, date_export, (select count(*) from t_reperage_import t2 where t2.lot=t1.lot) as ligne  FROM t_reperage_import t1 where 1=3");
+                            
+                            $nb=0;
+                            if ($cleanQ->rowCount() > 0) {
+                            while($rClean=$cleanQ->fetch(PDO::FETCH_ASSOC)){
+                                $nb++;
+                        ?>
+                        <tr>
+                            <td><img src="./dist/img/ajax-loader.gif" align="center" class="loading" style="display:none"></td>
+                            <td><?php echo 'Lot '.$rClean['lot'] ?></td>
+                            <td><?php echo $rClean['date_export'] ?></td>
+                            <td>
+                                <?php 
+                                    echo 'Nombre de Ligne : '.$rClean['ligne'] 
+                                ?>
+                            </td>
+                            <td>
+                                <a class="btn btn-warning cleanDataReal" dir="<?php echo $rClean['lot'] ?>" >Clean</a>
+                            </td>
+                        </tr>
+                        <?php 
+                            }
+                            }
+                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune donnée à Nétoyer</h3></td></tr>"
+                        ?>
+                      </table>
+                    </div>
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+            </div>
+            <!-- ./box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+       
+        <div class="col-md-6">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">Rapport d'exécution</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+              </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <div class="row">
+                <div class="col-md-12">
+                    <div class="box-body table-responsive no-padding" id="rapportCleaningReal">
+                      
                     </div>
                 </div>
                 <!-- /.col -->

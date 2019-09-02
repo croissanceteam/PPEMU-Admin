@@ -353,26 +353,7 @@
                           <th>Résultat</th>
                           <th width="80"></th>
                         </tr>
-                        <?php 
-                            $journalOpQ=$db->query("SELECT * FROM journal_operation ");
-                            
-                            $nb=0;
-                            while($rowJourn=$journalOpQ->fetch(PDO::FETCH_ASSOC)){
-                                $nb++;
-                        ?>
-                            <tr>
-                              <td><?php echo $nb ?></td>
-                              <td><?php echo  "" ?></td>
-                              <td><?php echo "" ?></td>
-                              <td><?php echo "" ?></td>
-                              <td><?php echo date('d/m/Y', $rowJourn['dateRdv']/1000); ?></td>
-                              <td>
-                                  <a href="" title="Affichez le Rendez-vous" dir="" ><i class="fa fa-eye"></i></a> &nbsp;
-                              </td>
-                            </tr>
-                        <?php 
-                            }
-                        ?>
+                        
                         
                       </table>
                     </div>

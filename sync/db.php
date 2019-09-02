@@ -29,4 +29,8 @@ catch(PDOException $e)
     	die("Erreur de connexion à la BD3_upload");
     }
 
+$link = new PDO("mysql:host=$servername;dbname=$dbname", $usr, $psw, [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES UTF8"]);
+$link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$link->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+
 ?>

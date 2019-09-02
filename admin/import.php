@@ -232,8 +232,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        PEMU
-        <small>Version 2.0</small>
+        Importation des Données
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -262,33 +261,118 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
+             
               <div class="row">
-                <div class="col-md-12">
+                
+                <div class="col-md-7">
+                    <button type="button" class="btn btn-warning" dir="" id="api_actualise" >
+                        <i class="fa fa-sync"></i>
+                        Actualise la Synchronisation
+                    </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button type="button" class="btn btn-success" dir="" id="api_downAll" >
+                        <i class="fa fa-cloud-download"></i>
+                        Télécharger Tous les données 
+                    </button><br>
+                </div>
+                <div class="col-md-5">
+                    <div id="loadingImport02" style="display:none">
+                        <img src="./dist/img/ajax-loader.gif" align="left"> <b>&nbsp;&nbsp; <span class="ldText"></span>...</b>
+                    </div>
+                </div>
+                
+                
+                <div class="col-md-6">
+                    <h2>Listes des Répérages par Lot</h2>   
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-bordered table-striped table-hover">
                         <tr>
                           <th></th>
                           <th>Lot</th>
                           <th>Date</th>
-                          <th>Description</th>
-                          <th width="80"></th>
+                          <th>Détails</th>
+                          <th></th>
                         </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        
+                        <tbody id="lotApi_reperage">
+                            
+                        </tbody>
                       </table>
+                       <br>
+                        <div class="reper_BtnAll" style="display:none">
+                            <div class="col-md-8"  >
+                                <button type="submit" class="btn btn-warning btn_affiche0" dir="Reperage" >
+                                    <i class="fa fa-eye"></i>
+                                    Tous Afficher
+                                </button>
+                                <button type="submit" class="btn btn-success btn_telecharge0" dir="Reperage" >
+                                    <i class="fa fa-cloud-download"></i>
+                                    Télécharger Tous
+                                </button>
+                            </div>
+                            <div class="col-md-4 ldReper_BtnAll" style="display:none">
+                                <img src="./dist/img/ajax-loader.gif" align="left"> <b>&nbsp;&nbsp; <span class="ldText2"></span>...</b>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <!-- /.col -->
+                
+                <div class="col-md-6">
+                    <h2>Listes des Réalisations par Lot</h2>
+                    <div class="box-body table-responsive no-padding">
+                      <table class="table table-bordered table-striped table-hover">
+                        <tr>
+                          <th></th>
+                          <th>Lot</th>
+                          <th>Date</th>
+                          <th>Détails</th>
+                          <th ></th>
+                        </tr>
+                        <tbody id="lotApi_realisation"></tbody>
+                      </table>
+                       <br>
+                        <div class="real_BtnAll" style="display:none">
+                            <div class="col-md-8"  >
+                                <button type="submit" class="btn btn-warning btn_affiche0" dir="Realisation" >
+                                    <i class="fa fa-eye"></i>
+                                    Tous Afficher
+                                </button>
+                                <button type="submit" class="btn btn-success btn_telecharge0" dir="Realisation" >
+                                    <i class="fa fa-cloud-download"></i>
+                                    Télécharger Tous
+                                </button>
+                            </div>
+                            <div class="col-md-4 ldReal_BtnAll" style="display:none">
+                                <img src="./dist/img/ajax-loader.gif" align="left"> <b>&nbsp;&nbsp; <span class="ldText2"></span>...</b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <br><br>
+                
+                <div class="col-md-12 tableau_affichage" style="display:none">
+                    <h2>Affichage</h2>
+                    <div class="box-body table-responsive no-padding">
+                      <table class="table table-bordered table-striped table-hover">
+                        <tr>
+                          <th></th>
+                          <th width="5%">Lot</th>
+                          <th>Client</th>
+                          <th>Adresses</th>
+                          <th>Géolocalisation</th>
+                          <th>Catégorie</th>
+                          <th>Pt Vente</th>
+                          <th>Commentaires</th>
+                          <th>Date</th>
+                        </tr>
+                        <tbody id="lotApi_affichage"></tbody>
+                      </table>
+                    </div>
+                </div><br><br><br>
+                
               </div>
-              <!-- /.row -->
+              
             </div>
-            <!-- ./box-body -->
           </div>
-          <!-- /.box -->
         </div>
        
         <div class="col-md-12">
@@ -323,7 +407,7 @@
                             <div class="col-md-1"></div>
                             <div class="col-md-8" id="">
                                 <div id="loadingImport01" style="display:none">
-                                    <img src="./dist/img/ajax-loader.gif" align="left"> <b> Importation en cours...</b>
+                                    <img src="./dist/img/ajax-loader.gif" align="left"> <b>&nbsp;&nbsp; Importation en cours...</b>
                                 </div>
                                 <div id="messageImport01"></div>
                             </div>

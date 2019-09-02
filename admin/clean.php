@@ -246,17 +246,15 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                          <label for="albumDate">Date Exportation du </label>
-                           <input type="date" id="date1" class="form-control datePhoto" > 
+                            <label for="albumType">Type de données</label>
+                            <select id="albumType" class="form-control">
+                                <option value="0">Séléctionnez Type donnée</option>
+                                <option value="Reperage">Répérage</option>
+                                <option value="Realisation">Réalisation</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                          <label for="albumDate">au </label>
-                          <input type="date" id="date2" class="form-control datePhoto" >
-                        </div>
-                    </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="albumType">Lot de données</label>
                             <select id="albumType" class="form-control">
@@ -270,6 +268,18 @@
                                     }
                                 ?>
                             </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                          <label for="albumDate">Date Exportation du </label>
+                           <input type="date" id="date1" class="form-control datePhoto" > 
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                          <label for="albumDate">au </label>
+                          <input type="date" id="date2" class="form-control datePhoto" >
                         </div>
                     </div>
                 </div>
@@ -304,16 +314,15 @@
                     <div class="box-body table-responsive no-padding">
                       <table class="table table table-bordered table-striped table-hover">
                         <tr>
-                          <th></th>
-                          <th>Client Réf.</th>
-                          <th>Nom Client</th>
-                          <th>Adresse</th>
-                          <th>Adresse</th>
-                          <th>Adresse</th>
-                          <th>Adresse</th>
-                          <th>Adresse</th>
-                          <th>Adresse</th>
-                          <th width="80"></th>
+                            <th></th>
+                            <th width="5%">Lot</th>
+                            <th>Client</th>
+                            <th>Adresses</th>
+                            <th>Géolocalisation</th>
+                            <th>Catégorie</th>
+                            <th>Pt Vente</th>
+                            <th>Commentaires</th>
+                            <th>Date</th>
                         </tr>
                         <?php 
 //                            $cleanQ=$db->query("SELECT DISTINCT lot, date_export, (select count(*) from t_reperage_import t2 where t2.lot=t1.lot) as ligne  FROM t_reperage_import t1 ");
@@ -330,13 +339,7 @@
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
                         </tr>
-                        <?php 
-                            //}
-                        ?>
                       </table>
                     </div>
                 </div>
