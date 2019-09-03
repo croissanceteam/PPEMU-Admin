@@ -3,7 +3,7 @@
     if (isset($_SESSION['pseudoPsv']) ) {
         header("location: dashboard.php") ;
     } //else die("ok");
-    include'./Metier/User.php';
+    include'Metier/User.php';
 ?>
 <!DOCTYPE html>
 <html>
