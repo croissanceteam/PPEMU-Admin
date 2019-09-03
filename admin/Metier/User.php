@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once '../sync/Database.php';
 Class User {
     private $dbLink;

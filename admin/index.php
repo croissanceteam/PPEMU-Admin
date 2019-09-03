@@ -48,10 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
 
   try {
     $user = new User();
-      
-    if($user->signin($_POST['username'],$_POST['password'])){
-      
-      
+    $log = $user->signin($_POST['username'],$_POST['password']);
+    if($log){
       echo "<meta http-equiv='refresh' content='0; url = dashboard.php' />";
     }else{
       echo "<span style='color:red'>Mot de passe ou nom d'utilisateur</span> ";
