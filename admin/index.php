@@ -49,11 +49,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
   try {
     $user = new User();
       
-    if($user->signin($_POST['username'],$_POST['password']))
-      echo "<meta http-equiv='refresh' content='0; url = dashboard.php' />";
-    else
-      echo "<span style='color:red'>Mot de passe ou nom d'utilisateur</span> ";
+    if($user->signin($_POST['username'],$_POST['password'])){
       
+      
+      echo "<meta http-equiv='refresh' content='0; url = dashboard.php' />";
+    }else{
+      echo "<span style='color:red'>Mot de passe ou nom d'utilisateur</span> ";
+    }
   } catch (\Throwable $th) {
       echo $th->getMessage();
       echo "<span style='color:red'>Echec de connexion</span> ";
