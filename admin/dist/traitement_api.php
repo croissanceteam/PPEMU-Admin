@@ -21,15 +21,15 @@ class parLot1
 
 $link_reperage = array(
                 1 => "aBjGWHgmQQfrwfeKsHCnby",
-                     "aT6K37chVpJ63i9zoh8YG3",
-//                     "au2pD2CP4VRoqcwB5fvLzD",
-//                     "ah93htLqf3qRVaidr2Payz",
-//                     "a3eQQCvANCG74mvnB2erAS",
-//                     "aW7Ra9JevzWbK7mEkgkTWT",
-//                     "aAPHjntRb2pUnkUBHvuYox",
-//                     "aLG8oDKUD5PrBFUX7VgAFe",
-//                     "aDqBSG9cVvCqvk6wFdUA7T",
-//                     "aqWecgKFFSsyyMDoDABKbR",
+                     "au2pD2CP4VRoqcwB5fvLzD",
+    		     "aT6K37chVpJ63i9zoh8YG3",
+                     "ah93htLqf3qRVaidr2Payz",
+                     "a3eQQCvANCG74mvnB2erAS",
+                     "aW7Ra9JevzWbK7mEkgkTWT",
+                     "aAPHjntRb2pUnkUBHvuYox",
+                     "aLG8oDKUD5PrBFUX7VgAFe",
+                     "aDqBSG9cVvCqvk6wFdUA7T",
+                     "aqWecgKFFSsyyMDoDABKbR",
 );
 $link_realisation = array(
                 1 => "ad9PwJdM5hgDAwv29cVvcu",
