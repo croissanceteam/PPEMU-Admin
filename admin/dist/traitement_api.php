@@ -1,7 +1,8 @@
 <?php
-include('../../sync/db.php');
+//include('../../sync/db.php');
+include_once '../Metier/Reperage.php';
 session_start();
-
+/*
 class parLot1
 {
     private $_lot_num;
@@ -17,12 +18,13 @@ class parLot1
         $this->_lot_type = $typeD;
     }
 }
+*/
 //$monChat = new Chat("Vert","Calico");
 
 $link_reperage = array(
                 1 => "aBjGWHgmQQfrwfeKsHCnby",
                      "au2pD2CP4VRoqcwB5fvLzD",
-    		     "aT6K37chVpJ63i9zoh8YG3",
+    		         "aT6K37chVpJ63i9zoh8YG3",
                      "ah93htLqf3qRVaidr2Payz",
                      "a3eQQCvANCG74mvnB2erAS",
                      "aW7Ra9JevzWbK7mEkgkTWT",
@@ -52,6 +54,7 @@ $link_realisation = array(
 //$data = file_get_contents($link, false, $context);
 //
 //$parsed_json = json_decode($data,true);
+$reperage = new Reperage();
 
 if(isset($_GET['traitement_api'])){
     
@@ -191,6 +194,7 @@ if(isset($_GET['traitement_api'])){
         
             
         foreach ($parsed_json as $v) {
+            /*
             $name_client=@htmlentities($v['Nom_Client'], ENT_QUOTES);
             $avenue=@htmlentities($v['Avenue_Quartier'], ENT_QUOTES);
             $num_home=@htmlentities($v['Num_ro_parcelle'], ENT_QUOTES);
@@ -198,21 +202,43 @@ if(isset($_GET['traitement_api'])){
             $phone=@htmlentities($v['Num_ro_t_l_phone'], ENT_QUOTES);
             $category=@htmlentities($v['Cat_gorie_Client'], ENT_QUOTES);
             $ref_client=@htmlentities($v['Ref_Client'], ENT_QUOTES);
-            $pt_vente=@htmlentities($v['Etat_du_point_de_vente'], ENT_QUOTES);
+            $pt_vente=@htmlentities($v['Etat_du_point_de_vente'], ENT_QUOTES); */
             $geopoint=@htmlentities($v['G_olocalisation'], ENT_QUOTES);
+            /*
             $lat=@htmlentities($v['_geolocation'][0], ENT_QUOTES);
             $lng=@htmlentities($v['_geolocation'][1], ENT_QUOTES);
-
+            */
             list($lat_2, $lng_2, $altitude, $precision)=explode(' ', $geopoint);
-
+            /*
             $controller_name=@htmlentities($v['Nom_du_Contr_leur'], ENT_QUOTES);
             $comments=@htmlentities($v['Commentaires'], ENT_QUOTES);
             $submission_time=@htmlentities($v['_submission_time'], ENT_QUOTES);
             $town='';
             $lot=$lot;
             $date_export=date('d/m/Y');//htmlentities($v['Ref_Client'], ENT_QUOTES);
-
-            $req = $db->query("INSERT INTO `t_reperage_import` (`id`, `name_client`, `avenue`, `num_home`, `commune`, `phone`, `category`, `ref_client`, `pt_vente`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `controller_name`, `comments`, `submission_time`, `town`, `lot`, `date_export`, `secteur`, `matching`, `error_matching`) VALUES (NULL, '$name_client', '$avenue', '$num_home', '$commune', '$phone', '$category', '$ref_client', '$pt_vente', '$geopoint', '$lat', '$lng', '$altitude', '$precision', '$controller_name', '$comments', '$submission_time', '$town', '$lot', '$date_export' , '', 0, 0 );");
+            */
+            //$req = $db->query("INSERT INTO `t_reperage_import` (`id`, `name_client`, `avenue`, `num_home`, `commune`, `phone`, `category`, `ref_client`, `pt_vente`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `controller_name`, `comments`, `submission_time`, `town`, `lot`, `date_export`, `secteur`, `matching`, `error_matching`) VALUES (NULL, '$name_client', '$avenue', '$num_home', '$commune', '$phone', '$category', '$ref_client', '$pt_vente', '$geopoint', '$lat', '$lng', '$altitude', '$precision', '$controller_name', '$comments', '$submission_time', '$town', '$lot', '$date_export' , '', 0, 0 );");
+            $req = $reperage->tempSave([
+                'name_client'   =>  @htmlentities($v['Nom_Client'], ENT_QUOTES),
+                'avenue'        =>  @htmlentities($v['Avenue_Quartier'], ENT_QUOTES),
+                'num_home'      =>  @htmlentities($v['Num_ro_parcelle'], ENT_QUOTES),
+                'commune'       =>  @htmlentities($v['Commune'], ENT_QUOTES),
+                'phone'         =>  @htmlentities($v['Num_ro_t_l_phone'], ENT_QUOTES),
+                'category'      =>  @htmlentities($v['Cat_gorie_Client'], ENT_QUOTES),
+                'ref_client'    =>  @htmlentities($v['Ref_Client'], ENT_QUOTES),
+                'pt_vente'      =>  @htmlentities($v['Etat_du_point_de_vente'], ENT_QUOTES),
+                'geopoint'      =>  @htmlentities($v['G_olocalisation'], ENT_QUOTES),
+                'lat'           =>  @htmlentities($v['_geolocation'][0], ENT_QUOTES),
+                'lng'           =>  @htmlentities($v['_geolocation'][1], ENT_QUOTES),
+                'altitude'      =>  $altitude, 
+                'precision'     =>  $precision,
+            'controller_name'   =>  @htmlentities($v['Nom_du_Contr_leur'], ENT_QUOTES),
+            'comments'          =>  @htmlentities($v['Commentaires'], ENT_QUOTES),
+            'submission_time'   =>  @htmlentities($v['_submission_time'], ENT_QUOTES),
+            'town'              =>  '', 
+            'lot'               =>  $lot, 
+            'date_export'       =>  date('d/m/Y')
+            ]);
 
         }
 
