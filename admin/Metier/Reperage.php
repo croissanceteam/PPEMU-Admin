@@ -1,6 +1,6 @@
 <?php
 
-require_once '../sync/Database.php';
+require_once '../Sync/Database.php';
 Class Reperage{
     private $dbLink;
     public function __construct(){
