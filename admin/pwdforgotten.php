@@ -14,7 +14,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>PEMU | Log in</title>
+  <title>PEMU | Reset password</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -27,6 +27,8 @@
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
   <!-- iCheck -->
   <link rel="stylesheet" href="plugins/iCheck/square/blue.css">
+  <!-- Alertify -->
+  <link rel="stylesheet" href="vendor/alertify/themes/alertify.css" />
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -65,15 +67,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
 }
 
 ?>
-    <p class="login-box-msg">Connectez-vous</p>
+    <p class="login-box-msg">Saisissez votre adresse email</p>
 
-    <form action="index.php" method="post" >
+    <form method="post" >
       <div class="form-group has-feedback">
-        <input type="text" name="username" class="form-control" placeholder="Nom d'utilisateur" autocomplete="off" required="required">
+        <input type="email" name="email" id="email" class="form-control" placeholder="Adresse email" autocomplete="off" required="required">
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
       </div>
-      <div class="form-group has-feedback">
-        <input type="password" name="password" class="form-control" placeholder="Mot de passe" autocomplete="off" required="required">
+      <div class="form-group has-feedback" style="display:none">
+        <input type="text" name="token" class="form-control" placeholder="Code de vérification" autocomplete="off" required="required">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
       <div class="row">
@@ -86,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
         </div>
         <!-- /.col -->
         <div class="col-xs-12">
-          <button type="submit" class="btn btn-primary btn-block btn-flat">Connexion</button>
+          <button id="send-token" class="btn btn-primary btn-block btn-flat">Envoyer</button>
         </div>
         <!-- /.col -->
       </div>
@@ -95,7 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
     <div class="" style="margin-top: 2em"></div>
     <!-- /.social-auth-links -->
 
-    <a href="pwdforgotten.php">J'ai oublié mon mot de passe</a><br>
 <!--    <a href="inscription.php" class="text-center">S'inscrire ...</a>-->
 <!--    <a href="../index.php" class="text-center pull-right" style="color:orange" >Accueil</a>-->
 
@@ -110,6 +111,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <!-- iCheck -->
 <script src="plugins/iCheck/icheck.min.js"></script>
+<!-- alertify -->
+<script src="vendor/alertify/lib/alertify.min.js"></script>
 <script>
   $(function () {
     $('input').iCheck({
@@ -117,6 +120,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
       radioClass: 'iradio_square-blue',
       increaseArea: '20%' /* optional */
     });
+  });
+  $(document).ready(function () {
+      $('#send-token').on('click',function(e){
+          console.log('Hello');
+            var email = $('#email').val();
+          $.ajax({
+            type: 'POST',
+            url: 'dist/userTrait.php',
+            data: 'email=' + email,
+            success : function(result){
+                console.log('result : ', result);
+                if(result == 6){
+                    alertify.error("Addresse email non reconnue");
+                }else if(result == 2){
+                    alertify.error("Le mail n'a pas été accpeté pour livraison");
+                }else if(result == 0){
+                    alertify.error("Echec de l'opération");
+                }
+            },
+            error: function () {
+                console.log("L'opération n'a pas abouti!");
+            }
+          })
+      });
   });
 </script>
 </body>

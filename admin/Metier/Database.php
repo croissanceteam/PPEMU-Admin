@@ -1,13 +1,13 @@
 <?php
-
+require_once 'sync/bind.php';
 class Database {
 
     private $_link;
-    private static $driver = 'mysql';
-    private static $server = 'localhost';
-    private static $username = "root";
-    private static $password = "root";
-    private static $dbname = "db_portal_test2";
+    private static $driver = DRIVER;
+    private static $server = SERVER;
+    private static $username = USERNAME;
+    private static $password = PASSWORD;
+    private static $dbname = DB;
     private $errorMessage = "Un probleme est survenu dans le serveur, veillez conctacter l'administrateur";
 
     public function __construct() {
