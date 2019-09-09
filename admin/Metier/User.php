@@ -1,5 +1,8 @@
 <?php
 session_start();
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require '../../vendor/autoload.php';
 //require_once '../sync/Database.php';
 Class User {
     private $dbLink;
@@ -36,6 +39,57 @@ Class User {
             $rs = $this->dbLink->query("UPDATE t_user SET token = ? WHERE mailaddress = ?", [$token,$email]);
             //return $rs;
 
+            $mail = new PHPMailer(true);
+
+            try {
+                //Server settings
+                $mail->SMTPDebug = 2;                                       // Enable verbose debug output
+                $mail->isSMTP();                                            // Set mailer to use SMTP
+                $mail->Host       = 'mail42.lwspanel.com;mail42.lwspanel.com';  // Specify main and backup SMTP se$
+                $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                $mail->Username   = 'no-reply@obspemu.org';                     // SMTP username
+                $mail->Password   = 'uK9$f_rpuC';                               // SMTP password
+                $mail->SMTPSecure = 'tls';                                  // Enable TLS encryption, `ssl` also a$
+                $mail->Port       = 587;                                    // TCP port to connect to
+                
+                //Recipients
+                $mail->setFrom('no-reply@obspemu.org', 'Mailer');
+                $mail->addAddress($email, 'PORTAIL User');     // Add a recipient
+                //$mail->addAddress('ellen@example.com');               // Name is optional
+                //$mail->addReplyTo('info@example.com', 'Information');
+                //$mail->addCC('cc@example.com');
+                //$mail->addBCC('bcc@example.com');é
+
+                // Attachments
+                //$mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
+                //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
+
+                // Content
+                $mail->isHTML(true);                                  // Set email format to HTML
+                $mail->Subject = 'Récupération du mot de passe';
+                $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+                $mail->AltBody = "<html>
+                                    <body>
+                                        <p>
+                                            <font size=50px>
+                                            <strong>CEP-O</strong> Portail
+                                            </font>
+                                        </p>
+                                        <p>
+                                            <font size=30px>
+                                            Voici votre code de réinitialisation de mot de passe: $token
+                                            
+                                            </font>
+                                        </p>
+                                    </body>
+                                </html>";
+
+                $mail->send();
+                return 1;
+            } catch (Exception $e) {
+                return "Le message ne peut pas être envoyé. Mailer Error: {$mail->ErrorInfo}";
+            }
+            /*
             if ($rs) {
 
                 $headers = "MIME-Version: 1.0" . "\r\n";
@@ -67,6 +121,7 @@ Class User {
                 return 0;
                 
             }
+            */
         }else{
             return 6;
         }
