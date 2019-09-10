@@ -51,9 +51,9 @@ Class User {
                 $mail->Password   = 'uK9$f_rpuC';                               // SMTP password
                 $mail->SMTPSecure = 'tls';                                  // Enable TLS encryption, `ssl` also a$
                 $mail->Port       = 587;                                    // TCP port to connect to
-                
+
                 //Recipients
-                $mail->setFrom('no-reply@obspemu.org', 'Mailer');
+                $mail->setFrom('no-reply@obspemu.org', 'CEP-O Portail');
                 $mail->addAddress($email, 'PORTAIL User');     // Add a recipient
                 //$mail->addAddress('ellen@example.com');               // Name is optional
                 //$mail->addReplyTo('info@example.com', 'Information');
@@ -66,8 +66,22 @@ Class User {
 
                 // Content
                 $mail->isHTML(true);                                  // Set email format to HTML
-                $mail->Subject = 'Récupération du mot de passe';
-                $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+                $mail->Subject = utf8_encode('Récupération du mot de passe');
+                $mail->Body    = "<html>
+                                    <body>
+                                        <p>
+                                            <font size=50px>
+                                            <strong>CEP-O</strong> Portail
+                                            </font>
+                                        </p>
+                                        <p>
+                                            <font size=30px>
+                                            Voici votre code de réinitialisation de mot de passe: $token
+                                            
+                                            </font>
+                                        </p>
+                                    </body>
+                                </html>";
                 $mail->AltBody = "<html>
                                     <body>
                                         <p>
