@@ -131,7 +131,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
             data: 'email=' + email,
             success : function(result){
                 console.log('result : ', result);
-                if(result == 6){
+                if(result == 1){
+                    alertify.alert("Un mail a été envoyé à votre adresse mail, veuillez le consulter.");
+                }else if(result == 6){
                     alertify.error("Addresse email non reconnue");
                 }else if(result == 2){
                     alertify.error("Le mail n'a pas été accpeté pour livraison");

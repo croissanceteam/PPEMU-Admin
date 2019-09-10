@@ -2,7 +2,7 @@
 session_start();
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-require '../../vendor/autoload.php';
+
 //require_once '../sync/Database.php';
 Class User {
     private $dbLink;
@@ -31,6 +31,7 @@ Class User {
     }
 
     public function sendToken($email){
+        require '../../vendor/autoload.php';
         $str = "123456789NBVCXWMLKJHGFDSQPOUYTREZA";
         $token = substr(str_shuffle(str_repeat($str,2)),0,4);
         
