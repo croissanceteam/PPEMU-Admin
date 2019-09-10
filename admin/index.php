@@ -1,7 +1,4 @@
 <?php 
-
-
-die('ZEla');
     session_start();
     if (isset($_SESSION['pseudoPsv']) ) {
         header("location: dashboard.php") ;
