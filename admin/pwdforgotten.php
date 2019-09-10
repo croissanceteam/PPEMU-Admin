@@ -4,7 +4,7 @@
         header("location: dashboard.php") ;
     } //else die("ok");
     
-    include_once 'metier/Autoloader.php';
+    include_once 'Metier/Autoloader.php';
     Autoloader::register();
     
     //include_once 'Metier/User.php';
