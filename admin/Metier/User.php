@@ -44,7 +44,8 @@ Class User {
 
             try {
                 //Server settings
-                $mail->SMTPDebug = 2;                                       // Enable verbose debug output
+                $mail->charSet = "UTF-8";
+                //$mail->SMTPDebug = 2;                                     // Enable verbose debug output
                 $mail->isSMTP();                                            // Set mailer to use SMTP
                 $mail->Host       = 'mail42.lwspanel.com;mail42.lwspanel.com';  // Specify main and backup SMTP se$
                 $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
@@ -59,7 +60,7 @@ Class User {
                 //$mail->addAddress('ellen@example.com');               // Name is optional
                 //$mail->addReplyTo('info@example.com', 'Information');
                 //$mail->addCC('cc@example.com');
-                //$mail->addBCC('bcc@example.com');é
+                //$mail->addBCC('bcc@example.com');
 
                 // Attachments
                 //$mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
@@ -67,17 +68,17 @@ Class User {
 
                 // Content
                 $mail->isHTML(true);                                  // Set email format to HTML
-                $mail->Subject = utf8_encode('Récupération du mot de passe');
+                $mail->Subject = 'Récupération du mot de passe';
                 $mail->Body    = "<html>
                                     <body>
                                         <p>
-                                            <font size=50px>
-                                            <strong>CEP-O</strong> Portail
+                                            <font size=40px>
+                                            <strong>CEP-O PEMU</strong> Portail
                                             </font>
                                         </p>
                                         <p>
-                                            <font size=30px>
-                                            Voici votre code de réinitialisation de mot de passe: $token
+                                            <font size=13px>
+                                            Voici votre code de récupération de compte : $token
                                             
                                             </font>
                                         </p>
@@ -141,7 +142,21 @@ Class User {
             return 6;
         }
         
+    }
+
+    public function validateToken($email,$token){
         
-        
+        $myuser = $this->dbLink->query("SELECT * FROM t_user WHERE mailaddress=? AND token= ?",[$email,$token]);
+        $rs =  $myuser->rowCount();
+        if($rs == 1)
+            $_SESSION['usrname'] = $myuser->fetch()->username;
+
+        return $rs;
+    }
+
+    public function setPassword($newpass){
+        $pass = password_hash($newpass, PASSWORD_BCRYPT);
+        $rs = $this->dbLink->query("UPDATE t_user SET password=?,token=? WHERE username=?",[$pass,NULL,$_SESSION['usrname']]);
+        return $rs;
     }
 }

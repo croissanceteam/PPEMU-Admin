@@ -39,10 +39,25 @@
 
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+  <style>
+  .loader{
+    background: url('dist/img/preloader3.gif') 50% 50% no-repeat rgba(255, 255, 255, 0.8);
+    cursor: wait;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 9999;
+  }
+  </style>
 </head>
 
 <body class="hold-transition login-page">
 <div class="login-box">
+  <div class="loader" style="display:none">
+
+  </div>
   <div class="login-logo">
     <a href="index.php"><b>CEP-O PEMU</b> Admin</a>
   </div>
@@ -67,15 +82,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
 }
 
 ?>
-    <p class="login-box-msg">Saisissez votre adresse email</p>
+    <p class="login-box-msg" id="box-msg">Reinitialisation du mot de passe</p>
 
     <form method="post" >
-      <div class="form-group has-feedback">
+      <div class="form-group has-feedback" id="mail-field">
         <input type="email" name="email" id="email" class="form-control" placeholder="Adresse email" autocomplete="off" required="required">
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
       </div>
-      <div class="form-group has-feedback" style="display:none">
-        <input type="text" name="token" class="form-control" placeholder="Code de vérification" autocomplete="off" required="required">
+      <div class="form-group has-feedback" id="token-field" style="display:none">
+        <input type="text" name="token" id="token" class="form-control" placeholder="Code de vérification" autocomplete="off" required="required">
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback" id="newpass-field" style="display:none">
+        <input type="password" name="newpass" id="newpass" class="form-control" placeholder="Tapez le nouveau mot de passe" autocomplete="off" required="required">
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback" id="newpass-field2" style="display:none">
+        <input type="password" name="newpass2" id="newpass2" class="form-control" placeholder="Retapez-le ici" autocomplete="off" required="required">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
       <div class="row">
@@ -87,8 +110,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
           </div>
         </div>
         <!-- /.col -->
-        <div class="col-xs-12">
+        <div class="col-xs-12" id="sending">
           <button id="send-token" class="btn btn-primary btn-block btn-flat">Envoyer</button>
+        </div>
+        <div class="col-xs-12" id="checking" style="display:none">
+          <button id="check-token" class="btn btn-primary btn-block btn-flat">Valider</button>
+        </div>
+        <div class="col-xs-12" id="saving" style="display:none">
+          <button id="save-pass" class="btn btn-primary btn-block btn-flat">Enregistrer</button>
         </div>
         <!-- /.col -->
       </div>
@@ -123,28 +152,126 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
   });
   $(document).ready(function () {
       $('#send-token').on('click',function(e){
-          console.log('Hello');
-            var email = $('#email').val();
-          $.ajax({
-            type: 'POST',
-            url: 'dist/userTrait.php',
-            data: 'email=' + email,
-            success : function(result){
-                console.log('result : ', result);
-                if(result == 1){
-                    alertify.alert("Un mail a été envoyé à votre adresse mail, veuillez le consulter.");
-                }else if(result == 6){
-                    alertify.error("Addresse email non reconnue");
-                }else if(result == 2){
-                    alertify.error("Le mail n'a pas été accpeté pour livraison");
-                }else if(result == 0){
-                    alertify.error("Echec de l'opération");
+          //console.log('Hello');
+            var email = document.getElementById('email').value;
+                       
+            console.log('EMAIL :',  email.trim() != "");
+            
+            if(email.trim() != ""){
+              document.querySelector('.loader').style.display="block";
+              $.ajax({
+                type: 'POST',
+                url: 'dist/userTrait.php',
+                data: 'email=' + email + '&sendmail',
+                dataType: 'json',
+                success : function(result){
+                    console.log('SENDING RESULT : ', result);
+                    console.log('RESULT RESPONSE : ', result.response);
+                    document.querySelector('.loader').style.display="none";
+                    if(result.number == 1){
+                      
+                      document.querySelector('#token-field').style.display="block";
+                      document.querySelector('#mail-field').style.display="none";
+                      document.querySelector('#sending').style.display="none";
+                      document.querySelector('#checking').style.display="block";
+                      document.querySelector('#box-msg').textContent = "Saisissez le code qui vous a été envoyé par mail";
+                      //document.querySelector('#send-token').text = "Valider";
+                      alertify.alert(result.response);
+                    }else{
+                      alertify.error(result.response);
+                    }
+                },
+                error: function (error) {
+                    document.querySelector('.loader').style.display="none";
+                    alertify.error("L'opération n'a pas abouti!");
+                    console.log("ERROR :",error.responseText);
                 }
-            },
-            error: function () {
-                console.log("L'opération n'a pas abouti!");
+              });
+            }else{
+               document.getElementById('email').value = "";
             }
-          })
+            
+            
+      });
+      $('#check-token').on('click',function(e){
+          //alertify.alert('ZELA');
+          var email = document.getElementById('email').value;
+          var token = document.getElementById('token').value;
+          console.log(email,token);
+          
+          console.log('TOKEN LENGTH', token.length);
+          if(token.length == 4){
+            document.querySelector('.loader').style.display="block";
+              $.ajax({
+                type: 'POST',
+                url: 'dist/userTrait.php',
+                data: 'email=' + email+'&token='+token,
+                dataType: 'json',
+                success : function(result){
+                    console.log('CODE VALIDATING RESULT : ', result);
+                    console.log('RESULT RESPONSE : ', result.response);
+                    document.querySelector('.loader').style.display="none";
+                    if(result.number == 1){
+                      
+                      document.querySelector('#newpass-field').style.display="block";
+                      document.querySelector('#newpass-field2').style.display="block";
+                      document.querySelector('#token-field').style.display="none";
+                      document.querySelector('#checking').style.display="none";
+                      document.querySelector('#saving').style.display="block";
+                      document.querySelector('#saving2').style.display="block";
+                      document.querySelector('#box-msg').textContent = "Nouveau mot de passe";
+                      //document.querySelector('#send-token').text = "Enregistrer";
+                      alertify.log(result.response);
+                    }else{
+                      alertify.error(result.response);
+                    }
+                },
+                error: function (error) {
+                    document.querySelector('.loader').style.display="none";
+                    alertify.error("L'opération n'a pas abouti!");
+                    console.log("ERROR :",error.responseText);
+                    
+                }
+              });
+          }else{
+            alertify.error("Code incorrect");
+          }
+      });
+      $('#save-pass').on('click',function(e){
+        var newpass = document.getElementById('newpass').value;
+        var newpass2 = document.getElementById('newpass2').value;
+        console.log(newpass);
+        if(newpass.trim() != "" && newpass2.trim() != ""){
+          if(newpass == newpass2){
+            $.ajax({
+                type: 'POST',
+                url: 'dist/userTrait.php',
+                data: 'newpass=' + newpass,
+                dataType: 'json',
+                success : function(result){
+                    console.log('NEW PASS RESULT : ', result);
+                    console.log('RESULT RESPONSE : ', result.response);
+                    document.querySelector('.loader').style.display="none";
+                    if(result.number == 1){
+                      
+                      
+                      alertify.log(result.response);
+                    }else{
+                      alertify.error(result.response);
+                    }
+                },
+                error: function (error) {
+                    document.querySelector('.loader').style.display="none";
+                    alertify.error("L'opération n'a pas abouti!");
+                    console.log("ERROR :",error.responseText);
+                    
+                }
+              });
+          }else{
+            alertify.error("Attention, veuillez taper la même chose dans les deux zones de saisie!");
+          }
+        }
+        
       });
   });
 </script>
