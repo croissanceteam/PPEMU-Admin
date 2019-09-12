@@ -1,16 +1,20 @@
 <?php 
     session_start(); 
-    if (!isset($_SESSION['pseudoPsv']) && !isset($_SESSION['rolePsv']) ) {
+    if (!isset($_SESSION['pseudoPsv']) ) {
         header("location: index.php") ;
-    }//else die ('dfddf');
-    include'../sync/db.php';
+    }
+
+    //include_once 'Metier/Reperage.php';
+    include_once 'Metier/Autoloader.php';
+    Autoloader::register();
+
 ?>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>PEMU | Importation</title>
+  <title>PPEMU | Cleaning</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -37,6 +41,20 @@
   <!-- Google Font -->
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+        
+    <style>
+        .okTD{
+            font-size: 28px;
+            color:#27a203;
+            display: none
+        }
+        .failTD{
+            font-size: 28px;
+            color:red;
+            display: none
+        }
+    </style>
+    
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -82,7 +100,6 @@
             <li ><a href="dashboard.php"><i class="fa fa-circle-o"></i> Dashboard</a></li>
           </ul>
         </li>
-        <?php //if($_SESSION['rolePsv']=='admin'){ ?>
         <li >
           <a href="import.php">
             <i class="fa fa-cloud-download active"></i> <span>Import Data</span>
@@ -95,7 +112,7 @@
         </li>
         <li>
           <a href="clean.php">
-            <i class="fa fa-check-square-o"></i> <span>Données CLean</span>
+            <i class="fa fa-check-square-o"></i> <span>Journal du Cleaning</span>
           </a>
         </li>
         <li>
@@ -103,12 +120,6 @@
             <i class="fa fa-list"></i> <span>Journal des Anomalies</span>
           </a>
         </li>
-        <li>
-          <a href="cron01.php">
-            <i class="fa fa-history"></i> <span>Cron Jobs</span>
-          </a>
-        </li>
-        <?php //} ?>
         <li class="header">AUTRES</li>
         <li><a href="utilisateur.php"><i class="fa fa-circle-o text-red"></i> <span>Gestion d'Utilisateur</span></a></li>
         
@@ -156,35 +167,40 @@
                     <div class="box-body table-responsive no-padding">
                       <table class="table table table-bordered table-striped table-hover">
                         <tr>
-                          <th></th>
+                          <th>#</th>
                           <th>Lot</th>
                           <th>Date Export</th>
                           <th>Description</th>
                           <th width="80"></th>
                         </tr>
-                        <?php 
-                            $cleanQ=$db->query("SELECT DISTINCT lot, date_export, (select count(*) from t_reperage_import t2 where t2.lot=t1.lot) as ligne  FROM t_reperage_import t1 ");
-                            
-                            $nb=0;
-                            if ($cleanQ->rowCount() > 0) {
-                            while($rClean=$cleanQ->fetch(PDO::FETCH_ASSOC)){
-                                $nb++;
+                        <?php
+                            $reperage = new Reperage();
+    
+                            $resData=$reperage->getNoCleanByLot(); 
+    
+                            if ($resData) {
+                                
+                                foreach ($resData as $cus) {
                         ?>
                         <tr>
-                            <td><img src="./dist/img/ajax-loader.gif" align="center" class="loading" style="display:none"></td>
-                            <td><?php echo 'Lot '.$rClean['lot'] ?></td>
-                            <td><?php echo $rClean['date_export'] ?></td>
                             <td>
+                                <img src="./dist/img/ajax-loader.gif" align="center" class="loading" style="display:none">
+                                <i class="okTD fa fa-check" ></i>
+                                <i class="failTD fa fa-remove" ></i>
+                            </td>
+                            <td><?php echo 'Lot '.$cus->lot; ?></td>
+                            <td><?php echo date('d/m/Y', strtotime($cus->date_export)); ?></td>
+                            <td class="lot_detail">
                                 <?php 
-                                    echo 'Nombre de Ligne : '.$rClean['ligne'] 
+                                    echo 'Nombre de Ligne : '.$cus->ligne; 
                                 ?>
                             </td>
                             <td>
-                                <a class="btn btn-warning cleanDataReper" dir="<?php echo $rClean['lot'] ?>" >Clean</a>
+                                <a class="btn btn-warning cleanDataReper grize" dir="<?php echo $cus->lot; ?>" >Clean</a>
                             </td>
                         </tr>
                         <?php 
-                            }
+                                }
                             }
                             else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune donnée à Nétoyer</h3></td></tr>"
                         ?>
@@ -252,37 +268,23 @@
                     <div class="box-body table-responsive no-padding">
                       <table class="table table table-bordered table-striped table-hover">
                         <tr>
-                          <th></th>
+                          <th>#</th>
                           <th>Lot</th>
                           <th>Date Export</th>
                           <th>Description</th>
                           <th width="80"></th>
                         </tr>
                         <?php 
-                            $cleanQ=$db->query("SELECT DISTINCT lot, date_export, (select count(*) from t_reperage_import t2 where t2.lot=t1.lot) as ligne  FROM t_reperage_import t1 where 1=3");
-                            
-                            $nb=0;
-                            if ($cleanQ->rowCount() > 0) {
-                            while($rClean=$cleanQ->fetch(PDO::FETCH_ASSOC)){
-                                $nb++;
+//                            $cleanQ=$db->query("SELECT DISTINCT lot, date_export, (select count(*) from t_reperage_import t2 where t2.lot=t1.lot) as ligne  FROM t_reperage_import t1 where 1=3");
+//                            
+//                            $nb=0;
+//                            if ($cleanQ->rowCount() > 0) {
+//                            while($rClean=$cleanQ->fetch(PDO::FETCH_ASSOC)){
+//                                $nb++;
                         ?>
-                        <tr>
-                            <td><img src="./dist/img/ajax-loader.gif" align="center" class="loading" style="display:none"></td>
-                            <td><?php echo 'Lot '.$rClean['lot'] ?></td>
-                            <td><?php echo $rClean['date_export'] ?></td>
-                            <td>
-                                <?php 
-                                    echo 'Nombre de Ligne : '.$rClean['ligne'] 
-                                ?>
-                            </td>
-                            <td>
-                                <a class="btn btn-warning cleanDataReal" dir="<?php echo $rClean['lot'] ?>" >Clean</a>
-                            </td>
-                        </tr>
+                        
                         <?php 
-                            }
-                            }
-                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune donnée à Nétoyer</h3></td></tr>"
+                            echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune donnée à Nétoyer</h3></td></tr>"
                         ?>
                       </table>
                     </div>
@@ -338,7 +340,7 @@
     <div class="pull-right hidden-xs">
       <b>Version</b> 1.0.0
     </div>
-    <strong>Copyright &copy; 2016-2019 <a href="http://www.demande-audience.com">Croissance Hub</a>.</strong> All rights
+    <strong>Copyright &copy; 2016-2019 <a href="http://www.croissancehub.com">Croissance Hub</a>.</strong> All rights
     reserved.
   </footer>
 

@@ -1,16 +1,17 @@
 <?php 
     session_start(); 
-    if (!isset($_SESSION['pseudoPsv']) && !isset($_SESSION['rolePsv']) ) {
+    if (!isset($_SESSION['pseudoPsv']) ) {
         header("location: index.php") ;
-    }//else die ('dfddf');
-    //include'../sync/db.php';
+    }
+    include_once 'Metier/Autoloader.php';
+    Autoloader::register();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>PEMU | Dashboard</title>
+  <title>PPEMU | Dashboard</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -82,7 +83,6 @@
             <li class="active"><a href="dashboard.php"><i class="fa fa-circle-o"></i> Dashboard</a></li>
           </ul>
         </li>
-        <?php //if($_SESSION['rolePsv']=='admin'){ ?>
         <li>
           <a href="import.php">
             <i class="fa fa-cloud-download"></i> <span>Import Data</span>
@@ -95,7 +95,7 @@
         </li>
         <li>
           <a href="clean.php">
-            <i class="fa fa-check-square-o"></i> <span>Données CLean</span>
+            <i class="fa fa-check-square-o"></i> <span>Journal du Cleaning</span>
           </a>
         </li>
         <li>
@@ -103,12 +103,6 @@
             <i class="fa fa-list"></i> <span>Journal des Anomalies</span>
           </a>
         </li>
-        <li>
-          <a href="cron01.php">
-            <i class="fa fa-history"></i> <span>Cron Jobs</span>
-          </a>
-        </li>
-        <?php //} ?>
         <li class="header">AUTRES</li>
         <li><a href="utilisateur.php"><i class="fa fa-circle-o text-red"></i> <span>Gestion d'Utilisateur</span></a></li>
         
@@ -122,8 +116,8 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        PEMU
-        <small>Version 2.0</small>
+        PPEMU&nbsp;
+        <small>Version 1.0</small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -187,11 +181,10 @@
             <span class="info-box-icon bg-yellow"><i class="fa fa-history"></i></span>
 
             <div class="info-box-content">
-              <span class="info-box-text">Cron Jobs</span>
+              <span class="info-box-text">Correction</span>
               <span class="info-box-number">
-                 <small><a href="cron01.php">Programing Job</a></small>
+                 <small><a href="import.php#Correction">Ré-Importation Annomalies</a></small>
                 </span>
-              <span class="info-box-number"> <small>3 Opérations </small></span>
             </div>
             <!-- /.info-box-content -->
           </div>
@@ -200,6 +193,10 @@
         <!-- /.col -->
       </div>
       <!-- /.row -->
+      
+        <?php
+            $rapport = new RapportOperation();
+        ?>
 
       <div class="row">
         <div class="col-md-12">
@@ -220,14 +217,35 @@
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-hover">
                         <tr>
-                          <th></th>
+                          <th>N°</th>
                           <th>Opérations</th>
                           <th>Description</th>
                           <th>Date</th>
-                          <th>Résultat</th>
-                          <th width="80"></th>
+                          <th width="180"></th>
                         </tr>
-                        
+                        <?php
+                            $resData=$rapport->getJournales(); 
+    
+                            if ($resData) {
+                                $nb=0;
+                                foreach ($resData as $cus) {
+                                $nb++;
+                        ?>
+                        <tr>
+                            <td><?php echo $nb; ?></td>
+                            <td><?php echo $cus->operation; ?></td>
+                            <td><?php echo $cus->detail_operation; ?></td>
+                            <td>
+                                <?php 
+                                    echo $cus->dateOperation;
+                                ?>
+                            </td>
+                        </tr>
+                        <?php 
+                                }
+                            }
+                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Pas de données dans le Journal</h3></td></tr>"
+                        ?>
                         
                       </table>
                     </div>
@@ -253,7 +271,7 @@
     <div class="pull-right hidden-xs">
       <b>Version</b> 1.0.0
     </div>
-    <strong>Copyright &copy; 2016-2019 <a href="http://www.demande-audience.com">Croissance Hub</a>.</strong> All rights
+    <strong>Copyright &copy; 2016-2019 <a href="http://www.croissancehub.com">Croissance Hub</a>.</strong> All rights
     reserved.
   </footer>
 

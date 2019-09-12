@@ -1,24 +1,20 @@
 <?php
 @session_start();
-@include"../../sync/db.php";
 
-function random_Code($length) 
-{
-    $key = '';
-    $keys = @array_merge(@range(0, 10));
+//include_once '../Metier/Reperage.php';
+//include_once '../Metier/RapportOperation.php';
 
-    for ($i = 0; $i < $length; $i++) 
-    {
-        $key .= $keys[@array_rand($keys)];
-    }   
+include_once '../Metier/Autoloader.php';
+Autoloader::register();
 
-    return $key;
-}
+$reperage = new Reperage();
+$rapport = new RapportOperation();
 
 
+//TRAITEMENT IMPORTATION CSV OU EXCEL XLS
 if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
 { 
-    //require_once 'excel/PHPExcel/IOFactory.php';
+    $typeDonnee=htmlentities($_POST['typeDonnee'], ENT_QUOTES);
     
    if($_FILES['csv']['type']=="application/vnd.ms-excel" || $_FILES['csv']['type']=="text/comma-separated-values" || $_FILES['csv']['type']=="text/csv")
       { 
@@ -26,72 +22,121 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
         $target_path = $target_path . basename( $_FILES['csv']['name']); 
         if(move_uploaded_file($_FILES['csv']['tmp_name'], $target_path)) 
         {
-//            $excel = PHPExcel_IOFactory::load($target_path);
-//            $writer= PHPExcel_IOFactory::createWriter($excel, 'CSV');
-//            $writer->setDelimiter(";");
-//            $writer->setEnclosure("");
-//            $writer->save($target_path.date('dmyhis').'pemu.csv');
 
-            //$filePath=$target_path.date('dmyhis').'pemu.csv';
-
-            if (($handle = @fopen("$target_path", "r")) !== FALSE) 
-            {
-                $req=false;
-                $ct=0;
-                $compt=0;
-                while (($data = @fgetcsv($handle, 1000, ";")) !== FALSE) 
-                {
-                    if($ct<1){ } else {
-
-                        $name_client=htmlentities($data[1], ENT_QUOTES);
-                        $avenue=htmlentities($data[2], ENT_QUOTES);
-                        $num_home=htmlentities($data[3], ENT_QUOTES);
-                        $commune=htmlentities($data[4], ENT_QUOTES);
-                        $phone=htmlentities($data[5], ENT_QUOTES);
-                        $category=htmlentities($data[6], ENT_QUOTES);
-                        $ref_client=htmlentities($data[7], ENT_QUOTES);
-                        $pt_vente=htmlentities($data[8], ENT_QUOTES);
-                        $geopoint=htmlentities($data[9], ENT_QUOTES);
-                        $lat=htmlentities($data[10], ENT_QUOTES);
-                        $lng=htmlentities($data[11], ENT_QUOTES);
-                        $altitude=htmlentities($data[12], ENT_QUOTES);
-                        $precision=htmlentities($data[13], ENT_QUOTES);
-                        $controller_name=htmlentities($data[14], ENT_QUOTES);
-                        $comments=htmlentities($data[15], ENT_QUOTES);
-                        $submission_time=htmlentities($data[16], ENT_QUOTES);
-                        $town=htmlentities($data[17], ENT_QUOTES);
-                        $lot=htmlentities($data[18], ENT_QUOTES);
-                        $date_export=htmlentities($data[19], ENT_QUOTES);
-                        $secteur=htmlentities($data[20], ENT_QUOTES);
-                        
-                        $req = $db->query("INSERT INTO `t_reperage_import` (`id`, `name_client`, `avenue`, `num_home`, `commune`, `phone`, `category`, `ref_client`, `pt_vente`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `controller_name`, `comments`, `submission_time`, `town`, `lot`, `date_export`, `secteur`, `matching`, `error_matching`) VALUES (NULL, '$name_client', '$avenue', '$num_home', '$commune', '$phone', '$category', '$ref_client', '$pt_vente', '$geopoint', '$lat', '$lng', '$altitude', '$precision', '$controller_name', '$comments', '$submission_time', '$town', '$lot', '$date_export' , '$secteur', 0, 0 );");
-                        
-                        if($req) $compt++;
-                    }
-                    $ct++;
-                } 
-                @fclose($handle);
+            if ($typeDonnee=="Reperage") {
                 
-                if($req)
+                if (($handle = @fopen("$target_path", "r")) !== FALSE) 
                 {
-                    echo '<div class="alert alert-success alert-dismissible" role="alert">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h3><strong>SUCCESS !!</strong> IMPORTATION avec succès. </h3>
-                                
-                                <h4> '.$compt.' Données Importée(s) </h4>
-                            </div> ';
-                }
-                else
-                {
-                    echo '<div class="alert alert-warning alert-dismissible" role="alert">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h3><strong>ECHEC !!</strong> FICHIER non Importés... Re-essayer plus tard. </h3>
-                            </div> ';
+                    $req=false;
+                    $ct=0;
+                    $compt=0;
+                    while (($data = @fgetcsv($handle, 1000, ";")) !== FALSE) 
+                    {
+                        if($ct<1){ } else {
+
+                            $id=@htmlentities($data[0], ENT_QUOTES);
+                            $name_client=@htmlentities($data[1], ENT_QUOTES);
+                            $avenue=@htmlentities($data[2], ENT_QUOTES);
+                            $num_home=@htmlentities($data[3], ENT_QUOTES);
+                            $commune=@htmlentities($data[4], ENT_QUOTES);
+                            $phone=@htmlentities($data[5], ENT_QUOTES);
+                            $category=@htmlentities($data[6], ENT_QUOTES);
+                            $ref_client=@htmlentities($data[7], ENT_QUOTES);
+                            $pt_vente=@htmlentities($data[8], ENT_QUOTES);
+                            $geopoint=@htmlentities($data[9], ENT_QUOTES);
+                            $lat=@htmlentities($data[10], ENT_QUOTES);
+                            $lng=@htmlentities($data[11], ENT_QUOTES);
+                            $altitude=@htmlentities($data[12], ENT_QUOTES);
+                            $precision=@htmlentities($data[13], ENT_QUOTES);
+                            $controller_name=@htmlentities($data[14], ENT_QUOTES);
+                            $comments=@htmlentities($data[15], ENT_QUOTES);
+                            $submission_time=@htmlentities($data[16], ENT_QUOTES);
+                            $town=@htmlentities($data[17], ENT_QUOTES);
+                            $lot=@htmlentities($data[18], ENT_QUOTES);
+                            $date_export=@htmlentities($data[19], ENT_QUOTES);
+                            $secteur=@htmlentities($data[20], ENT_QUOTES);
+                            $issue=@htmlentities($data[21], ENT_QUOTES);
+
+                            if($issue!=1 && $issue!=0){
+                                $req = $reperage->deleteDoublon($ref_client, $id);
+                            }
+
+                            $req = $reperage->tempSaveImportCSV([
+                            'id'            =>  $id,
+                            'name_client'   =>  $name_client,
+                            'avenue'        =>  $avenue,
+                            'num_home'      =>  $num_home,
+                            'commune'       =>  $commune,
+                            'phone'         =>  $phone,
+                            'category'      =>  $category,
+                            'ref_client'    =>  $ref_client,
+                            'pt_vente'      =>  $pt_vente,
+                            'geopoint'      =>  $geopoint,
+                            'lat'           =>  $lat,
+                            'lng'           =>  $lng,
+                            'altitude'      =>  $altitude, 
+                            'precision'     =>  $precision,
+                        'controller_name'   =>  $controller_name,
+//                        'comments'          =>  $comments,
+                        'submission_time'   =>  $submission_time,
+                        'town'              =>  $town, 
+                        'lot'               =>  $lot, 
+                        ]);
+
+                            if($req) $compt++;
+                        }
+                        $ct++;
+                    } 
+                    @fclose($handle);
+
+                    /*
+                     * Enregistrement de l operation dans le journal des operations
+                     */
+                    $detailOp="Correction Anomalie(s) $typeDonnee par $_SESSION[nomsPsv], resultat : $compt Données Corrigé(s)";
+
+                    $req = $rapport->saveRapport([
+                        'user' => $_SESSION['nomsPsv'],
+                        'operation' => "Correction Data CSV",
+                        'detail_operation' => $detailOp,
+                        'lot' => $lot,
+                        'total_reper_before' => 0,
+                        'total_reperImport_before' => 0,
+                        'total_cleaned_found' => 0,
+                        'total_cleaned_afected' => 0,
+                        'total_reper_after' => 0,
+                        'total_reperImport_after' => 0,
+                        'total_match_found' => 0,
+                        'total_match_afected' => 0,
+                        'total_noObs' => 0,
+                        'total_doublon' => 0,
+                        'total_noObs_doublon' => 0,
+                    ]);
+
+                    if($req)
+                    {
+                        echo '<div class="alert alert-success alert-dismissible" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h3><strong>SUCCESS !!</strong> IMPORTATION avec succès. </h3>
+
+                                    <h4> '.$compt.' Données Corrigé(s) </h4>
+                                </div> ';
+                    }
+                    else
+                    {
+                        echo '<div class="alert alert-warning alert-dismissible" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h3><strong>ECHEC !!</strong> FICHIER non Importés... Re-essayer plus tard. </h3>
+                                </div> ';
+                    }
+
                 }
                 
             }
-//            @unlink($filePath);
-//            @unlink($target_path);
+            
+            else if ($typeDonnee=="Realisation") {
+                
+            }
+            
         }
       }else{ 
           echo '<div class="block margin-bottom">
@@ -104,42 +149,125 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
 
 }
 
-else if(@isset($_POST['pst']) && $_POST['pst']=="save_publicite")
-{ 
-//    $titre=htmlentities($_POST['titre'], ENT_QUOTES);
-//    $lien=htmlentities($_POST['lien'], ENT_QUOTES);
-//    $duree=htmlentities($_POST['duree'], ENT_QUOTES);
-//    
-//    $dossier = '../../uploads/pubs/';
-//    
-//    if(!is_uploaded_file($_FILES["photoAdd_1"]["tmp_name"]))$affich="pub.png";
-//    else {
-//        $affich = 'pub'.time().$_FILES['photoAdd_1']['type'];
-//        $affich = str_replace("image/",".",$affich);
-//        move_uploaded_file($_FILES['photoAdd_1']['tmp_name'], $dossier . $affich);
-//    }
-//    
-//    $duree=$duree*3600;
-//    $token="p".time();
-//    
-//    $pubQ="INSERT INTO `publicite`(`id`, `titre`, `lien`, `avatar`, `datePub`, `duree`, `par`, `lastModif`, `token`, `etat` ) VALUES (NULL,'$titre','$lien', '".$affich."', ".(time()*1000).", '$duree', '$_SESSION[pseudoPsv]', ".time().", '".$token."', 1);";
-//    $req = $db->query($pubQ);
-//    
-//    if($req)
-//    {
-//        echo '<div class="alert alert-success alert-dismissible" role="alert">
-//                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-//                    <h4><strong>SUCCESS !!</strong> PUBLICITE Ajouter avec succès. Veuillez actualiser la Page</h4>
-//                </div> ';
-//    }
-//    else
-//    {
-//        echo '<div class="alert alert-warning alert-dismissible" role="alert">
-//                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-//                    <h4><strong>ECHEC !!</strong> PUBLICITE non Enregistrer... Re-essayer plus tard. </h4>
-//                </div> ';
-//    }
 
+//AFFICHAGE JOURNAL ANOMALIE
+else if(@isset($_GET['journalAnomalie']) )
+{
+    $json= array();
+    $lot=htmlentities($_GET['lot'], ENT_QUOTES);
+    $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
+    $anomalie=htmlentities($_GET['anomalie'], ENT_QUOTES);
+    
+    $where=" 1=1 ";
+    
+    if(trim($typeDonnee)=="Reperage") {
+        if(trim($lot)!="") $where=$where." AND lot='$lot' ";
+        if(trim($anomalie)!="") $where=$where." AND issue='$anomalie' ";
+        
+        $resData=$reperage->getAnomalies($where);
+        if($resData){
+            foreach ($resData as $cus)
+            $json[]=$cus;
+        }
+    }
+    
+    echo json_encode($json);
+}
+
+
+//AFFICHAGE RAPPORT TRAITEMENT CLEAN
+else if(@isset($_GET['rapportClean']) )
+{
+    $json= array();
+    $lot=htmlentities($_GET['lot'], ENT_QUOTES);
+    $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
+    $date_1=htmlentities($_GET['date_1'], ENT_QUOTES);
+    $date_2=htmlentities($_GET['date_2'], ENT_QUOTES);
+    //die($date_1);
+//    if(trim($date_1)=='') $date_1=0;
+//    else{
+//        list($y, $m, $d)=explode('-',  $date_1);
+//        $date_1=mktime(0,0,0,$m,$d,$y);
+//    }
+//    if(trim($date_2)=='') $date_2="(select MAX(dateCompt) from comptabilite)";
+//    else{
+//        list($y, $m, $d)=explode('-',  $date_2);
+//        $date_2=mktime(0,0,0,$m,$d,$y);
+//    }
+    
+    $where=" 1=1 ";
+    
+    if(trim($typeDonnee)=="Reperage") {
+        if(trim($lot)!="") $where=$where." AND lot='$lot' ";
+        //if(trim($anomalie)!="") $where=$where." AND issue='$anomalie' ";
+        
+        $resData=$rapport->getJournaleByWhere($where);
+        if($resData){
+            foreach ($resData as $cus)
+                $json[]=$cus;
+        }
+    }
+    
+    echo json_encode($json);
+}
+
+
+//EXPORTATION JOURNAL ANOMALIE
+else if(@isset($_GET['exporter']) )
+{
+    $lot=htmlentities($_GET['lot'], ENT_QUOTES);
+    $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
+    $anomalie=htmlentities($_GET['anomalie'], ENT_QUOTES);
+    
+    $fname="";
+    $data= array();
+    
+    $where=" 1=1 ";
+    
+    if(trim($typeDonnee)=="Reperage") {
+        
+        if(trim($lot)!="") $where=$where." AND lot='$lot' ";
+        if(trim($anomalie)!="") $where=$where." AND issue='$anomalie' ";
+        
+        $resData=$reperage->getAnomalies($where);
+        if($resData){
+            
+            $fname="referencement_anomlaies";
+            
+            header('Content-Type:text/Excel; charset=utf-8');
+			header('Content-Disposition:attachment;filename='.$fname.'.csv');
+	       
+            $entete= array();
+            
+            for($i=0; $i<$resData->columnCount(); $i++ ){
+                $col=$resData->getColumnMeta($i);
+                $entete[]=$col['name'];
+            }
+            
+            imprcsv($entete);
+            
+            foreach ($resData as $cus)
+                imprcsv($cus);
+            
+        }
+    }
+    
+    //echo $fname;
 }
 
 else echo 'ERROR 000, Re-essayer plus tard.';
+
+function imprcsv($chs){
+    $separat='';
+    foreach($chs as $i=>$ch){
+        
+        $ch=html_entity_decode($ch);
+        
+        if(preg_match('/\\r|\\n|;|"/', $ch )){
+            $ch = '"'.str_replace('"','""',$ch).'"';
+        }
+        echo $separat.$ch;
+        $separat=';';
+    }
+    echo "\r\n";
+}

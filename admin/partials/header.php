@@ -5,7 +5,7 @@
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b></b>PEMU</span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg">Portail<b>PPEMU</b></span>
+      <span class="logo-lg">Portail&nbsp;<b> PPEMU</b></span>
     </a>
 
     <!-- Header Navbar: style can be found in header.less -->
@@ -31,10 +31,6 @@
               <li class="user-header">
                 <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
 
-                <p>
-                  <?php echo $_SESSION['nomsPsv']." - ".$_SESSION['rolePsv'] ?>.
-                  <small>Membre depuis </small>
-                </p>
               </li>
               <!-- Menu Body -->
 <!--

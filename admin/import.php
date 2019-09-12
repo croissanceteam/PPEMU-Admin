@@ -2,15 +2,14 @@
     session_start(); 
     if (!isset($_SESSION['pseudoPsv'])) {
         header("location: index.php") ;
-    }//else die ('dfddf');
-    //include'../sync/db.php';
+    }
 ?>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>PEMU | Importation</title>
+  <title>PPEMU | Importation</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -37,6 +36,20 @@
   <!-- Google Font -->
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+        
+    <style>
+        .okTD{
+            font-size: 28px;
+            color:#27a203;
+            display: none
+        }
+        .failTD{
+            font-size: 28px;
+            color:red;
+            display: none
+        }
+    </style>
+    
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -82,7 +95,6 @@
             <li ><a href="dashboard.php"><i class="fa fa-circle-o"></i> Dashboard</a></li>
           </ul>
         </li>
-        <?php //if($_SESSION['rolePsv']=='admin'){ ?>
         <li class="active">
           <a href="import.php">
             <i class="fa fa-cloud-download active"></i> <span>Import Data</span>
@@ -95,7 +107,7 @@
         </li>
         <li>
           <a href="clean.php">
-            <i class="fa fa-check-square-o"></i> <span>Données CLean</span>
+            <i class="fa fa-check-square-o"></i> <span>Journal du Cleaning</span>
           </a>
         </li>
         <li>
@@ -103,12 +115,6 @@
             <i class="fa fa-list"></i> <span>Journal des Anomalies</span>
           </a>
         </li>
-        <li>
-          <a href="cron01.php">
-            <i class="fa fa-history"></i> <span>Cron Jobs</span>
-          </a>
-        </li>
-        <?php //} ?>
         <li class="header">AUTRES</li>
         <li><a href="utilisateur.php"><i class="fa fa-circle-o text-red"></i> <span>Gestion d'Utilisateur</span></a></li>
         
@@ -155,11 +161,11 @@
               <div class="row">
                 
                 <div class="col-md-7">
-                    <button type="button" class="btn btn-warning" dir="" id="api_actualise" >
-                        <i class="fa fa-sync"></i>
+                    <button type="button" class="btn btn-warning grize" dir="" id="api_actualise" >
+                        <i class="fa fa-refresh"></i>
                         Actualise la Synchronisation
                     </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <button type="button" class="btn btn-success" dir="" id="api_downAll" >
+                    <button type="button" class="btn btn-success grize" dir="" id="api_downAll" >
                         <i class="fa fa-cloud-download"></i>
                         Télécharger Tous les données 
                     </button><br>
@@ -176,32 +182,39 @@
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-bordered table-striped table-hover">
                         <tr>
-                          <th></th>
+                          <th>#</th>
                           <th>Lot</th>
-                          <th>Date</th>
-                          <th>Détails</th>
+                          <th>Last Date</th>
+                          <th width="33%">Détails</th>
                           <th></th>
                         </tr>
                         <tbody id="lotApi_reperage">
-                            
+                            <?php for($i=1;$i<=10; $i++){ ?>
+                            <tr class="lign_1<?php echo $i; ?>">
+                                <td>
+                                    <img src='./dist/img/ajax-loader.gif' class='ldTD' style='display:none'>
+                                    <i class="okTD fa fa-check" ></i>
+                                    <i class="failTD fa fa-remove" ></i>
+                                </td>
+                                <td>Lot <?php echo $i; ?></td>
+                                <td class="lot_date"></td>
+                                <td class="lot_detail"> </td>
+                                <td>
+                                    <button name='<?php echo $i; ?>' class='btn btn-warning api_actualiseLot grize' dir='Reperage' title='Actualise' > 
+                                        <i class="fa fa-refresh"></i>
+                                    </button>
+                                    <button name='<?php echo $i; ?>' class='btn btn-info api_affichLot grize' dir='Reperage' title="Affichage" >
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button name='<?php echo $i; ?>' class='btn btn-success api_TelechargeLot grize' dir='Reperage' title="Télécharge" >
+                                        <i class="fa fa-cloud-download"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <?php } ?>
                         </tbody>
                       </table>
                        <br>
-                        <div class="reper_BtnAll" style="display:none">
-                            <div class="col-md-8"  >
-                                <button type="submit" class="btn btn-warning btn_affiche0" dir="Reperage" >
-                                    <i class="fa fa-eye"></i>
-                                    Tous Afficher
-                                </button>
-                                <button type="submit" class="btn btn-success btn_telecharge0" dir="Reperage" >
-                                    <i class="fa fa-cloud-download"></i>
-                                    Télécharger Tous
-                                </button>
-                            </div>
-                            <div class="col-md-4 ldReper_BtnAll" style="display:none">
-                                <img src="./dist/img/ajax-loader.gif" align="left"> <b>&nbsp;&nbsp; <span class="ldText2"></span>...</b>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 
@@ -210,30 +223,39 @@
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-bordered table-striped table-hover">
                         <tr>
-                          <th></th>
+                          <th>#</th>
                           <th>Lot</th>
-                          <th>Date</th>
-                          <th>Détails</th>
+                          <th>Last Date</th>
+                          <th width="33%">Détails</th>
                           <th ></th>
                         </tr>
-                        <tbody id="lotApi_realisation"></tbody>
+                        <tbody id="lotApi_realisation">
+                            <?php for($i=1;$i<=10; $i++){ ?>
+                            <tr class="lign_2<?php echo $i; ?>">
+                                <td>
+                                    <img src='./dist/img/ajax-loader.gif' class='ldTD' style='display:none'>
+                                    <i class="okTD fa fa-check" ></i>
+                                    <i class="failTD fa fa-remove" ></i>
+                                </td>
+                                <td>Lot <?php echo $i; ?></td>
+                                <td class="lot_date"></td>
+                                <td class="lot_detail"> </td>
+                                <td>
+                                    <button name='<?php echo $i; ?>' class='btn btn-warning api_actualiseLot grize' dir='Realisation' value='Affiche' > 
+                                        <i class="fa fa-refresh"></i>
+                                    </button>
+                                    <button name='<?php echo $i; ?>' class='btn btn-info api_affichLot grize' dir='Realisation' title="Affichage" >
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button name='<?php echo $i; ?>' class='btn btn-success api_TelechargeLot grize' dir='Realisation' >
+                                        <i class="fa fa-cloud-download"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <?php } ?>
+                        </tbody>
                       </table>
                        <br>
-                        <div class="real_BtnAll" style="display:none">
-                            <div class="col-md-8"  >
-                                <button type="submit" class="btn btn-warning btn_affiche0" dir="Realisation" >
-                                    <i class="fa fa-eye"></i>
-                                    Tous Afficher
-                                </button>
-                                <button type="submit" class="btn btn-success btn_telecharge0" dir="Realisation" >
-                                    <i class="fa fa-cloud-download"></i>
-                                    Télécharger Tous
-                                </button>
-                            </div>
-                            <div class="col-md-4 ldReal_BtnAll" style="display:none">
-                                <img src="./dist/img/ajax-loader.gif" align="left"> <b>&nbsp;&nbsp; <span class="ldText2"></span>...</b>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 
@@ -244,14 +266,14 @@
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-bordered table-striped table-hover">
                         <tr>
-                          <th></th>
+                          <th>N°</th>
                           <th width="5%">Lot</th>
                           <th>Client</th>
                           <th>Adresses</th>
-                          <th>Géolocalisation</th>
+<!--                          <th>Géolocalisation</th>-->
                           <th>Catégorie</th>
                           <th>Pt Vente</th>
-                          <th>Commentaires</th>
+                          <th>Controlleur</th>
                           <th>Date</th>
                         </tr>
                         <tbody id="lotApi_affichage"></tbody>
@@ -265,10 +287,10 @@
           </div>
         </div>
        
-        <div class="col-md-12">
+        <div class="col-md-12" id="Correction">
           <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title">Importation CSV / EXCEL.</h3>
+              <h3 class="box-title">Importation CSV / EXCEL. &nbsp;&nbsp; :: &nbsp;&nbsp; Correction des données erronées</h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -284,12 +306,32 @@
                         <form id="formImport01" action="dist/ajax_php.php" method="post" enctype="multipart/form-data" >
                         <div class="row">
                             <div class="col-md-1"></div>
-                            <div class="col-md-4">
-                                <input type="file" value="Valider" class="btn btn-primary" name="csv" /><br>
+                            <div class="col-md-9">
+                                <p style="font-size:16px; font-style:italic">
+                                    « Dans cette section importer les données erronées (doublons, branchements réalisés avec clé sans obs, etc) corrigées par l’utilisateur et disponible au format Excel ou CSV pour leur prise en charge dans le portail public. »
+                                </p> <br>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-12"></div>
+                            
+                            <div class="col-md-1"></div>
+                            
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="typeDonnee">Type de données</label>
+                                    <select id="typeDonnee" name="typeDonnee" class="form-control" >
+                                        <option value="">Séléctionnez Type donnée</option>
+                                        <option value="Reperage">Répérage</option>
+                                        <option value="Realisation">Réalisation</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4"><br>
+                                <input type="file" value="Valider" class="btn btn-primary grize_1" name="csv" disabled /><br>
+                            </div>
+                            <div class="col-md-3"><br>
                                 <input type="hidden" value="save_ImportCSV" name="pst">
-                                <button type="submit" class="btn btn-success" dir="" id="" >IMPORTER LE FICHIER</button>
+                                <button type="submit" class="btn btn-success grize_1" disabled >IMPORTER LE FICHIER</button>
                             </div>
                         </div>
                      
@@ -299,7 +341,7 @@
                                 <div id="loadingImport01" style="display:none">
                                     <img src="./dist/img/ajax-loader.gif" align="left"> <b>&nbsp;&nbsp; Importation en cours...</b>
                                 </div>
-                                <div id="messageImport01"></div>
+                                <div id="msgImport01"></div>
                             </div>
                         </div>
                         
@@ -343,7 +385,7 @@
     <div class="pull-right hidden-xs">
       <b>Version</b> 1.0.0
     </div>
-    <strong>Copyright &copy; 2016-2019 <a href="http://www.demande-audience.com">Croissance Hub</a>.</strong> All rights
+    <strong>Copyright &copy; 2016-2019 <a href="http://www.croissancehub.com">Croissance Hub</a>.</strong> All rights
     reserved.
   </footer>
 

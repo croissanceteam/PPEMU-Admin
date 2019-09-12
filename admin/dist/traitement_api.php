@@ -4,7 +4,10 @@ session_start();
 include_once '../Metier/Autoloader.php';
 Autoloader::register();
 
+//include('../../sync/db.php');
 //include_once '../Metier/Reperage.php';
+//include_once '../Metier/RapportOperation.php';
+//session_start();
 /*
 class parLot1
 {
@@ -22,7 +25,6 @@ class parLot1
     }
 }
 */
-//$monChat = new Chat("Vert","Calico");
 
 $link_reperage = array(
                 1 => "aBjGWHgmQQfrwfeKsHCnby",
@@ -49,374 +51,267 @@ $link_realisation = array(
 //                     "a753uDACAv9fFi6UVYhwVw",
 );
 
-//$link='https://kf.kobotoolbox.org/assets/'.$linkSub.'/submissions/?format=json';
-////$link='https://kf.kobotoolbox.org/assets/aN9oVWSGeVTGhyuAxxcyr5/submissions/?format=json';
-//$opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
-//
-//$context = stream_context_create($opts);
-//$data = file_get_contents($link, false, $context);
-//
-//$parsed_json = json_decode($data,true);
 $reperage = new Reperage();
+$rapportOp = new RapportOperation();
 
 if(isset($_GET['traitement_api'])){
     
-    if(isset($_GET['btn']) && $_GET['btn']=='api_actualise'){
-        
-        $json= array();
-        
-        $i=0;
-        foreach($link_reperage as $cle=>$valeur){
-            $i++;
-            $link='https://kf.kobotoolbox.org/assets/'.$valeur.'/submissions/?format=json';
-            $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
-            $context = stream_context_create($opts);
-            $data = file_get_contents($link, false, $context);
-
-            $parsed_json = json_decode($data,true);
-            
-            $json[$i] =array($cle, count($parsed_json), 'dateExp', 'Reperage');
-        }
-        
-        foreach($link_realisation as $cle=>$valeur){
-            $i++;
-            $link='https://kf.kobotoolbox.org/assets/'.$valeur.'/submissions/?format=json';
-            $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
-            $context = stream_context_create($opts);
-            $data = file_get_contents($link, false, $context);
-
-            $parsed_json = json_decode($data,true);
-            
-            $json[$i] =array($cle, count($parsed_json), 'dateExp', 'Realisation');
-        }
-        
-        echo json_encode($json);
-        
-    }
+    $lastDate = 0;
+    $lastDate_2 = 0;  // Dernier date Realisation
     
-    else if(isset($_GET['btn']) && $_GET['btn']=='api_downAll'){ //TELECHARGE TOUT LE DONNEE REPERAGE ET REALISATION
+    //ACTUALISATION PAR LOT REPERAGE ET REALISATION
+    if(isset($_GET['btn']) && $_GET['btn']=='api_actualiseLot'){ 
         
         $json= array();
+        $lot=htmlentities($_GET['lot'], ENT_QUOTES);
+        $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
         
-        $i=0;
-        foreach($link_reperage as $cle=>$valeur){
-            $i++;
-            $link='https://kf.kobotoolbox.org/assets/'.$valeur.'/submissions/?format=json';
+        try {
+            if($typeDonnee=='Reperage'){
+                if(array_key_exists($lot, $link_reperage))
+                    $link_sub=$link_reperage[$lot];
+                else 
+                    throw new Exception("Lot $lot Non trouvé! ");
+                
+                $lastDate=$reperage->getLastDate($lot);
+            }
+            else if($typeDonnee=='Realisation'){
+                if(array_key_exists($lot, $link_realisation))
+                    $link_sub=$link_realisation[$lot];
+                else 
+                    throw new Exception("Lot $lot Non trouvé! ");
+                
+                $lastDate=$lastDate_2;
+            }
+
+            $link='https://kf.kobotoolbox.org/assets/'.$link_sub.'/submissions/?format=json';
             $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
             $context = stream_context_create($opts);
-            $data = file_get_contents($link, false, $context);
+            //$data = file_get_contents($link, false, $context);
+            
+            if(!@file_get_contents($link, false, $context))
+                throw new Exception("Pas de Connexion Internet ! ");
+            else
+                $data = @file_get_contents($link, false, $context);
 
             $parsed_json = json_decode($data,true);
             
+            $nbrligne=0;
             foreach ($parsed_json as $v) {
-                
-                $geopoint=@htmlentities($v['G_olocalisation'], ENT_QUOTES);
-                
-                list($lat_2, $lng_2, $altitude, $precision)=explode(' ', $geopoint);
-                
-                $controller_name=@htmlentities($v['Nom_du_Contr_leur'], ENT_QUOTES);
-                $comments=@htmlentities($v['Commentaires'], ENT_QUOTES);
                 $submission_time=@htmlentities($v['_submission_time'], ENT_QUOTES);
-                $town='';
-                $lot=$cle;
-                $date_export=date('d/m/Y');//htmlentities($v['Ref_Client'], ENT_QUOTES);
-                
-                $req = $reperage->tempSave([
-                    'name_client'   =>  @htmlentities($v['Nom_Client'], ENT_QUOTES),
-                    'avenue'        =>  @htmlentities($v['Avenue_Quartier'], ENT_QUOTES),
-                    'num_home'      =>  @htmlentities($v['Num_ro_parcelle'], ENT_QUOTES),
-                    'commune'       =>  @htmlentities($v['Commune'], ENT_QUOTES),
-                    'phone'         =>  @htmlentities($v['Num_ro_t_l_phone'], ENT_QUOTES),
-                    'category'      =>  @htmlentities($v['Cat_gorie_Client'], ENT_QUOTES),
-                    'ref_client'    =>  @htmlentities($v['Ref_Client'], ENT_QUOTES),
-                    'pt_vente'      =>  @htmlentities($v['Etat_du_point_de_vente'], ENT_QUOTES),
-                    'geopoint'      =>  @htmlentities($v['G_olocalisation'], ENT_QUOTES),
-                    'lat'           =>  @htmlentities($v['_geolocation'][0], ENT_QUOTES),
-                    'lng'           =>  @htmlentities($v['_geolocation'][1], ENT_QUOTES),
-                    'altitude'      =>  $altitude,
-                    'precision'     =>  $precision,
-                'controller_name'   =>  @htmlentities($v['Nom_du_Contr_leur'], ENT_QUOTES),
-                'comments'          =>  @htmlentities($v['Commentaires'], ENT_QUOTES),
-                'submission_time'   =>  @htmlentities($v['_submission_time'], ENT_QUOTES),
-                'town'              =>  '',
-                'lot'               =>  $lot,
-                'date_export'       =>  Helper::ngonga()
-                ]);
+                if($lastDate < strtotime($submission_time)){
+                    $nbrligne++; //echo $v['_submission_time'];
+                }
             }
             
+            $json[] =array($lot, $nbrligne, date('d/m/Y', strtotime($parsed_json[0]['_submission_time'])), $typeDonnee);
+            //throw new Exception(" contains the word name");
+            echo json_encode($json);
             
-            
-            $json[$i] =array($cle, count($parsed_json), 'dateExp', 'Reperage');
+        } catch (Exception $e) {
+            echo json_encode(array($lot, "Error", $typeDonnee, $e->getMessage() ));
         }
         
-//        foreach($link_realisation as $cle=>$valeur){
-//            $i++;
-//            $link='https://kf.kobotoolbox.org/assets/'.$valeur.'/submissions/?format=json';
-//            $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
-//            $context = stream_context_create($opts);
-//            $data = file_get_contents($link, false, $context);
+    }
+    
+    //Lire et Affiche le données d un lot REPERAGE ET REALISATION
+    else if(isset($_GET['btn']) && $_GET['btn']=='api_afficheLot'){ 
+        
+        $json= array();
+        
+        $lot=htmlentities($_GET['lot'], ENT_QUOTES);
+        $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
+        
+        try{
+            
+            if($typeDonnee=='Reperage'){
+                if(array_key_exists($lot, $link_reperage))
+                    $link_sub=$link_reperage[$lot];
+                else 
+                    throw new Exception("Lot $lot Non trouvé! ");
+
+                $lastDate=$reperage->getLastDate($lot);
+            }
+            else if($typeDonnee=='Realisation'){
+                if(array_key_exists($lot, $link_realisation))
+                    $link_sub=$link_realisation[$lot];
+                else 
+                    throw new Exception("Lot $lot Non trouvé! ");
+
+                $lastDate=$lastDate_2;
+            }
+        
+            $link='https://kf.kobotoolbox.org/assets/'.$link_sub.'/submissions/?format=json';
+            $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
+
+            $context = stream_context_create($opts);
+        
+            if(!@file_get_contents($link, false, $context))
+                throw new Exception("Pas de Connexion Internet ! ");
+            else
+                $data = @file_get_contents($link, false, $context);
+
+            $parsed_json = json_decode($data,true);
+
+            $nbrligne=0;
+            foreach ($parsed_json as $v) {
+                $submission_time=@htmlentities($v['_submission_time'], ENT_QUOTES);
+                if($lastDate <= strtotime($submission_time)){
+                    $nbrligne++;
+                    $json[]=$v;
+                }
+            }
+
+            echo json_encode($json);
+        } catch (Exception $e) {
+            echo json_encode(array($lot, "Error", $typeDonnee, $e->getMessage()));
+        }
+        
+    }
+    
+    //Télécharge le données d un lot REPERAGE ok (REALISATION pas de table prevue)
+    else if(isset($_GET['btn']) && $_GET['btn']=='api_TelechargeLot'){ 
+        
+        $json= array();
+        $nbrligne;
+        
+        $lot=htmlentities($_GET['lot'], ENT_QUOTES);
+        $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
+        try{
+            
+            if($typeDonnee=='Reperage'){
+                if(array_key_exists($lot, $link_reperage))
+                    $link_sub=$link_reperage[$lot];
+                else 
+                    throw new Exception("Lot $lot Non trouvé! ");
+
+                $lastDate=$reperage->getLastDate($lot);
+            }
+            else if($typeDonnee=='Realisation'){
+                if(array_key_exists($lot, $link_realisation))
+                    $link_sub=$link_realisation[$lot];
+                else 
+                    throw new Exception("Lot $lot Non trouvé! ");
+
+                $lastDate=$lastDate_2;
+            }
+        
+            $link='https://kf.kobotoolbox.org/assets/'.$link_sub.'/submissions/?format=json';
+            $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
+
+            $context = stream_context_create($opts);
+            if(!@file_get_contents($link, false, $context))
+                throw new Exception("Pas de Connexion Internet ! ");
+            else
+                $data = @file_get_contents($link, false, $context);
+
+            $parsed_json = json_decode($data,true);
+
+            $nbrligne=0;
+            foreach ($parsed_json as $v) {
+                $submission_time=@htmlentities($v['_submission_time'], ENT_QUOTES);
+                if($lastDate <= strtotime($submission_time)){
+                    $nbrligne++;
+                    
+                    $geopoint= isset($v['G_olocalisation']) ? $v['G_olocalisation'] : $v['Golocalisation'];
+                    
+                    $name_client= isset($v['Nom_Client']) ? $v['Nom_Client'] : $v['NomClient'];
+                    
+                    $avenue= isset($v['Avenue_Quartier']) ? $v['Avenue_Quartier'] : $v['AvenueQuartier'];
+                    
+                    $num_home= isset($v['Num_ro_parcelle']) ? $v['Num_ro_parcelle'] : $v['Numparcelle'];
+                    $phone= isset($v['Num_ro_t_l_phone']) ? $v['Num_ro_t_l_phone'] : $v['Numphone'];
+                    $category= isset($v['Cat_gorie_Client']) ? $v['Cat_gorie_Client'] : $v['CatgorieClient'];
+                    //$ref_client= isset($v['Ref_Client']) ? $v['Ref_Client'] : $v['numsite'];
+                    $pt_vente= isset($v['Etat_du_point_de_vente']) ? $v['Etat_du_point_de_vente'] : $v['Etatpvente'];
+                    
+//                    if(isset($v['G_olocalisation'])) $geopoint=@htmlentities($v['G_olocalisation'], ENT_QUOTES);
+//                    else $geopoint=@htmlentities($v['Golocalisation'], ENT_QUOTES);
 //
-//            $parsed_json = json_decode($data,true);
-//            
-//            $json[$i] =array($cle, count($parsed_json), 'dateExp', 'Realisation');
-//        }
-        
-        echo json_encode($json);
-        
-    }
-    
-    else if(isset($_GET['btn']) && $_GET['btn']=='api_afficheLot'){ //Lire et Affiche le données d un lot
-        
-        $json= array();
-        
-        $lot=htmlentities($_GET['lot'], ENT_QUOTES);
-        $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
-        
-        if($typeDonnee=='Reperage')$link_sub=$link_reperage[$lot];
-        else if($typeDonnee=='Realisation')$link_sub=$link_realisation[$lot];
-        //die (" L ".$link_reperage[$lot]." L2".$link_sub);
-        $link='https://kf.kobotoolbox.org/assets/'.$link_sub.'/submissions/?format=json';
-        $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
+//                    if(isset($v['Nom_Client'])) $name_client=@htmlentities($v['Nom_Client'], ENT_QUOTES);
+//                    else $name_client=@htmlentities($v['NomClient'], ENT_QUOTES);
+//
+//                    if(isset($v['Avenue_Quartier'])) $avenue=@htmlentities($v['Avenue_Quartier'], ENT_QUOTES);
+//                    else $avenue=@htmlentities($v['AvenueQuartier'], ENT_QUOTES);
+//
+//                    if(isset($v['Num_ro_parcelle'])) $num_home=@htmlentities($v['Num_ro_parcelle'], ENT_QUOTES);
+//                    else $num_home=@htmlentities($v['Numparcelle'], ENT_QUOTES);
+//
+//                    if(isset($v['Num_ro_t_l_phone'])) $phone=@htmlentities($v['Num_ro_t_l_phone'], ENT_QUOTES);
+//                    else $phone=@htmlentities($v['Numphone'], ENT_QUOTES);
+//
+//                    if(isset($v['Cat_gorie_Client'])) $category=@htmlentities($v['Cat_gorie_Client'], ENT_QUOTES);
+//                    else $category=@htmlentities($v['CatgorieClient'], ENT_QUOTES);
+//
+                    if(isset($v['Ref_Client'])) $ref_client=@htmlentities($v['Ref_Client'], ENT_QUOTES);
+                    else if(isset($v['Numero_site'])) $ref_client=@htmlentities($v['Numero_site'], ENT_QUOTES);
+                    else $ref_client=@htmlentities($v['numsite'], ENT_QUOTES);
+//
+//                    if(isset($v['Etat_du_point_de_vente'])) $pt_vente=@htmlentities($v['Etat_du_point_de_vente'], ENT_QUOTES);
+//                    else $pt_vente=@htmlentities($v['Etatpvente'], ENT_QUOTES);
 
-        $context = stream_context_create($opts);
-        $data = file_get_contents($link, false, $context);
+                    if(isset($v['Nom_du_Contr_leur'])) $controller_name=@htmlentities($v['Nom_du_Contr_leur'], ENT_QUOTES);
+                    else if(isset($v['consultant'])) $controller_name=@htmlentities($v['consultant'], ENT_QUOTES);
+                    else $controller_name="";
 
-        $parsed_json = json_decode($data,true);
-        
-        echo json_encode($parsed_json);
-        
-    }
-    
-    else if(isset($_GET['btn']) && $_GET['btn']=='api_TelechargeLot'){ //Télécharge le données d un lot
-        
-        $json= array();
-        
-        $lot=htmlentities($_GET['lot'], ENT_QUOTES);
-        $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
-        
-        if($typeDonnee=='Reperage')$link_sub=$link_reperage[$lot];
-        else if($typeDonnee=='Realisation')$link_sub=$link_realisation[$lot];
-        //die (" L ".$link_reperage[$lot]." L2".$link_sub);
-        $link='https://kf.kobotoolbox.org/assets/'.$link_sub.'/submissions/?format=json';
-        $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
-
-        $context = stream_context_create($opts);
-        $data = file_get_contents($link, false, $context);
-
-        $parsed_json = json_decode($data,true);
-        
-            
-        foreach ($parsed_json as $v) {
-            /*
-            $name_client=@htmlentities($v['Nom_Client'], ENT_QUOTES);
-            $avenue=@htmlentities($v['Avenue_Quartier'], ENT_QUOTES);
-            $num_home=@htmlentities($v['Num_ro_parcelle'], ENT_QUOTES);
-            $commune=@htmlentities($v['Commune'], ENT_QUOTES);
-            $phone=@htmlentities($v['Num_ro_t_l_phone'], ENT_QUOTES);
-            $category=@htmlentities($v['Cat_gorie_Client'], ENT_QUOTES);
-            $ref_client=@htmlentities($v['Ref_Client'], ENT_QUOTES);
-            $pt_vente=@htmlentities($v['Etat_du_point_de_vente'], ENT_QUOTES); */
-            $geopoint=@htmlentities($v['G_olocalisation'], ENT_QUOTES);
-            /*
-            $lat=@htmlentities($v['_geolocation'][0], ENT_QUOTES);
-            $lng=@htmlentities($v['_geolocation'][1], ENT_QUOTES);
-            */
-            list($lat_2, $lng_2, $altitude, $precision)=explode(' ', $geopoint);
-            /*
-            $controller_name=@htmlentities($v['Nom_du_Contr_leur'], ENT_QUOTES);
-            $comments=@htmlentities($v['Commentaires'], ENT_QUOTES);
-            $submission_time=@htmlentities($v['_submission_time'], ENT_QUOTES);
-            $town='';
-            $lot=$lot;
-            $date_export=date('d/m/Y');//htmlentities($v['Ref_Client'], ENT_QUOTES);
-            */
-            //$req = $db->query("INSERT INTO `t_reperage_import` (`id`, `name_client`, `avenue`, `num_home`, `commune`, `phone`, `category`, `ref_client`, `pt_vente`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `controller_name`, `comments`, `submission_time`, `town`, `lot`, `date_export`, `secteur`, `matching`, `error_matching`) VALUES (NULL, '$name_client', '$avenue', '$num_home', '$commune', '$phone', '$category', '$ref_client', '$pt_vente', '$geopoint', '$lat', '$lng', '$altitude', '$precision', '$controller_name', '$comments', '$submission_time', '$town', '$lot', '$date_export' , '', 0, 0 );");
-            $req = $reperage->tempSave([
-                'name_client'   =>  @htmlentities($v['Nom_Client'], ENT_QUOTES),
-                'avenue'        =>  @htmlentities($v['Avenue_Quartier'], ENT_QUOTES),
-                'num_home'      =>  @htmlentities($v['Num_ro_parcelle'], ENT_QUOTES),
-                'commune'       =>  @htmlentities($v['Commune'], ENT_QUOTES),
-                'phone'         =>  @htmlentities($v['Num_ro_t_l_phone'], ENT_QUOTES),
-                'category'      =>  @htmlentities($v['Cat_gorie_Client'], ENT_QUOTES),
-                'ref_client'    =>  @htmlentities($v['Ref_Client'], ENT_QUOTES),
-                'pt_vente'      =>  @htmlentities($v['Etat_du_point_de_vente'], ENT_QUOTES),
-                'geopoint'      =>  @htmlentities($v['G_olocalisation'], ENT_QUOTES),
-                'lat'           =>  @htmlentities($v['_geolocation'][0], ENT_QUOTES),
-                'lng'           =>  @htmlentities($v['_geolocation'][1], ENT_QUOTES),
-                'altitude'      =>  $altitude,
-                'precision'     =>  $precision,
-            'controller_name'   =>  @htmlentities($v['Nom_du_Contr_leur'], ENT_QUOTES),
-            'comments'          =>  @htmlentities($v['Commentaires'], ENT_QUOTES),
-            'submission_time'   =>  @htmlentities($v['_submission_time'], ENT_QUOTES),
-            'town'              =>  '',
-            'lot'               =>  $lot,
-            'date_export'       =>  Helper::ngonga()
-            ]);
-
-        }
-
-        $json[$i] =array($lot, count($parsed_json), 'dateExp', $typeDonnee);
-        
-        
-        echo json_encode($json);
-        
-    }
-    
-    else if(isset($_GET['btn']) && $_GET['btn']=='api_afficheTout0'){ 
-        //Lire Affiche tout le données (Par reperage ou Realisation)
-        
-        $json= array();
-        
-        $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
-        $i=0;
-        
-        if($typeDonnee=='Reperage'){
-            
-            foreach($link_reperage as $cle=>$valeur){
-                $i++;
-                $link='https://kf.kobotoolbox.org/assets/'.$valeur.'/submissions/?format=json';
-                $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
-                $context = stream_context_create($opts);
-                $data = file_get_contents($link, false, $context);
-
-                $parsed_json = json_decode($data,true);
-
-                foreach ($parsed_json as $v) {
-                    
-                    $geopoint=@htmlentities($v['G_olocalisation'], ENT_QUOTES);
-                    
                     list($lat_2, $lng_2, $altitude, $precision)=explode(' ', $geopoint);
 
-                    $lot=$cle;
-                    //$req = $db->query("INSERT INTO `t_reperage_import` (`id`, `name_client`, `avenue`, `num_home`, `commune`, `phone`, `category`, `ref_client`, `pt_vente`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `controller_name`, `comments`, `submission_time`, `town`, `lot`, `date_export`, `secteur`, `matching`, `error_matching`) VALUES (NULL, '$name_client', '$avenue', '$num_home', '$commune', '$phone', '$category', '$ref_client', '$pt_vente', '$geopoint', '$lat', '$lng', '$altitude', '$precision', '$controller_name', '$comments', '$submission_time', '$town', '$lot', '$date_export' , '', 0, 0 );");
                     $req = $reperage->tempSave([
-                        'name_client'   =>  @htmlentities($v['Nom_Client'], ENT_QUOTES),
-                        'avenue'        =>  @htmlentities($v['Avenue_Quartier'], ENT_QUOTES),
-                        'num_home'      =>  @htmlentities($v['Num_ro_parcelle'], ENT_QUOTES),
+                        'name_client'   =>  $name_client,
+                        'avenue'        =>  $avenue,
+                        'num_home'      =>  $num_home,
                         'commune'       =>  @htmlentities($v['Commune'], ENT_QUOTES),
-                        'phone'         =>  @htmlentities($v['Num_ro_t_l_phone'], ENT_QUOTES),
-                        'category'      =>  @htmlentities($v['Cat_gorie_Client'], ENT_QUOTES),
-                        'ref_client'    =>  @htmlentities($v['Ref_Client'], ENT_QUOTES),
-                        'pt_vente'      =>  @htmlentities($v['Etat_du_point_de_vente'], ENT_QUOTES),
-                        'geopoint'      =>  @htmlentities($v['G_olocalisation'], ENT_QUOTES),
-                        'lat'           =>  @htmlentities($v['_geolocation'][0], ENT_QUOTES),
-                        'lng'           =>  @htmlentities($v['_geolocation'][1], ENT_QUOTES),
+                        'phone'         =>  $phone,
+                        'category'      =>  $category,
+                        'ref_client'    =>  $ref_client,
+                        'pt_vente'      =>  $pt_vente,
+                        'geopoint'      =>  $geopoint,
+                        'lat'           =>  $lat_2,
+                        'lng'           =>  $lng_2,
                         'altitude'      =>  $altitude, 
                         'precision'     =>  $precision,
-                    'controller_name'   =>  @htmlentities($v['Nom_du_Contr_leur'], ENT_QUOTES),
+                    'controller_name'   =>  $controller_name,
                     'comments'          =>  @htmlentities($v['Commentaires'], ENT_QUOTES),
                     'submission_time'   =>  @htmlentities($v['_submission_time'], ENT_QUOTES),
                     'town'              =>  '', 
                     'lot'               =>  $lot, 
-                    'date_export'       =>  date('d/m/Y')
                     ]);
                 }
-
-
-
-                $json[$i] =array($cle, count($parsed_json), 'dateExp', 'Reperage');
             }
-        }
-        else if($typeDonnee=='Realisation'){
-//            foreach($link_realisation as $cle=>$valeur){
-//                $i++;
-//                $link='https://kf.kobotoolbox.org/assets/'.$valeur.'/submissions/?format=json';
-//                $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
-//                $context = stream_context_create($opts);
-//                $data = file_get_contents($link, false, $context);
-//
-//                $parsed_json = json_decode($data,true);
-//                $json[$i] =$parsed_json;
-//            }
+
+            $json[] =array($lot, $nbrligne, date('d/m/Y'), $typeDonnee);
+
+            echo json_encode($json);
+        } catch (Exception $e) {
+            echo json_encode(array($lot, "Error", $typeDonnee, $e->getMessage()));
         }
         
-        echo json_encode($json);
         
-    }
+            /*
+             * Enregistrement de l operation dans le journal des operations
+             */
+            $detailOp="Importation $typeDonnee par $_SESSION[nomsPsv], resultat : $nbrligne Importé(s)";
+
+            $req = $rapportOp->saveRapport([
+                'user' => $_SESSION['nomsPsv'],
+                'operation' => "Importation API KOBO",
+                'detail_operation' => $detailOp,
+                'lot' => $lot,
+                'total_reper_before' => 0,
+                'total_reperImport_before' => 0,
+                'total_cleaned_found' => 0,
+                'total_cleaned_afected' => 0,
+                'total_reper_after' =>0,
+                'total_reperImport_after' => 0,
+                'total_match_found' => 0,
+                'total_match_afected' => 0,
+                'total_noObs' => 0,
+                'total_doublon' => 0,
+                'total_noObs_doublon' => 0,
+            ]);
+
+        }
     
-    else if(isset($_GET['btn']) && $_GET['btn']=='api_telechargeTout0'){ 
-        //TELECHARGE tout le données (Par reperage ou Realisation)
-        
-        $json= array();
-        
-        $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
-        $i=0;
-        
-        if($typeDonnee=='Reperage'){
-            
-            foreach($link_reperage as $cle=>$valeur){
-                $i++;
-                $link='https://kf.kobotoolbox.org/assets/'.$valeur.'/submissions/?format=json';
-                $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
-                $context = stream_context_create($opts);
-                $data = file_get_contents($link, false, $context);
-
-                $parsed_json = json_decode($data,true);
-                $json[$i] =$parsed_json;
-            }
-        }
-        else if($typeDonnee=='Realisation'){
-            foreach($link_realisation as $cle=>$valeur){
-                $i++;
-                $link='https://kf.kobotoolbox.org/assets/'.$valeur.'/submissions/?format=json';
-                $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
-                $context = stream_context_create($opts);
-                $data = file_get_contents($link, false, $context);
-
-                $parsed_json = json_decode($data,true);
-                $json[$i] =$parsed_json;
-            }
-        }
-        
-        
-        //die (" L ".$link_reperage[$lot]." L2".$link_sub);
-//        $link='https://kf.kobotoolbox.org/assets/'.$link_sub.'/submissions/?format=json';
-//        $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
-//
-//        $context = stream_context_create($opts);
-//        $data = file_get_contents($link, false, $context);
-//
-//        $parsed_json = json_decode($data,true);
-        
-        echo json_encode($json);
-        
-    }
-    
-    else if(isset($_GET['btn']) && $_GET['btn']=='api_actualise2'){ //Lire le données d un lot
-        
-        $json= array();
-        $link='https://kf.kobotoolbox.org/assets/aN9oVWSGeVTGhyuAxxcyr5/submissions/?format=json';
-        $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
-
-        $context = stream_context_create($opts);
-        $data = file_get_contents($link, false, $context);
-
-        $parsed_json = json_decode($data,true);
-        $i=0;
-        
-//        foreach ($parsed_json as $v) {
-//            //echo $v['Nom_du_Contr_leur'].'<br>';
-//            $json[$i][]=$v['Ref_Client'];
-//            $i++;
-//         }
-        
-        
-//        $i=0;
-//        $parsed_json = json_decode($data);
-//        foreach ($parsed_json as $v ) {
-//            //echo $v['Ref_Client'].'<br>';
-//            $json[$i][]=$v['Ref_Client'];
-//            $i++;
-//        }
-        
-        
-//        for ($i=1;$i>=3; $i++){
-//            $json[$i][]="Nombre de ligne "
-//        }
-        echo count($parsed_json);
-        //echo json_encode($parsed_json);
-        
-    }
 }
 else
 {

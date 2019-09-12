@@ -1,19 +1,18 @@
 <?php
 include('../../sync/db.php');
+//include('../Sync/Database.php');
 session_start();
 
 if(isset($_GET['cleanDataReper'])){
-        //TODO: Affichage Liste Villes 
+        //TODO: CLEANING PROCESS
         
-    $json= array();
-
     $lot=htmlentities($_GET['lot'], ENT_QUOTES);
     
-    print("<u><b>CLEANING REPERAGE $lot </b></u><br/><br/>");
+    print("<u><b>CLEANING REPERAGE LOT $lot </b></u><br/>");
     
     $reqTotalReperage = "SELECT COUNT(*) AS total FROM t_reperage WHERE lot='$lot' ";
-    $reqTotalImport = "SELECT COUNT(*) AS total FROM t_reperage_import WHERE lot='$lot' ";
-    $reqGetDateExport = "SELECT DISTINCT(date_export) FROM t_reperage_import ORDER BY date_export DESC LIMIT 1";
+    $reqTotalImport = "SELECT COUNT(*) AS total FROM t_reperage_import WHERE lot='$lot' and issue='0' ";
+    $reqGetDateExport = "SELECT DISTINCT(date_export) FROM t_reperage_import WHERE issue='0' ORDER BY date_export DESC LIMIT 1";
 
     $total_reperage_before = $link->query($reqTotalReperage)->fetch()->total;
     $total_import_before = $link->query($reqTotalImport)->fetch()->total;
@@ -29,7 +28,7 @@ if(isset($_GET['cleanDataReper'])){
 
     print("<br/><u><b>Recherche des données clean à la date du $date_export </b></u><br/>");
 
-    $reqGetCleanData = "SELECT * FROM t_reperage_import WHERE lot='$lot' AND ref_client LIKE '%OBS' AND ref_client IN (SELECT ref_client FROM t_reperage_import GROUP BY ref_client  HAVING COUNT(*) = 1)";
+    $reqGetCleanData = "SELECT * FROM t_reperage_import WHERE lot='$lot' AND issue='0' AND ref_client LIKE '%OBS' AND ref_client IN (SELECT ref_client FROM t_reperage_import GROUP BY ref_client  HAVING COUNT(*) = 1)";
 
     $resCleanData = $link->query($reqGetCleanData);
     $total_clean_data = $resCleanData->rowCount();
@@ -37,8 +36,8 @@ if(isset($_GET['cleanDataReper'])){
     if ($total_clean_data > 0) {
         print ("<b>".$total_clean_data . " clean data trouvées dans la table reperage import</b> <br/><br/>");
 
-        print("<b><u>Transfert des clean data dans la table des referencements 'reperages'</u></b> <br/><br/>");
-        print("Début du transfert des données <br/><br/>");
+        print("<b><u>Transfert des clean data dans la table des referencements 'reperages'</u></b> <br/>");
+        print("Début du transfert des données <br/>");
 
         /*
          * Second step: transfer clean data into reperage table and delete them from reperage_import
@@ -105,8 +104,8 @@ if(isset($_GET['cleanDataReper'])){
 
         //$nouvelles_data = $total_reperage_before - $total_reperage_after;
 
-        print(" <b>Fin du transfert des données</b> <br/><br/>");
-        print("<u><b>RAPPORT DE TRANSFERT</b></u><br><br>");
+        print("<b>Fin du transfert des données</b> <br/><br/>");
+        print("<u><b>RAPPORT DE TRANSFERT</b></u><br>");
         print ("* " . $total_inserted . " lignes sur " . $total_clean_data . " ont été transferées <br/>");
 
         print ("<b>Total de lignes dans reperage après transfert : $total_reperage_after.<br/>Total de lignes des données sales à la date du $date_export : $total_import_after </b><br/>");
@@ -135,7 +134,7 @@ if(isset($_GET['cleanDataReper'])){
     $stmtUpdate = $link->prepare($reqUpdateRepMatching);
 
     print ("<br/><b>Recheche des lignes dans root qui matchent avec les reperages...</b><br/>");
-    print ("<br/>" . $countRootMatching . " lignes trouvées.");
+    print ("" . $countRootMatching . " lignes trouvées.");
 
     print ("<br/>Début du processus d'attribution des secteurs aux données de reperage matchées... <br/>");
     $updated_rows = $rs = 0;
@@ -164,14 +163,14 @@ if(isset($_GET['cleanDataReper'])){
             break;
         }
     }
-    print ("<br/><b>Fin du processus</b><br/>");
+    print ("<b>Fin du processus</b><br/>");
 
     $notupdated = $countRootMatching - $updated_rows;
     $reqCountNotMatchingReperage = "SELECT COUNT(*) AS total FROM t_reperage rep LEFT JOIN t_root rt ON rep.ref_client = rt.refclient WHERE rt.refclient IS NULL";
     $totalNotMatchingReperage = $link->query($reqCountNotMatchingReperage)->fetch()->total;
 
 
-    print ("<br/><b><u>RAPPORT DE MATCHING</u></b><br/><br/>");
+    print ("<br/><b><u>RAPPORT DE MATCHING</u></b><br/>");
 
     print ("* " . $updated_rows . " lignes sur " . $countRootMatching . " ont été mises à jour;<br/>");
 
@@ -180,11 +179,142 @@ if(isset($_GET['cleanDataReper'])){
 
     print ("<br/>Exception : " . $totalNotMatchingReperage . " lignes dans reperages ne matchent pas avec les données de Wambe.");
 
+    /*
+     * Enregistrement de l operation dans le journal des operations
+     */
+    try {
+        $link->beginTransaction();
+
+        $reqInsert = "INSERT INTO `journal_operations` (`id`, `user`, `operation`, `detail_operation`, `lot`, `total_reper_before`, `total_reperImport_before`, `total_cleaned_found`, `total_cleaned_afected`, `total_reper_after`, `total_reperImport_after`, `total_match_found`, `total_match_afected`, `total_noObs`, `total_doublon`, `total_noObs_doublon`, `dateOperation`) "
+            
+                . "VALUES (NULL, :user, :operation, :detail_operation, :lot, :total_reper_before, :total_reperImport_before, :total_cleaned_found, :total_cleaned_afected, :total_reper_after, :total_reperImport_after, :total_match_found, :total_match_afected, :total_noObs, :total_doublon, :total_noObs_doublon, sysdate() )";
+        
+        $detailOp="Cleaning Operation par $_SESSION[nomsPsv], result : $total_inserted traité sur $total_import_before";
+        
+        $statement = $link->prepare($reqInsert);
+        $statement->execute([
+            'user' => $cus->name_client,
+            'operation' => "Cleaning Data",
+            'detail_operation' => $detailOp,
+            'lot' => $lot,
+            'total_reper_before' => $total_reperage_before,
+            'total_reperImport_before' => $total_import_before,
+            'total_cleaned_found' => $total_clean_data,
+            'total_cleaned_afected' => $total_inserted,
+            'total_reper_after' => $total_reperage_after,
+            'total_reperImport_after' => $total_import_after,
+            'total_match_found' => $countRootMatching,
+            'total_match_afected' => $updated_rows,
+            'total_noObs' => 0,
+            'total_doublon' => 0,
+            'total_noObs_doublon' => 0,
+        ]);
+
+        $link->commit();
+        
+    } catch (PDOException $ex) {
+        $link->rollBack();
+        echo $ex->getMessage();
+        break;
+    } catch (Exception $exc) {
+        $link->rollBack();
+        echo $exc->getTraceAsString();
+        break;
+    }
+    
     $link = NULL;
         
-        
-        
 }
+
+else if(isset($_GET['cleanDataReper_suite'])){
+    
+    $lot=htmlentities($_GET['lot'], ENT_QUOTES);
+    
+//    $reqlastOperation = "SELECT id from journal_operations where lot='$lot' order by id desc limit 1 ";
+    $reqGetDataAnomalie = "SELECT id, ref_client, (select id from t_reperage_import t1 where t1.id=t.id and t1.ref_client NOT LIKE '%OBS') as noObs, (select id from t_reperage_import t1 where t1.id=t.id and ref_client IN (SELECT ref_client FROM t_reperage_import t1 GROUP BY t1.ref_client  HAVING COUNT(*) > 1) ) as doublon FROM t_reperage_import t WHERE lot='$lot' ";
+    
+    $reqlastOperation = $link->query("SELECT id from journal_operations where lot='$lot' order by id desc limit 1 ");
+    foreach ($reqlastOperation as $cus)
+        $lastOpId=$cus->id;
+
+    $resDataAnomalie = $link->query($reqGetDataAnomalie);
+    $total_anomalie = $resDataAnomalie->rowCount();
+    
+    $total_doublon = 0;
+    $total_noObs = 0;
+    $total_noObs_doublon = 0;
+    
+    if ($total_anomalie > 0) {
+        foreach ($resDataAnomalie as $cus) {
+
+            try {
+                $link->beginTransaction();
+                
+                $issue=0;
+                if ($cus->noObs !=null && $cus->doublon !=null){
+                    $issue=3;
+                    $total_noObs_doublon++;
+                } 
+                else if ($cus->noObs !=null ){
+                    $issue=1;
+                    $total_noObs++;
+                } 
+                else if ($cus->doublon !=null){
+                    $issue=2;
+                    $total_doublon++;
+                }
+                
+                $reqUpdate = "UPDATE t_reperage_import SET issue=? WHERE id = ?";
+                $stmt = $link->prepare($reqUpdate);
+                $stmt->execute([$issue, $cus->id]);
+                
+                $link->commit();
+                
+            } catch (PDOException $ex) {
+                $link->rollBack();
+                echo $ex->getMessage();
+                break;
+            } catch (Exception $exc) {
+                $link->rollBack();
+                echo $exc->getTraceAsString();
+                break;
+            }
+        }
+    }
+    
+    try {
+        $link->beginTransaction();
+
+        $reqUpdate = "UPDATE journal_operations SET total_noObs=?, total_doublon=?, total_noObs_doublon=? WHERE id = ?";
+        $stmt = $link->prepare($reqUpdate);
+        $stmt->execute([$total_noObs, $total_doublon, $total_noObs_doublon, $lastOpId]);
+
+        $link->commit();
+
+    } catch (PDOException $ex) {
+        $link->rollBack();
+        echo $ex->getMessage();
+        break;
+    } catch (Exception $exc) {
+        $link->rollBack();
+        echo $exc->getTraceAsString();
+        break;
+    }
+    
+    print ("<br/><br/><b><u>RAPPORT SUR LES ANOMALIES </u></b><br/>");
+    print ("* <b>" . $total_anomalie . " lignes<b> trouvée(s) avec <b> anomalie </b> ; <br/>");
+    
+    if ($total_anomalie > 0){
+        print ("<br/><b>ANOMALIES </u></b><br/>");
+        print ("* Erreurs sur les Références &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b>" . $total_noObs . " lignes </b> ;<br/>");
+        print ("* Références avec Doublons  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b>" . $total_doublon . " lignes </b>;<br/>");
+        print ("* Erreurs sur Référence et Doublons : <b>" . $total_noObs_doublon . " lignes</b>.<br/><br/>");
+        
+        
+        print (" <b>FIN OPERATION CLEANING DU LOT $lot.</b><br/>");
+    }
+}
+
 else
 {
     echo 'Please fill in all required fields. 2';

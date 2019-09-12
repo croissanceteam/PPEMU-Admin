@@ -6,9 +6,9 @@ class Database {
     private static $driver = 'mysql';
     private static $server = 'localhost';
     private static $username = "root";
-    private static $password = "root";
+    private static $password = "root"; 
     private static $dbname = "db_portal_test2";
-    private $errorMessage = "Un probleme est survenu dans le serveur, veillez conctacter l'administrateur";
+    private $errorMessage = "2Un probleme est survenu dans le serveur, veillez conctacter l'administrateur";
 
     public function __construct() {
         try {

@@ -1,16 +1,17 @@
 <?php 
     session_start(); 
-    if (!isset($_SESSION['pseudoPsv']) && !isset($_SESSION['rolePsv']) ) {
+    if (!isset($_SESSION['pseudoPsv']) ) {
         header("location: index.php") ;
-    }//else die ('dfddf');
-    include'../sync/db.php';
+    }
+    include_once 'Metier/Autoloader.php';
+    Autoloader::register();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>PEMU | Journal</title>
+  <title>PPEMU | Journal</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -23,6 +24,7 @@
   <link rel="stylesheet" href="bower_components/jvectormap/jquery-jvectormap.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
+<!--  <link rel="stylesheet" href="DataTables/DataTables-1.10.18/css/jquery.dataTables.css">-->
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
@@ -82,7 +84,6 @@
             <li ><a href="dashboard.php"><i class="fa fa-circle-o"></i> Dashboard</a></li>
           </ul>
         </li>
-        <?php //if($_SESSION['rolePsv']=='admin'){ ?>
         <li >
           <a href="import.php">
             <i class="fa fa-cloud-download active"></i> <span>Import Data</span>
@@ -96,7 +97,7 @@
         
         <li >
           <a href="clean.php">
-            <i class="fa fa-check-square-o"></i> <span>Données CLean</span>
+            <i class="fa fa-check-square-o"></i> <span>Journal du Cleaning</span>
           </a>
         </li>
         <li class="active">
@@ -104,12 +105,6 @@
             <i class="fa fa-list"></i> <span>Journal des Anomalies</span>
           </a>
         </li>
-        <li>
-          <a href="cron01.php">
-            <i class="fa fa-history"></i> <span>Cron Jobs</span>
-          </a>
-        </li>
-        <?php //} ?>
         <li class="header">AUTRES</li>
         <li><a href="utilisateur.php"><i class="fa fa-circle-o text-red"></i> <span>Gestion d'Utilisateur</span></a></li>
         
@@ -136,7 +131,9 @@
       <!-- Info boxes -->
       
       <!-- /.row -->
-      
+        <?php 
+            $reperage = new Reperage();
+        ?>
       
       <div class="row">
         <div class="col-md-12">
@@ -152,9 +149,9 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="albumType">Type de données</label>
-                            <select id="albumType" class="form-control">
-                                <option value="0">Séléctionnez Type donnée</option>
+                            <label for="typeDonnee">Type de données</label>
+                            <select id="typeDonnee" class="selectAnomalie form-control" >
+                                <option value="">Séléctionnez Type donnée</option>
                                 <option value="Reperage">Répérage</option>
                                 <option value="Realisation">Réalisation</option>
                             </select>
@@ -162,28 +159,51 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="albumType">Lot de données</label>
-                            <select id="albumType" class="form-control">
-                                <option value="0">Séléctionnez Lot</option>
+                            <label for="lot">Lot de données</label>
+                            <select id="lot" class="selectAnomalie form-control"  disabled>
+                                <option value="">Séléctionnez Lot</option>
                                 <?php 
-                                    $lotQ=$db->query("SELECT DISTINCT lot FROM t_reperage_import ");
-                                    while($rowR=$lotQ->fetch(PDO::FETCH_ASSOC)){
+//                                    $resData=$reperage->getLot(); 
+//
+//                                    if ($resData) {
+//
+//                                        foreach ($resData as $cus) {
+//                                    echo "<option value='$cus->lot'>Lot $cus->lot</option>";
+//                                    }
+//                                    }
                                 ?>
-                                    <option value="<?php echo $rowR['lot']; ?>"><?php echo $rowR['lot']; ?></option>
-                                <?php 
-                                    }
-                                ?>
+                                    <option value="1">Lot 1</option>
+                                    <option value="2">Lot 2</option>
+                                    <option value="3">Lot 3</option>
+                                    <option value="4">Lot 4</option>
+                                    <option value="5">Lot 5</option>
+                                    <option value="6">Lot 6</option>
+                                    <option value="7">Lot 7</option>
+                                    <option value="8">Lot 8</option>
+                                    <option value="9">Lot 9</option>
+                                    <option value="10">Lot 10</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="albumType">Type Anomalies</label>
-                            <select id="albumType" class="form-control">
-                                <option value="0">Séléctionnez Anomalie</option>
-                                <option value="Ref_Client">Référence Client</option>
-                                <option value="Doublons">Doublons</option>
+                            <label for="anomalie">Type Anomalies</label>
+                            <select id="anomalie" class="selectAnomalie form-control" disabled >
+                                <option value="">Séléctionnez Anomalie</option>
+                                <option value="1">Problème avec OBS</option>
+                                <option value="2">Doublon</option>
+                                <option value="3">Problème OBS et Doublons</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <br>
+                            <button type="button" class="btn btn-info" dir="" id="btn_export" style="display:none" >
+                                <img src="./dist/img/ajax-loader.gif" align="center" class="loading" style="display:none" width="20">
+                                <i class="fa fa-share-square-o" class="iExport"></i> &nbsp;&nbsp;
+                                Exporter la liste &nbsp;&nbsp;
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -203,7 +223,7 @@
         <div class="col-md-12">
           <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title">Liste des Anomalies.</h3>
+              <h3 class="box-title">Liste Data avecs Anomalies.</h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -216,27 +236,19 @@
               <div class="row">
                 <div class="col-md-12">
                     <div class="box-body table-responsive no-padding">
-                      <table class="table table table-bordered table-striped table-hover">
+                      <table id="example2" class="table table table-bordered table-striped table-hover">
+                        <thead>
                         <tr>
-                            <th></th>
+                            <th>N°</th>
                             <th width="5%">Lot</th>
                             <th>Client</th>
                             <th>Coordonnées</th>  <!-- Adresse et Téléphone -->
-                            <th>Géolocalisation</th>
                             <th>Controlleur</th>
                             <th>Commentaires</th>
-                            <th>Anomalie Trouvée</th>
+                            <th width="17%">Anomalie Trouvée</th>
                         </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
+                        </thead>
+                        <tbody id="listDataAnomalies"></tbody>
                       </table>
                     </div>
                 </div>
@@ -263,7 +275,7 @@
     <div class="pull-right hidden-xs">
       <b>Version</b> 1.0.0
     </div>
-    <strong>Copyright &copy; 2016-2019 <a href="http://www.demande-audience.com">Croissance Hub</a>.</strong> All rights
+    <strong>Copyright &copy; 2016-2019 <a href="http://www.croissancehub.com">Croissance Hub</a>.</strong> All rights
     reserved.
   </footer>
 
@@ -279,6 +291,9 @@
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <!-- Bootstrap 3.3.7 -->
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- DataTables -->
+<script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <!-- FastClick -->
 <script src="bower_components/fastclick/lib/fastclick.js"></script>
 <!-- AdminLTE App -->
@@ -297,5 +312,18 @@
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
 <script src="dist/script.js"></script>
+<script>
+  $(function () {
+    $('#example1').DataTable()
+    $('#example2').DataTable({
+      'paging'      : true,
+      'lengthChange': true,
+      'searching'   : true,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : true
+    })
+  })
+</script>
 </body>
 </html>

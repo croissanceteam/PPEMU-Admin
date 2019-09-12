@@ -1,16 +1,17 @@
 <?php 
     session_start(); 
-    if (!isset($_SESSION['pseudoPsv']) && !isset($_SESSION['rolePsv']) ) {
+    if (!isset($_SESSION['pseudoPsv']) ) {
         header("location: index.php") ;
-    }//else die ('dfddf');
-    include'../sync/db.php';
+    }
+    include_once 'Metier/Autoloader.php';
+    Autoloader::register();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>PEMU | Clean</title>
+  <title>PPEMU | Clean</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -22,6 +23,7 @@
   <!-- jvectormap -->
   <link rel="stylesheet" href="bower_components/jvectormap/jquery-jvectormap.css">
   <!-- Theme style -->
+<!--  <link rel="stylesheet" href="DataTables/DataTables-1.10.18/css/jquery.dataTables.css">-->
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
@@ -41,101 +43,7 @@
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <header class="main-header">
-
-    <!-- Logo -->
-    <a href="index2.html" class="logo">
-      <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>H</b>UB</span>
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Croissance</b>HUB</span>
-    </a>
-
-    <!-- Header Navbar: style can be found in header.less -->
-    <nav class="navbar navbar-static-top">
-      <!-- Sidebar toggle button-->
-      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-        <span class="sr-only">Toggle navigation</span>
-      </a>
-      <!-- Navbar Right Menu -->
-      <div class="navbar-custom-menu">
-        <ul class="nav navbar-nav">
-          <li class="dropdown notifications-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-bell-o"></i>
-              <span class="label label-warning">0</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li class="header">vous avez 0 notifications</li>
-              <li>
-                <!-- inner menu: contains the actual data -->
-                <ul class="menu">
-<!--
-                  <li>
-                    <a href="#">
-                      <i class="fa fa-users text-aqua"></i> 5 new members joined today
-                    </a>
-                  </li>
--->
-                </ul>
-              </li>
-              <li class="footer"><a href="#">Voir tous</a></li>
-            </ul>
-          </li>
-          <!-- Tasks: style can be found in dropdown.less -->
-          <li class="dropdown tasks-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-flag-o"></i>
-              <span class="label label-danger">0</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li class="header"> 0 taches en cours</li>
-              <li>
-                <!-- inner menu: contains the actual data -->
-                <ul class="menu">
-                </ul>
-              </li>
-              <li class="footer">
-                <a href="#">Voir tous</a>
-              </li>
-            </ul>
-          </li>
-          <!-- User Account: style can be found in dropdown.less -->
-          <li class="dropdown user user-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-              <span class="hidden-xs"><?php echo $_SESSION['nomsPsv'] ?></span>
-            </a>
-            <ul class="dropdown-menu">
-              <!-- User image -->
-              <li class="user-header">
-                <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-
-                <p>
-                  <?php echo $_SESSION['nomsPsv']." - ".$_SESSION['rolePsv'] ?>.
-                  <small>Membre depuis </small>
-                </p>
-              </li>
-              <!-- Menu Body -->
-              <li class="user-footer">
-                <div class="pull-left">
-                  <a href="#" class="btn btn-default btn-flat">Profile</a>
-                </div>
-                <div class="pull-right">
-                  <a href="deconnection.php" class="btn btn-default btn-flat">Se Déconnecter</a>
-                </div>
-              </li>
-            </ul>
-          </li>
-          <!-- Control Sidebar Toggle Button -->
-          <li>
-            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-          </li>
-        </ul>
-      </div>
-
-    </nav>
-  </header>
+  <?php include_once 'partials/header.php' ?>
   <!-- Left side column. contains the logo and sidebar -->
   <aside class="main-sidebar">
     <!-- sidebar: style can be found in sidebar.less -->
@@ -176,7 +84,6 @@
             <li ><a href="dashboard.php"><i class="fa fa-circle-o"></i> Dashboard</a></li>
           </ul>
         </li>
-        <?php //if($_SESSION['rolePsv']=='admin'){ ?>
         <li >
           <a href="import.php">
             <i class="fa fa-cloud-download active"></i> <span>Import Data</span>
@@ -190,7 +97,7 @@
         
         <li class="active">
           <a href="clean.php">
-            <i class="fa fa-check-square-o"></i> <span>Données CLean</span>
+            <i class="fa fa-check-square-o"></i> <span>Journal du Cleaning</span>
           </a>
         </li>
         <li >
@@ -198,12 +105,6 @@
             <i class="fa fa-list"></i> <span>Journal des Anomalies</span>
           </a>
         </li>
-        <li>
-          <a href="cron01.php">
-            <i class="fa fa-history"></i> <span>Cron Jobs</span>
-          </a>
-        </li>
-        <?php //} ?>
         <li class="header">AUTRES</li>
         <li><a href="utilisateur.php"><i class="fa fa-circle-o text-red"></i> <span>Gestion d'Utilisateur</span></a></li>
         
@@ -217,11 +118,11 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Données Clean
+        Journal Sommaire du Cleaning
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Données Clean</li>
+        <li class="active">Journal Sommaire</li>
       </ol>
     </section>
 
@@ -230,7 +131,9 @@
       <!-- Info boxes -->
       
       <!-- /.row -->
-      
+        <?php
+            $rapport = new RapportOperation();
+        ?>
       
       <div class="row">
         <div class="col-md-12">
@@ -246,9 +149,9 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="albumType">Type de données</label>
-                            <select id="albumType" class="form-control">
-                                <option value="0">Séléctionnez Type donnée</option>
+                            <label for="typeDonnee">Type de données</label>
+                            <select id="typeDonnee" class="form-control selectTraitement">
+                                <option value="">Séléctionnez Type donnée</option>
                                 <option value="Reperage">Répérage</option>
                                 <option value="Realisation">Réalisation</option>
                             </select>
@@ -256,30 +159,32 @@
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <label for="albumType">Lot de données</label>
-                            <select id="albumType" class="form-control">
-                                <option value="0">Séléctionnez Lot</option>
-                                <?php 
-                                    $lotQ=$db->query("SELECT DISTINCT lot FROM t_reperage_import ");
-                                    while($rowR=$lotQ->fetch(PDO::FETCH_ASSOC)){
-                                ?>
-                                    <option value="<?php echo $rowR['lot']; ?>"><?php echo $rowR['lot']; ?></option>
-                                <?php 
-                                    }
-                                ?>
+                            <label for="lot">Lot de données</label>
+                            <select id="lot" class="form-control selectTraitement">
+                                <option value="">Séléctionnez Lot</option>
+                                <option value="1">Lot 1</option>
+                                <option value="2">Lot 2</option>
+                                <option value="3">Lot 3</option>
+                                <option value="4">Lot 4</option>
+                                <option value="5">Lot 5</option>
+                                <option value="6">Lot 6</option>
+                                <option value="7">Lot 7</option>
+                                <option value="8">Lot 8</option>
+                                <option value="9">Lot 9</option>
+                                <option value="10">Lot 10</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                          <label for="albumDate">Date Exportation du </label>
-                           <input type="date" id="date1" class="form-control datePhoto" > 
+                          <label for="albumDate">Date Traitement du </label>
+                           <input type="date" id="date_1" class="form-control selectTraitement" placeholder="jj/mm/yyyy" > 
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
                           <label for="albumDate">au </label>
-                          <input type="date" id="date2" class="form-control datePhoto" >
+                          <input type="date" id="date_2" class="form-control selectTraitement" placeholder="jj/mm/yyyy">
                         </div>
                     </div>
                 </div>
@@ -299,7 +204,7 @@
         <div class="col-md-12">
           <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title">Liste des données Propres</h3>
+              <h3 class="box-title">Liste des Opérations Traitement Réperage</h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -312,34 +217,74 @@
               <div class="row">
                 <div class="col-md-12">
                     <div class="box-body table-responsive no-padding">
-                      <table class="table table table-bordered table-striped table-hover">
+                      <table class="table table table-bordered table-striped table-hover" id="example2">
+                       <thead>
                         <tr>
-                            <th></th>
+                            <th>N°</th>
                             <th width="5%">Lot</th>
-                            <th>Client</th>
-                            <th>Adresses</th>
-                            <th>Géolocalisation</th>
-                            <th>Catégorie</th>
-                            <th>Pt Vente</th>
-                            <th>Commentaires</th>
+                            <th>Reperage Import</th>
+                            <th>Reperage</th>
+                            <th>Cleaned</th>
+                            <th>Matching</th>
+                            <th>Anomalies</th>
                             <th>Date</th>
                         </tr>
-                        <?php 
-//                            $cleanQ=$db->query("SELECT DISTINCT lot, date_export, (select count(*) from t_reperage_import t2 where t2.lot=t1.lot) as ligne  FROM t_reperage_import t1 ");
-//                            
-                            $nb=0;
-//                            while($rClean=$cleanQ->fetch(PDO::FETCH_ASSOC)){
-//                                $nb++;
+                       </thead>
+                        <tbody id="listTraitementClean">
+                        <?php
+                            $resData=$rapport->getJournaleByWhere(" operation='Cleaning Data' "); 
+    
+                            if ($resData) {
+                                $nb=0;
+                                foreach ($resData as $cus) {
+                                $nb++;
                         ?>
                         <tr>
                             <td><?php echo $nb; ?></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <td><?php echo "Lot ".$cus->lot; ?></td>
+                            <td>
+                                <?php 
+                                    echo "Avant : ".$cus->total_reperImport_before." </br>"; 
+                                    echo "Aprés : ".$cus->total_reperImport_after; 
+                                ?>
+                            </td>
+                            <td>
+                                <?php 
+                                    echo "Avant : ".$cus->total_reper_before." </br>"; 
+                                    echo "Aprés : ".$cus->total_reper_after; 
+                                ?>
+                            </td>
+                            <td>
+                                <?php 
+                                    echo "Trouvé : ".$cus->total_cleaned_found." </br>"; 
+                                    echo "Traité : ".$cus->total_cleaned_afected; 
+                                ?>
+                            </td>
+                            <td>
+                                <?php 
+                                    echo "Trouvé : ".$cus->total_match_found." </br>"; 
+                                    echo "Affecté : ".$cus->total_match_afected; 
+                                ?>
+                            </td>
+                            <td>
+                                <?php 
+                                    echo "No Obs : ".$cus->total_noObs." </br>"; 
+                                    echo "Doublon : ".$cus->total_doublon." </br>"; 
+                                    echo "No Obs et Doublon : ".$cus->total_noObs_doublon; 
+                                ?>
+                            </td>
+                            <td>
+                                <?php 
+                                    echo $cus->dateOperation;
+                                ?>
+                            </td>
                         </tr>
+                        <?php 
+                                }
+                            }
+                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Pas de données dans le Journal</h3></td></tr>"
+                        ?>
+                        </tbody>
                       </table>
                     </div>
                 </div>
@@ -366,7 +311,7 @@
     <div class="pull-right hidden-xs">
       <b>Version</b> 1.0.0
     </div>
-    <strong>Copyright &copy; 2016-2019 <a href="http://www.demande-audience.com">Croissance Hub</a>.</strong> All rights
+    <strong>Copyright &copy; 2016-2019 <a href="http://www.croissancehub.com">Croissance Hub</a>.</strong> All rights
     reserved.
   </footer>
 
@@ -382,6 +327,15 @@
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <!-- Bootstrap 3.3.7 -->
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- DataTables -->
+<script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
+<!--
+<script src="./DataTables/DataTables-1.10.18/js/jquery.dataTables.js"></script>
+<script src="./DataTables/DataTables-1.10.18/js/dataTables.bootstrap.js"></script>
+-->
+
 <!-- FastClick -->
 <script src="bower_components/fastclick/lib/fastclick.js"></script>
 <!-- AdminLTE App -->
@@ -400,5 +354,18 @@
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
 <script src="dist/script.js"></script>
+<script>
+  $(function () {
+    $('#example1').DataTable()
+    $('#example2').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      'searching'   : false,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : false
+    })
+  })
+</script>
 </body>
 </html>

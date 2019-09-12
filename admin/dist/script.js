@@ -1,116 +1,274 @@
+    
 $(document).ready(function (e){
     
+    $(document).on('click', '.grize', function(e){
+        $('.grize').attr('disabled', 'on');
+        $(this).removeAttr('disabled');
+    });
+    
+    //$('#example').DataTable();
+//    $('#tablePage').DataTable({
+//        "paginType":"full_numbers"
+//    });
+    $(document).on('click', '.grize', function(e){
+        $('.grize').attr('disabled', 'on');
+        $(this).removeAttr('disabled');
+    });
+    
+    
+
+    //TODO:: SELECT TYPE DONNES IMPORTATION CSV XLS
+    $(document).on('change', '#typeDonnee', function(e){
+        if($(this).val()!="")
+            $('.grize_1').removeAttr('disabled');
+        else
+            $('.grize_1').attr('disabled', 'on');
+        
+    });
     //TODO:: Envoi du FOrmulaire + Reponse IMPORTATION CSV XLS
     $("#formImport01").on('submit',(function(e){
         e.preventDefault();
-        $("#loadingImport01").show();
-        $.ajax({
-            url: "dist/ajax_php.php",
-            type: "POST",
-            data:  new FormData(this),
-            contentType: false,
-            cache: false,
-            processData:false,
-            success: function(data){
-                $("#loadingImport01").hide();
-                $("#msgImport01").html(data);
-                $("#formImport01")[0].reset();
-            },
-            error: function(){} 	        
-        });
+        
+        var typeD = $("#typeDonnee").val();
+        
+        if(typeD!=""){
+            $("#loadingImport01").show();
+            $.ajax({
+                url: "dist/ajax_php.php",
+                type: "POST",
+                data:  new FormData(this),
+                contentType: false,
+                cache: false,
+                processData:false,
+                success: function(data){
+                    $("#loadingImport01").hide();
+                    $("#msgImport01").html(data);
+                    $("#formImport01")[0].reset();
+                },
+                error: function(){} 	        
+            });
+        }
+        
     }));
     
     
-    //TODO:: Envoi + Reponse IMPORTATION API 
-//    $(document).on('click', '#api_actualise', function(e){
-//        e.preventDefault();
-//        $.ajax({
-//            url: "https://kf.kobotoolbox.org/assets/au2pD2CP4VRoqcwB5fvLzD/submissions/?format=json",
-//            contentType: 'json',
-//            dataType:'json',
-//            headers:{"Authorization":"Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1"},
-//            //headers:{"Authorization":'Basic ' + btoa('Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1')},
-//            success: function(data){
-//                alert(data);
-//            },
-//            error: function(){} 	        
-//        });
-//    });
-    
-    
-    //TODO:: Envoi + Reponse IMPORTATION API QTE LIGNE PAR LOT (DE TOUS)
-    $(document).on('click', '#api_actualise', function(e){
-        $(".ldText").text(" Actualisation Synchronisation ...");
-        $("#loadingImport02").show();
+    //TODO:: Envoi + Reponse ACTUALISATION API QTE LIGNE PAR LOT
+    $(document).on('click', '.api_actualiseLot', function(e){
+        
+        var lot =$(this).attr('name');
+        var typeD =$(this).attr('dir');
+        var ligne=$(this).parent('td').parent('tr');
+        
+        $("#loadingImport02").hide();
         $(".reper_BtnAll").hide();
         $(".real_BtnAll").hide();
-        $("#lotApi_reperage").empty();
-        $("#lotApi_realisation").empty();
+        
+        ligne.find('.okTD').hide();
+        ligne.find('.failTD').hide();
+        ligne.find('.ldTD').show();
+        
         $('.tableau_affichage #lotApi_affichage').empty();
         $('.tableau_affichage').hide();
         
         $.ajax({
             type:'get',
             url:'dist/traitement_api.php',
-            data:'traitement_api' + '&btn=' + 'api_actualise',
+            data:'traitement_api' + '&btn=' + 'api_actualiseLot' + '&lot=' + lot + '&typeDonnee=' + typeD,
             dataType:'json',
             success: function(json){
-                //alert(json.length);
-                //alert(json.Ref_client);
-                //alert(json);
-                
-                $.each(json, function(index, value){
-                    //alert(value[0]+' '+value[1]);
-                    if(value[3]=='Reperage'){
-                        $("#lotApi_reperage").append("<tr><td><img src='./dist/img/ajax-loader.gif' class='ldTD' style='display:none'></td>"
-                                    +"<td>Lot "+value[0]+"</td>"
-                                    +"<td>"+value[2]+"</td><td>Enregistrement(s) : "+value[1]+"</td>"
-                                    +"<td><input type='button' name='"+value[0]+"' class='btn btn-warning api_affichLot' dir='"+value[3]+"' value='Affiche' />"
-                                    +"<input type='button' name='"+value[0]+"' class='btn btn-success api_TelechargeLot' dir='"+value[3]+"' value='Sync' />"
-                                                        +"</td>");
-                        $(".reper_BtnAll").show();
-                    }
-                    else if(value[3]=='Realisation'){
-                        $("#lotApi_realisation").append("<tr><td><img src='./dist/img/ajax-loader.gif' class='ldTD' style='display:none'></td>"
-                                    +"<td>"+value[2]+"</td><td>Enregistrement(s) : "+value[1]+"</td>"
-                                    +"<td><input type='button' name='"+value[0]+"' class='btn btn-warning api_affichLot' dir='"+value[3]+"' value='Affiche' />"
-                                    +"<input type='button' name='"+value[0]+"' class='btn btn-success api_TelechargeLot' dir='"+value[3]+"' value='Sync' />"
-                                                        +"</td>");
-                        $(".real_BtnAll").show();
-                    }
-                });
-                
-                $("#loadingImport02").hide();    
+                if(json[1]=="Error"){
+                    ligne.find('.ldTD').hide();
+                    ligne.find('.okTD').hide();
+                    ligne.find('.failTD').show();
+                    ligne.find('.lot_detail').text(json[3]);
+                }
+                else {
+                    $.each(json, function(index, value){
+                        if(value[3]=='Reperage'){
+                            ligne.find('.lot_date').text(value[2]);
+                            ligne.find('.lot_detail').text("Enregistrement(s) : "+value[1]);
+
+                            $(".reper_BtnAll").show();
+                        }
+                        else if(value[3]=='Realisation'){
+                            ligne.find('.lot_date').text(value[2]);
+                            ligne.find('.lot_detail').text("Enregistrement(s) : "+value[1]);
+
+                            $(".real_BtnAll").show();
+                        }
+                    });
+                    ligne.find('.ldTD').hide();    
+                    ligne.find('.okTD').show();    
+                }
+                $('.grize').removeAttr('disabled');
         }});
+    });
+    
+    
+    
+    //TODO:: Envoi + Reponse ACTUALISATION API QTE LIGNE POUR TOUT REPERAGE ET REALISATION
+    $(document).on('click', '#api_actualise', function(e){
+        var lot=0;
+        var typeD='Reperage';
+        var lign_class='.lign_1';
+        
+        $("#loadingImport02").hide();
+        $(".reper_BtnAll").hide();
+        $(".real_BtnAll").hide();
+        $('.tableau_affichage #lotApi_affichage').empty();
+        $('.tableau_affichage').hide();
+        
+        for (var i = 1; i < 21; i++) {
+            lot++;
+            //if(lot==4) {
+            if(lot==11) {
+                lot=1;
+                typeD='Realisation';
+                lign_class='.lign_2';
+            }
+            
+            var ligne=$(lign_class+lot);
+
+            ligne.find('.okTD').hide();
+            ligne.find('.failTD').hide();
+            ligne.find('.ldTD').show();
+
+            $.ajax({
+            type:'get',
+            url:'dist/traitement_api.php',
+            data:'traitement_api' + '&btn=' + 'api_actualiseLot' + '&lot=' + lot + '&typeDonnee=' + typeD,
+            dataType:'json',
+            success: function(json){}})
+            
+            .done(function(data) {
+                var ligne1;
+                if(data[1]=="Error"){
+                    if(data[2]=='Reperage') ligne1=$('.lign_1'+data[0]);
+                    else if(data[2]=='Realisation') ligne1=$('.lign_2'+data[0]);
+                    
+                    ligne1.find('.ldTD').hide();
+                    ligne1.find('.failTD').show();
+                    ligne1.find('.lot_detail').text(data[3]);
+                }
+                else {
+                    $.each(data, function(index, value){
+                        if(value[3]=='Reperage'){
+                            ligne1=$('.lign_1'+value[0]);
+                            ligne1.find('.lot_date').text(value[2]);
+                            ligne1.find('.lot_detail').text("Enregistrement(s) : "+value[1]);
+
+                            $(".reper_BtnAll").show();
+                        }
+                        else if(value[3]=='Realisation'){
+                            ligne1=$('.lign_2'+value[0]);
+                            ligne1.find('.lot_date').text(value[2]);
+                            ligne1.find('.lot_detail').text("Enregistrement(s) : "+value[1]);
+
+                            $(".real_BtnAll").show();
+                        }
+                    });
+                    
+                    ligne1.find('.ldTD').hide();
+                    ligne1.find('.okTD').show();
+                }
+                $('.grize').removeAttr('disabled');
+            })
+            .fail(function(data) {
+                var ligne1;
+                if(data[2]=='Reperage') ligne1=$('.lign_1'+data[0]);
+                else if(data[2]=='Realisation') ligne1=$('.lign_2'+data[0]);
+
+                ligne1.find('.ldTD').hide();
+                ligne1.find('.failTD').show();
+                $('.grize').removeAttr('disabled');
+            });
+            
+            //if(i==6) break;
+        }
+        
     });
     
     
     //TODO:: Envoi + Reponse IMPORTATION TELECHARGEMENT DIRECT API QTE LIGNE PAR LOT (DE TOUS)
     $(document).on('click', '#api_downAll', function(e){
-        $(".ldText").text(" Téléchargement de tous les Données ...");
-        $("#loadingImport02").show();
+        var lot=0;
+        var typeD='Reperage';
+        var lign_class='.lign_1';
         
+        $("#loadingImport02").hide();
         $(".reper_BtnAll").hide();
         $(".real_BtnAll").hide();
-        $("#lotApi_reperage").empty();
-        $("#lotApi_realisation").empty();
         $('.tableau_affichage #lotApi_affichage').empty();
         $('.tableau_affichage').hide();
         
-        $.ajax({
+        for (var i = 1; i < 21; i++) {
+            lot++;
+            //if(lot==4) {
+            if(lot==11) {
+                lot=1;
+                typeD='Realisation';
+                lign_class='.lign_2';
+            }
+            
+            var ligne=$(lign_class+lot);
+
+            ligne.find('.okTD').hide();
+            ligne.find('.ldTD').show();
+
+            $.ajax({
             type:'get',
             url:'dist/traitement_api.php',
-            data:'traitement_api' + '&btn=' + 'api_downAll',
+            data:'traitement_api' + '&btn=' + 'api_TelechargeLot' + '&lot=' + lot + '&typeDonnee=' + typeD,
             dataType:'json',
-            success: function(json){
-                $.each(json, function(index, value){
-                    alert('Fin Téléchargement \n Nombres de Lignes Téléchargé : '+value[1]+' n\ Date Exportation ');
-                });
-                
-                $("#loadingImport02").hide();    
-        }});
+            success: function(json){}})
+            
+            .done(function(data) {
+                var ligne1;
+                if(data[1]=="Error"){
+                    if(data[2]=='Reperage') ligne1=$('.lign_1'+data[0]);
+                    else if(data[2]=='Realisation') ligne1=$('.lign_2'+data[0]);
+                    
+                    ligne1.find('.ldTD').hide();
+                    ligne1.find('.failTD').show();
+                    ligne1.find('.lot_detail').text(data[3]);
+                }
+                else {
+                    $.each(data, function(index, value){
+
+                        if(value[3]=='Reperage'){
+                            ligne1=$('.lign_1'+value[0]);
+                            ligne1.find('.lot_date').text(value[2]);
+                            ligne1.find('.lot_detail').text("Téléchargé(s) : "+value[1]);
+
+                            $(".reper_BtnAll").show();
+                        }
+                        else if(value[3]=='Realisation'){
+                            ligne1=$('.lign_2'+value[0]);
+                            ligne1.find('.lot_date').text(value[2]);
+                            ligne1.find('.lot_detail').text("Téléchargé(s) : "+value[1]);
+
+                            $(".real_BtnAll").show();
+                        }
+                    });
+                    ligne1.find('.ldTD').hide();
+                    ligne1.find('.okTD').show();
+                }
+                $('.grize').removeAttr('disabled');
+            })
+            .fail(function(data) {
+                var ligne1;
+                if(data[2]=='Reperage') ligne1=$('.lign_1'+data[0]);
+                else if(data[2]=='Realisation') ligne1=$('.lign_2'+data[0]);
+
+                ligne1.find('.ldTD').hide();
+                ligne1.find('.failTD').show();
+                $('.grize').removeAttr('disabled');
+            });
+            
+            //if(i==2) break;
+        }
+        
     });
-    
     
     //TODO:: Envoi + Reponse AFFICHAGE DONNE API PAR LOT
     $(document).on('click', '.api_affichLot', function(e){
@@ -118,6 +276,8 @@ $(document).ready(function (e){
         var typeD =$(this).attr('dir');
         var ligne=$(this).parent('td').parent('tr');
         
+        ligne.find('.okTD').hide();
+        ligne.find('.failTD').hide();
         ligne.find('.ldTD').show();
         
         $('.tableau_affichage #lotApi_affichage').empty();
@@ -131,36 +291,71 @@ $(document).ready(function (e){
             data:'traitement_api' + '&btn=' + 'api_afficheLot' + '&lot=' + lot + '&typeDonnee=' + typeD,
             dataType:'json',
             success: function(json){
-                var i=0;
-                $.each(json, function(index, value){
-                    i++;
-                    if(typeD=='Reperage'){
-                        $("#lotApi_affichage").append("<tr><td>"+i+"</td>"
-                                +"<td>Lot "+lot+"</td>"
-                                +"<td>"+value.Nom_Client+"<br/>Réf.:"+value.Ref_Client+"</td>"
-                                +"<td>"+value.Num_ro_parcelle+", "+value.Avenue_Quartier+",<br/>"+value.Commune+"</td>"
-                                +"<td>"+value.G_olocalisation+"</td>"
-                                +"<td>"+value.Cat_gorie_Client+"</td>"
-                                +"<td>"+value.Etat_du_point_de_vente+"</td>"
-                                +"<td>"+value.Commentaires+"</td>"
-                                +"<td>"+value._submission_time+"</td>"
+                if(json[1]=="Error"){
+                    ligne.find('.ldTD').hide();
+                     ligne.find('.okTD').hide();
+                    ligne.find('.failTD').show();
+                    ligne.find('.lot_detail').text(json[3]);
+                }
+                else {
+                    var i=0;
+                    $.each(json, function(index, value){
+                        i++;
+                        if(typeD=='Reperage'){
+                            if(value.Nom_Client === undefined ) var nomClient=value.NomClient;
+                            else var nomClient=value.Nom_Client;
+
+                            if(value.Avenue_Quartier === undefined ) var avenue=value.AvenueQuartier;
+                            else var nomClient=value.Avenue_Quartier;
+
+                            if(value.Ref_Client === undefined ) var refClient=value.numsite;
+                            else var refClient=value.Ref_Client;
+
+                            if(value.Num_ro_parcelle === undefined ) var numParcel=value.Numparcelle;
+                            else var numParcel=value.Num_ro_parcelle;
+
+                            if(value.Etat_du_point_de_vente === undefined ) var etPVente=value.Etatpvente;
+                            else var etPVente=value.Etat_du_point_de_vente;
+
+                            if(value.Cat_gorie_Client === undefined ) var catClient=value.CatgorieClient;
+                            else var catClient=value.Cat_gorie_Client;
+
+                            if(value.Nom_du_Contr_leur !== undefined ) var controller=value.Nom_du_Contr_leur;
+                            else if(value.consultant !== undefined ) var controller=value.consultant;
+                            else var controller="";
+
+//                            if(value.G_olocalisation === undefined ) var geoLoc=value.Golocalisation;
+//                            else var geoLoc=value.G_olocalisation;
+
+                            $("#lotApi_affichage").append("<tr><td>"+i+"</td>"
+                                    +"<td>Lot "+lot+"</td>"
+                                    +"<td>"+nomClient+"<br/>Réf.:"+refClient+"</td>"
+                                    +"<td>"+numParcel+", "+avenue+",<br/>"+value.Commune+"</td>"
+                                    +"<td>"+catClient+"</td>"
+                                    +"<td>"+etPVente+"</td>"
+                                    +"<td>"+controller+"</td>"
+//                                    +"<td>"+value.Commentaires+"</td>"
+                                    +"<td>"+value._submission_time+"</td>"
+                                                            );
+                        }
+                        else if(typeD=='Realisation'){
+                            $("#lotApi_affichage").append("<tr><td>"+i+"</td>"
+                                    +"<td>Lot "+lot+"</td>"
+                                    +"<td>"+value.Nom_du_Client+"<br/>Réf.:"+value.num_site+"</td>"
+                                    +"<td>"+value.Num_ro+", "+value.Avenue +", "+value.Quartier +",<br/>"+value.Commune+"</td>"
+                                    +"<td>"+value.Emplacement_du_branchement_r_alis+"</td>"
+                                    +"<td></td>"
+                                    +"<td>"+value.Branchement_Social_ou_Appropri+"</td>"
+//                                    +"<td>"+value.Commentaires+"</td>"
+                                    +"<td>"+value.Date+"</td>"
                                                         );
-                    }
-                    else if(typeD=='Realisation'){
-                        $("#lotApi_affichage").append("<tr><td>"+i+"</td>"
-                                +"<td>Lot "+iLot+"</td>"
-                                +"<td>"+val1.Nom_du_Client+"<br/>Réf.:"+val1.Ref_Client+"</td>"
-                                +"<td>"+val1.Num_ro+", "+val1.Avenue +", "+val1.Quartier +",<br/>"+val1.Commune+"</td>"
-                                +"<td>"+val1.Emplacement_du_branchement_r_alis+"</td>"
-                                +"<td></td>"
-                                +"<td>"+val1.Branchement_Social_ou_Appropri+"</td>"
-                                +"<td>"+val1.Commentaires+"</td>"
-                                +"<td>"+val1.Date+"</td>"
-                                                    );
-                    }
-                });
-                
-                ligne.find('.ldTD').hide();
+                        }
+                    });
+
+                    ligne.find('.ldTD').hide();
+                    ligne.find('.okTD').show();
+                }
+                $('.grize').removeAttr('disabled');
         }});
     });
     
@@ -171,12 +366,13 @@ $(document).ready(function (e){
         var typeD =$(this).attr('dir');
         var ligne=$(this).parent('td').parent('tr');
         
+        ligne.find('.okTD').hide();
+        ligne.find('.failTD').hide();
         ligne.find('.ldTD').show();
         
         $('.tableau_affichage #lotApi_affichage').empty();
         
-        $('.tableau_affichage').show();
-        $('.tableau_affichage h2').text("Affichage Liste "+typeD+" par Lot");
+        $('.tableau_affichage').hide();
         
         $.ajax({
             type:'get',
@@ -184,121 +380,36 @@ $(document).ready(function (e){
             data:'traitement_api' + '&btn=' + 'api_TelechargeLot' + '&lot=' + lot + '&typeDonnee=' + typeD,
             dataType:'json',
             success: function(json){
-                var i=0;
-                $.each(json, function(index, value){
-                    i++;
-                    alert('Fin Téléchargement \n OPERATION : '+typeD+' \n LOT : '+lot+' \n Nombres de Lignes Téléchargé : '+value[1]+' n\ Date Exportation ');
-                });
-                
-                ligne.find('.ldTD').hide();
-        }});
-    });
-    
-    
-    //TODO:: Envoi + Reponse AFFICHAGE DONNE TOUS LE LOT API PAR REPERAGE OU REALISATION
-    $(document).on('click', '.btn_affiche0', function(e){
-        var typeD =$(this).attr('dir');
-        
-        if(typeD=='Reperage') $(".ldReper_BtnAll").show();
-        else $(".ldReal_BtnAll").show();
-        
-        $(".ldText2").text(" Affichage");
-        
-        $('.tableau_affichage #lotApi_affichage').empty();
-        
-        $('.tableau_affichage').show();
-        $('.tableau_affichage h2').text("Affichage Liste "+typeD+" (tous)");
-        
-        $.ajax({
-            type:'get',
-            url:'dist/traitement_api.php',
-            data:'traitement_api' + '&btn=' + 'api_afficheTout0' + '&typeDonnee=' + typeD,
-            dataType:'json',
-            success: function(json){
-                var i=0;
-                var iLot=0;
-                $.each(json, function(index, value){
-                    iLot++;
-                    $.each(value, function(ind, val1){
-                    i++;
-                        if(typeD=='Reperage'){
-                            $("#lotApi_affichage").append("<tr><td>"+i+"</td>"
-                                    +"<td>Lot "+iLot+"</td>"
-                                    +"<td>"+val1.Nom_Client+"<br/>Réf.:"+val1.Ref_Client+"</td>"
-                                    +"<td>"+val1.Num_ro_parcelle+", "+val1.Avenue_Quartier+",<br/>"+val1.Commune+"</td>"
-                                    +"<td>"+val1.G_olocalisation+"</td>"
-                                    +"<td>"+val1.Cat_gorie_Client+"</td>"
-                                    +"<td>"+val1.Etat_du_point_de_vente+"</td>"
-                                    +"<td>"+val1.Commentaires+"</td>"
-                                    +"<td>"+val1._submission_time+"</td>"
-                                                        );
-                        }
-                        else if(typeD=='Realisation'){
-                            $("#lotApi_affichage").append("<tr><td>"+i+"</td>"
-                                    +"<td>Lot "+iLot+"</td>"
-                                    +"<td>"+val1.Nom_du_Client+"<br/>Réf.:"+val1.Ref_Client+"</td>"
-                                    +"<td>"+val1.Num_ro+", "+val1.Avenue +", "+val1.Quartier +",<br/>"+val1.Commune+"</td>"
-                                    +"<td>"+val1.Emplacement_du_branchement_r_alis+"</td>"
-                                    +"<td></td>"
-                                    +"<td>"+val1.Branchement_Social_ou_Appropri+"</td>"
-                                    +"<td>"+val1.Commentaires+"</td>"
-                                    +"<td>"+val1.Date+"</td>"
-                                                        );
-                        }
+                if(json[1]=="Error"){
+                    ligne.find('.ldTD').hide();
+                     ligne.find('.okTD').hide();
+                    ligne.find('.failTD').show();
+                    ligne.find('.lot_detail').text(json[3]);
+                }
+                else {
+                    $.each(json, function(index, value){
+                        alert('Fin Téléchargement \n OPERATION : '+typeD+' \n LOT : '+lot+' \n Nombres de Lignes Téléchargé : '+value[1]+' \n Date Exportation : '+value[2]);
                     });
-                });
-                
-                $(".ldReper_BtnAll").hide();
-                $(".ldReal_BtnAll").hide();
-        }});
-    });
-    
-    
-    //TODO:: Envoi + Reponse AFFICHAGE DONNE TOUS LE LOT API PAR REPERAGE OU REALISATION
-    $(document).on('click', '.btn_telecharge0', function(e){
-        var typeD =$(this).attr('dir');
-        
-        if(typeD=='Reperage') $(".ldReper_BtnAll").show();
-        else $(".ldReal_BtnAll").show();
-        
-        $(".ldText2").text(" Affichage");
-        
-        $('.tableau_affichage #lotApi_affichage').empty();
-        
-        $('.tableau_affichage').show();
-        $('.tableau_affichage h2').text("Affichage Liste "+typeD+" (tous)");
-        
-        $.ajax({
-            type:'get',
-            url:'dist/traitement_api.php',
-            data:'traitement_api' + '&btn=' + 'api_telechargeTout0' + '&typeDonnee=' + typeD,
-            dataType:'json',
-            success: function(json){
-                var i=0;
-                var iLot=0;
-                $.each(json, function(index, value){
-                    iLot++;
-                    $.each(value, function(ind, val1){
-                    i++;
-                        alert('Fin Téléchargement \n OPERATION : '+typeD+' \n Nombres de Lignes Téléchargé : '+value[1]+' n\ Date Exportation ');
-                    });
-                });
-                
-                $(".ldReper_BtnAll").hide();
-                $(".ldReal_BtnAll").hide();
+
+                    ligne.find('.ldTD').hide();
+                    ligne.find('.okTD').show();
+                }
+                $('.grize').removeAttr('disabled');
         }});
     });
     
     
     
     
+    
+    // Cleaning Data Reperage Process par lot
     $(document).on('click', '.cleanDataReper', function(e){
-        // pour Clean Data Reperage d 'un lot
         e.preventDefault();
-        //alert("1");
+        
         var lot = $(this).attr('dir');
         var ligne=$(this).parent('td').parent('tr');
         
+        ligne.find('.okTD').hide();
         ligne.find('.loading').show();
         
          $("#rapportCleaningReper").empty();
@@ -309,14 +420,127 @@ $(document).ready(function (e){
             data:'cleanDataReper' + '&lot=' + lot,
             dataType:'Text',
             success: function(json){
-//                $("#rapportCleaningReper").append("json");
+                
                 $("#rapportCleaningReper").append(json);
-                //alert(json);
-                ligne.find('.loading').hide();
-//                $('#contPrintPaie .dateRec').text(json[0].dateP);
-//                $('#contPrintPaie .montlettrRec').text(json[1]);
+                
+                $.ajax({
+                    type:'get',
+                    url:'dist/cleaning_proccess.php',
+                    data:'cleanDataReper_suite' + '&lot=' + lot,
+                    dataType:'Text',
+                    success: function(json){
+                        $("#rapportCleaningReper").append(json);
+                        
+                        ligne.find('.lot_detail').text("Nombre de Ligne : 0");
+                        
+                        ligne.find('.loading').hide();
+                        ligne.find('.okTD').show();
+                        $('.grize').removeAttr('disabled');
+
+                }});
 
         }});
+        
+    });
+    
+    
+    
+    // AFFICHAGE RAPPORT TRAITEMENT CLEANING
+    $(document).on('change', '.selectTraitement', function(e){
+        e.preventDefault();
+        
+        var typeD = $("#typeDonnee").val();
+        
+        if(typeD!=""){
+            var lot = $("#lot").val();
+            var date_1=$("#date_1").val();
+            var date_2=$("#date_2").val();
+        
+            $("#listTraitementClean").empty();
+
+            $.ajax({
+                type:'get',
+                url:'dist/ajax_php.php',
+                data:'rapportClean'+'&typeDonnee='+typeD+'&lot='+lot+'&date_1=' + date_1 + '&date_2=' + date_2,
+                dataType:'json',
+                success: function(json){
+                    
+                    $.each(json, function(i, v){
+                        
+                        $("#listTraitementClean").append("<tr><td>"+(i+1)+"</td><td>Lot "+v.lot+"</td>"
+                                +"<td>Avant :"+v.total_reperImport_before+" </br>Aprés : "+v.total_reperImport_after+"</td>"
+                                +"<td>Avant : "+ v.total_reper_before + "</br>Aprés : "+v.total_reper_after+ "</td>"
+                                +"<td>Trouvé : "+ v.total_cleaned_found + "</br>Traité : "+ v.total_cleaned_afected+ "</td>"
+                                +"<td>Trouvé : "+ v.total_match_found+" </br>Affecté : "+v.total_match_afected+"</td>"
+                                +"<td> No Obs : "+ v.total_noObs+"</br> Doublon : "+ v.total_doublon+" </br>No Obs et Doublon : "+ v.total_noObs_doublon+"</td>"
+                                +"<td>"+v.dateOperation+"</td>"
+                                                        );
+                    });
+                    
+            }});
+        }
+        else {
+        }
+        
+    });
+    
+    // AFFICHAGE JOURNAL ANOMALIE
+    $(document).on('change', '.selectAnomalie', function(e){
+        e.preventDefault();
+        
+        var typeD = $("#typeDonnee").val();
+        
+        if(typeD!=""){
+            var lot = $("#lot").val();
+            var anomalie=$("#anomalie").val();
+        
+            $('#btn_export').hide();
+
+            $("#listDataAnomalies").empty();
+            
+            $.ajax({
+                type:'get',
+                url:'dist/ajax_php.php',
+                data:'journalAnomalie' + '&typeDonnee=' + typeD + '&lot=' + lot + '&anomalie=' + anomalie,
+                dataType:'json',
+                success: function(json){
+                    
+                    $.each(json, function(i, v){
+                        
+                        $("#listDataAnomalies").append("<tr><td>"+(i+1)+"</td><td>Lot "+v.lot+"</td>"
+                            +"<td>"+v.name_client+"<br/> Ref.:<b>"+v.ref_client+"</b> </td>" 
+                            +"<td>"+v.num_home+", "+v.avenue+", <br/>"+v.commune+"</td>"
+                            +"<td>"+v.controller_name+"</td>"
+                            +"<td>"+v.comments+"</td><td>"+v.label+"</td></tr>");
+                    });
+                    
+                    $('#btn_export').show();
+                    $("#lot").removeAttr('disabled');
+                    $("#anomalie").removeAttr('disabled');
+                    $('#example').DataTable().ajax.reload();
+                    //$('#example').DataTable().ajax.reload();alert("mmlm");
+                    //$('#example').reload(); 
+            }});
+        }
+        else {
+            $("#listDataAnomalies").empty();
+            $('#btn_export').hide();
+            $("#lot").removeAttr('disabled');
+            $("#anomalie").removeAttr('disabled');
+        }
+        
+    });
+    
+    
+    // EXPORTATION JOURNAL ANOMALIE
+    $(document).on('click', '#btn_export', function(e){
+        e.preventDefault();
+        
+        var typeD = $("#typeDonnee").val();
+        var lot = $("#lot").val();
+        var anomalie=$("#anomalie").val();
+        
+        window.open("dist/ajax_php.php?exporter=export&typeDonnee="+typeD+"&lot="+lot+"&anomalie="+anomalie);
         
     });
     
