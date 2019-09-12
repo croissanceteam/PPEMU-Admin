@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
     if($log){
       echo "<meta http-equiv='refresh' content='0; url = dashboard.php' />";
     }else{
-      echo "<span style='color:red'>Mot de passe ou nom d'utilisateur</span> ";
+      echo "<span style='color:red'>Mot de passe ou nom d'utilisateur incorrect</span> ";
     }
   } catch (\Throwable $th) {
       echo $th->getMessage();

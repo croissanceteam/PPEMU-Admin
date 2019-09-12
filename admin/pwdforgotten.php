@@ -86,11 +86,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
 
     <form method="post" >
       <div class="form-group has-feedback" id="mail-field">
-        <input type="email" name="email" id="email" class="form-control" placeholder="Adresse email" autocomplete="off" required="required">
+        <input type="email" name="email" id="email" class="form-control" placeholder="Adresse email" required="required">
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback" id="token-field" style="display:none">
-        <input type="text" name="token" id="token" class="form-control" placeholder="Code de vérification" autocomplete="off" required="required">
+        <input type="text" name="token" id="token" class="form-control" placeholder="Code de récupération" autocomplete="off" required="required">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback" id="newpass-field" style="display:none">
@@ -117,13 +117,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
           <button id="check-token" class="btn btn-primary btn-block btn-flat">Valider</button>
         </div>
         <div class="col-xs-12" id="saving" style="display:none">
-          <button id="save-pass" class="btn btn-primary btn-block btn-flat">Enregistrer</button>
+          <button type="button" id="save-pass" class="btn btn-primary btn-block btn-flat">Enregistrer</button>
         </div>
         <!-- /.col -->
       </div>
     </form>
 
     <div class="" style="margin-top: 2em"></div>
+    <a href="index.php" id="login-url" style="display:none">Aller à la page de connexion</a>
     <!-- /.social-auth-links -->
 
 <!--    <a href="inscription.php" class="text-center">S'inscrire ...</a>-->
@@ -184,6 +185,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
                 error: function (error) {
                     document.querySelector('.loader').style.display="none";
                     alertify.error("L'opération n'a pas abouti!");
+                    console.log("ERROR :",error);
                     console.log("ERROR :",error.responseText);
                 }
               });
@@ -208,18 +210,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
                 data: 'email=' + email+'&token='+token,
                 dataType: 'json',
                 success : function(result){
-                    console.log('CODE VALIDATING RESULT : ', result);
+                    console.log('TOKEN VALIDATING RESULT : ', result);
                     console.log('RESULT RESPONSE : ', result.response);
                     document.querySelector('.loader').style.display="none";
                     if(result.number == 1){
-                      
+                      document.querySelector('#box-msg').textContent = "Nouveau mot de passe";
                       document.querySelector('#newpass-field').style.display="block";
                       document.querySelector('#newpass-field2').style.display="block";
                       document.querySelector('#token-field').style.display="none";
                       document.querySelector('#checking').style.display="none";
                       document.querySelector('#saving').style.display="block";
                       document.querySelector('#saving2').style.display="block";
-                      document.querySelector('#box-msg').textContent = "Nouveau mot de passe";
+                      
                       //document.querySelector('#send-token').text = "Enregistrer";
                       alertify.log(result.response);
                     }else{
@@ -240,7 +242,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
       $('#save-pass').on('click',function(e){
         var newpass = document.getElementById('newpass').value;
         var newpass2 = document.getElementById('newpass2').value;
-        console.log(newpass);
+        console.log('Pass:',newpass);
+        console.log('Pass2:',newpass2);
         if(newpass.trim() != "" && newpass2.trim() != ""){
           if(newpass == newpass2){
             $.ajax({
@@ -249,19 +252,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
                 data: 'newpass=' + newpass,
                 dataType: 'json',
                 success : function(result){
-                    console.log('NEW PASS RESULT : ', result);
-                    console.log('RESULT RESPONSE : ', result.response);
+                    //console.log('NEW PASS RESULT : ', result);
+                    //console.log('RESULT RESPONSE : ', result.response);
+                    //alert('RESULT RESPONSE : ', result.response);
                     document.querySelector('.loader').style.display="none";
                     if(result.number == 1){
+                      document.getElementById('login-url').click();
                       
-                      
-                      alertify.log(result.response);
+                      //alertify.log(result.response);
                     }else{
                       alertify.error(result.response);
                     }
                 },
                 error: function (error) {
+                    console.log("ERROR :",error);
                     document.querySelector('.loader').style.display="none";
+                    //document.getElementById('login-url').click();
+                    alert(error);
                     alertify.error("L'opération n'a pas abouti!");
                     console.log("ERROR :",error.responseText);
                     
