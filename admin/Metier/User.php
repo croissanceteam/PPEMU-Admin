@@ -3,22 +3,19 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-@require_once '../sync/Database.php';
 Class User {
     private $dbLink;
     public function __construct(){
-
-        $database = new Database();
-        $this->dbLink = $database;
+      $this->dbLink = new Database();
     }
 
     public function signin($username, $password) {
         $user = $this->dbLink->query("SELECT * FROM t_user WHERE username = ?", [$username]);
         if ($user->rowCount()) {
             $myuser = $user->fetch();
-            
+
             if (password_verify($password, $myuser->password)) {
-                
+
                 $_SESSION['pseudoPsv'] = $myuser->username;
                 $_SESSION['nomsPsv'] = $myuser->fullname;
                 $_SESSION['avatarPsv'] = $myuser->avatar;
@@ -34,7 +31,7 @@ Class User {
         require '../../vendor/autoload.php';
         $str = "123456789NBVCXWMLKJHGFDSQPOUYTREZA";
         $token = substr(str_shuffle(str_repeat($str,2)),0,4);
-        
+
         $exist = $this->dbLink->query("SELECT COUNT(*) AS nbr FROM t_user WHERE mailaddress= ?",[$email])->fetch();
         if($exist->nbr == 1){
             $rs = $this->dbLink->query("UPDATE t_user SET token = ? WHERE mailaddress = ?", [$token,$email]);
@@ -43,7 +40,7 @@ Class User {
             $baseUrl = Helper::getURL(1);
             $image_src = $baseUrl.'/img/code-fill-page.png';
             //$resquest_uri = $_SERVER['REQUEST_URI'];
-            
+
             $mail = new PHPMailer(true);
 
             try {
@@ -96,7 +93,7 @@ Class User {
                                         <p>Une fois retourné sur la page d'où vous étiez, tapez ce code afin de procéder à la récupération de votre compte pour ainsi définir un nouveau mot de passe.</p>
                                     </body>
                                 </html>";
-                $mail->CharSet = 'UTF-8';  
+                $mail->CharSet = 'UTF-8';
                 $retour = $mail->send();
                 $mail->SmtpClose();
 
@@ -110,15 +107,15 @@ Class User {
             } catch (Exception $e) {
                 return "Le message ne peut pas être envoyé. Exception Error: ".$e->getMessage();
             }
-            
+
         }else{
             return 6;
         }
-        
+
     }
 
     public function validateToken($email,$token){
-        
+
         $myuser = $this->dbLink->query("SELECT * FROM t_user WHERE mailaddress=? AND token= ?",[$email,$token]);
         $rs =  $myuser->rowCount();
         if($rs == 1)

@@ -1,9 +1,11 @@
-<?php 
-    session_start(); 
+<?php
+    session_start();
     if (!isset($_SESSION['pseudoPsv']) && !isset($_SESSION['rolePsv']) ) {
         header("location: index.php") ;
     }//else die ('dfddf');
-    include'../sync/db.php';
+    
+    include_once 'Metier/Autoloader.php';
+    Autoloader::register();
 ?>
 <!DOCTYPE html>
 <html>
@@ -111,7 +113,7 @@
         <?php //} ?>
         <li class="header">AUTRES</li>
         <li><a href="utilisateur.php"><i class="fa fa-circle-o text-red"></i> <span>Gestion d'Utilisateur</span></a></li>
-        
+
       </ul>
     </section>
     <!-- /.sidebar -->
@@ -133,11 +135,11 @@
     <!-- Main content -->
     <section class="content">
       <!-- Info boxes -->
-      
+
       <!-- /.row -->
 
       <div class="row">
-       
+
         <div class="col-md-11">
           <div class="box">
             <div class="box-header with-border">
@@ -162,9 +164,9 @@
                           <th>Description</th>
                           <th width="80"></th>
                         </tr>
-                        <?php 
+                        <?php
                             $cleanQ=$db->query("SELECT DISTINCT lot, date_export, (select count(*) from t_reperage_import t2 where t2.lot=t1.lot) as ligne  FROM t_reperage_import t1 ");
-                            
+
                             $nb=0;
                             while($rClean=$cleanQ->fetch(PDO::FETCH_ASSOC)){
                                 $nb++;
@@ -174,15 +176,15 @@
                             <td><?php echo 'Lot '.$rClean['lot'] ?></td>
                             <td><?php echo $rClean['date_export'] ?></td>
                             <td>
-                                <?php 
-                                    echo 'Nombre de Ligne : '.$rClean['ligne'] 
+                                <?php
+                                    echo 'Nombre de Ligne : '.$rClean['ligne']
                                 ?>
                             </td>
                             <td>
                                 <a <?php echo "href='cleanData.php?lot=$rClean[lot]&exportDate=$rClean[date_export]'" ?>  class="btn btn-warning" >Clean</a>
                             </td>
                         </tr>
-                        <?php 
+                        <?php
                             }
                         ?>
                       </table>
@@ -196,11 +198,11 @@
           </div>
           <!-- /.box -->
         </div>
-       
-        
+
+
         <!-- /.col -->
       </div>
-      
+
       <!-- /.row -->
     </section>
     <!-- /.content -->

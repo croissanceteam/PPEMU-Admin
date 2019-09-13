@@ -1,5 +1,5 @@
 <?php 
-    session_start(); 
+    session_start();
     if (!isset($_SESSION['pseudoPsv'])) {
         header("location: index.php") ;
     }
@@ -36,7 +36,7 @@
   <!-- Google Font -->
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-        
+
     <style>
         .okTD{
             font-size: 28px;
@@ -49,7 +49,7 @@
             display: none
         }
     </style>
-    
+
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -117,7 +117,7 @@
         </li>
         <li class="header">AUTRES</li>
         <li><a href="utilisateur.php"><i class="fa fa-circle-o text-red"></i> <span>Gestion d'Utilisateur</span></a></li>
-        
+
       </ul>
     </section>
     <!-- /.sidebar -->
@@ -139,11 +139,11 @@
     <!-- Main content -->
     <section class="content">
       <!-- Info boxes -->
-      
+
       <!-- /.row -->
 
       <div class="row">
-       
+
         <div class="col-md-12">
           <div class="box">
             <div class="box-header with-border">
@@ -157,9 +157,9 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-             
+
               <div class="row">
-                
+
                 <div class="col-md-7">
                     <button type="button" class="btn btn-warning grize" dir="" id="api_actualise" >
                         <i class="fa fa-refresh"></i>
@@ -167,7 +167,7 @@
                     </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <button type="button" class="btn btn-success grize" dir="" id="api_downAll" >
                         <i class="fa fa-cloud-download"></i>
-                        Télécharger Tous les données 
+                        Télécharger Tous les données
                     </button><br>
                 </div>
                 <div class="col-md-5">
@@ -175,10 +175,10 @@
                         <img src="./dist/img/ajax-loader.gif" align="left"> <b>&nbsp;&nbsp; <span class="ldText"></span>...</b>
                     </div>
                 </div>
-                
-                
+
+
                 <div class="col-md-6">
-                    <h2>Listes des Répérages par Lot</h2>   
+                    <h2>Listes des Répérages par Lot</h2>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-bordered table-striped table-hover">
                         <tr>
@@ -200,7 +200,7 @@
                                 <td class="lot_date"></td>
                                 <td class="lot_detail"> </td>
                                 <td>
-                                    <button name='<?php echo $i; ?>' class='btn btn-warning api_actualiseLot grize' dir='Reperage' title='Actualise' > 
+                                    <button name='<?php echo $i; ?>' class='btn btn-warning api_actualiseLot grize' dir='Reperage' title='Actualise' >
                                         <i class="fa fa-refresh"></i>
                                     </button>
                                     <button name='<?php echo $i; ?>' class='btn btn-info api_affichLot grize' dir='Reperage' title="Affichage" >
@@ -217,7 +217,7 @@
                        <br>
                     </div>
                 </div>
-                
+
                 <div class="col-md-6">
                     <h2>Listes des Réalisations par Lot</h2>
                     <div class="box-body table-responsive no-padding">
@@ -241,7 +241,7 @@
                                 <td class="lot_date"></td>
                                 <td class="lot_detail"> </td>
                                 <td>
-                                    <button name='<?php echo $i; ?>' class='btn btn-warning api_actualiseLot grize' dir='Realisation' value='Affiche' > 
+                                    <button name='<?php echo $i; ?>' class='btn btn-warning api_actualiseLot grize' dir='Realisation' value='Affiche' >
                                         <i class="fa fa-refresh"></i>
                                     </button>
                                     <button name='<?php echo $i; ?>' class='btn btn-info api_affichLot grize' dir='Realisation' title="Affichage" >
@@ -258,9 +258,9 @@
                        <br>
                     </div>
                 </div>
-                
+
                 <br><br>
-                
+
                 <div class="col-md-12 tableau_affichage" style="display:none">
                     <h2>Affichage</h2>
                     <div class="box-body table-responsive no-padding">
@@ -280,13 +280,13 @@
                       </table>
                     </div>
                 </div><br><br><br>
-                
+
               </div>
-              
+
             </div>
           </div>
         </div>
-       
+
         <div class="col-md-12" id="Correction">
           <div class="box">
             <div class="box-header with-border">
@@ -312,9 +312,9 @@
                                 </p> <br>
                             </div>
                             <div class="col-md-12"></div>
-                            
+
                             <div class="col-md-1"></div>
-                            
+
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="typeDonnee">Type de données</label>
@@ -325,7 +325,7 @@
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-4"><br>
                                 <input type="file" value="Valider" class="btn btn-primary grize_1" name="csv" disabled /><br>
                             </div>
@@ -334,7 +334,7 @@
                                 <button type="submit" class="btn btn-success grize_1" disabled >IMPORTER LE FICHIER</button>
                             </div>
                         </div>
-                     
+
                         <div class="row">
                             <div class="col-md-1"></div>
                             <div class="col-md-8" id="">
@@ -344,19 +344,19 @@
                                 <div id="msgImport01"></div>
                             </div>
                         </div>
-                        
+
                         </form>
                      <br>
 <!--
                       <table class="table table-hover">
-                       
+
                         <tr>
                           <th>Exécution de l'Importation : </th>
                         </tr>
                         <tr>
                           <th></th>
                         </tr>
-                        
+
                       </table>
 -->
                       <br>
@@ -371,10 +371,10 @@
           </div>
           <!-- /.box -->
         </div>
-        
+
         <!-- /.col -->
       </div>
-      
+
       <!-- /.row -->
     </section>
     <!-- /.content -->

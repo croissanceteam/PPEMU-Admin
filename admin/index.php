@@ -1,16 +1,18 @@
-<?php 
-    session_start(); 
+<?php
+    session_start();
     if (isset($_SESSION['pseudoPsv']) ) {
         header("location: dashboard.php") ;
-    } //else die("ok");
-    include'Metier/User.php';
+    }
+
+    include_once 'Metier/Autoloader.php';
+    Autoloader::register();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>PPEMU | Log in</title>
+  <title>PEMU | Log in</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -38,11 +40,11 @@
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="index.php"><b>PPEMU</b> Admin</a>
+    <a href="index.php"><b>CEP-O PEMU</b> Admin</a>
   </div>
   <!-- /.login-logo -->
   <div class="login-box-body">
-<?php 
+<?php
 //echo password_hash("123", PASSWORD_BCRYPT);
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($_POST['password'])) {
 
@@ -52,12 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
     if($log){
       echo "<meta http-equiv='refresh' content='0; url = dashboard.php' />";
     }else{
-      echo "<span style='color:red'>Mot de passe ou nom d'utilisateur</span> ";
+      echo "<span style='color:red'>Mot de passe ou nom d'utilisateur incorrect</span> ";
     }
   } catch (\Throwable $th) {
       echo $th->getMessage();
       echo "<span style='color:red'>Echec de connexion</span> ";
-  }  
+  }
 }
 
 ?>
@@ -91,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
     <div class="" style="margin-top: 2em"></div>
     <!-- /.social-auth-links -->
 
-    <a href="#">J'ai oublié mon mot de passe</a><br>
+    <a href="pwdforgotten.php">J'ai oublié mon mot de passe</a><br>
 <!--    <a href="inscription.php" class="text-center">S'inscrire ...</a>-->
 <!--    <a href="../index.php" class="text-center pull-right" style="color:orange" >Accueil</a>-->
 

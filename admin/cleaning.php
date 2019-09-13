@@ -1,10 +1,9 @@
-<?php 
-    session_start(); 
+<?php
+    session_start();
     if (!isset($_SESSION['pseudoPsv']) ) {
         header("location: index.php") ;
     }
 
-    //include_once 'Metier/Reperage.php';
     include_once 'Metier/Autoloader.php';
     Autoloader::register();
 
@@ -41,7 +40,7 @@
   <!-- Google Font -->
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-        
+
     <style>
         .okTD{
             font-size: 28px;
@@ -54,7 +53,7 @@
             display: none
         }
     </style>
-    
+
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -122,7 +121,7 @@
         </li>
         <li class="header">AUTRES</li>
         <li><a href="utilisateur.php"><i class="fa fa-circle-o text-red"></i> <span>Gestion d'Utilisateur</span></a></li>
-        
+
       </ul>
     </section>
     <!-- /.sidebar -->
@@ -144,11 +143,11 @@
     <!-- Main content -->
     <section class="content">
       <!-- Info boxes -->
-      
+
       <!-- /.row -->
 
       <div class="row">
-       
+
         <div class="col-md-6">
           <div class="box">
             <div class="box-header with-border">
@@ -175,11 +174,11 @@
                         </tr>
                         <?php
                             $reperage = new Reperage();
-    
-                            $resData=$reperage->getNoCleanByLot(); 
-    
+
+                            $resData=$reperage->getNoCleanByLot();
+
                             if ($resData) {
-                                
+
                                 foreach ($resData as $cus) {
                         ?>
                         <tr>
@@ -191,15 +190,15 @@
                             <td><?php echo 'Lot '.$cus->lot; ?></td>
                             <td><?php echo date('d/m/Y', strtotime($cus->date_export)); ?></td>
                             <td class="lot_detail">
-                                <?php 
-                                    echo 'Nombre de Ligne : '.$cus->ligne; 
+                                <?php
+                                    echo 'Nombre de Ligne : '.$cus->ligne;
                                 ?>
                             </td>
                             <td>
                                 <a class="btn btn-warning cleanDataReper grize" dir="<?php echo $cus->lot; ?>" >Clean</a>
                             </td>
                         </tr>
-                        <?php 
+                        <?php
                                 }
                             }
                             else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune donnée à Nétoyer</h3></td></tr>"
@@ -215,7 +214,7 @@
           </div>
           <!-- /.box -->
         </div>
-       
+
         <div class="col-md-6">
           <div class="box">
             <div class="box-header with-border">
@@ -232,7 +231,7 @@
               <div class="row">
                 <div class="col-md-12">
                     <div class="box-body table-responsive no-padding" id="rapportCleaningReper">
-                      
+
                     </div>
                 </div>
                 <!-- /.col -->
@@ -243,13 +242,13 @@
           </div>
           <!-- /.box -->
         </div>
-       
-        
+
+
         <!-- /.col -->
       </div>
 
       <div class="row">
-       
+
         <div class="col-md-6">
           <div class="box">
             <div class="box-header with-border">
@@ -274,16 +273,16 @@
                           <th>Description</th>
                           <th width="80"></th>
                         </tr>
-                        <?php 
+                        <?php
 //                            $cleanQ=$db->query("SELECT DISTINCT lot, date_export, (select count(*) from t_reperage_import t2 where t2.lot=t1.lot) as ligne  FROM t_reperage_import t1 where 1=3");
-//                            
+//
 //                            $nb=0;
 //                            if ($cleanQ->rowCount() > 0) {
 //                            while($rClean=$cleanQ->fetch(PDO::FETCH_ASSOC)){
 //                                $nb++;
                         ?>
-                        
-                        <?php 
+
+                        <?php
                             echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune donnée à Nétoyer</h3></td></tr>"
                         ?>
                       </table>
@@ -297,7 +296,7 @@
           </div>
           <!-- /.box -->
         </div>
-       
+
         <div class="col-md-6">
           <div class="box">
             <div class="box-header with-border">
@@ -314,7 +313,7 @@
               <div class="row">
                 <div class="col-md-12">
                     <div class="box-body table-responsive no-padding" id="rapportCleaningReal">
-                      
+
                     </div>
                 </div>
                 <!-- /.col -->
@@ -325,11 +324,11 @@
           </div>
           <!-- /.box -->
         </div>
-       
-        
+
+
         <!-- /.col -->
       </div>
-      
+
       <!-- /.row -->
     </section>
     <!-- /.content -->
