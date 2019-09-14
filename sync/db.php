@@ -12,9 +12,9 @@
 
 
 $servername = 'localhost';
-$usr = "root";
-$psw = "root";
-$dbname = "db_portal_test2";
+$usr = "pemu";
+$psw = "pemu";
+$dbname = "db_portal";
 
 try {
     	header("Access-Control-Allow-Origin: *");
