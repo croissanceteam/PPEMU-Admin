@@ -36,8 +36,8 @@ Class User {
         $exist = $this->dbLink->query("SELECT COUNT(*) AS nbr FROM t_user WHERE mailaddress= ?",[$email])->fetch();
         if($exist->nbr == 1){
             $rs = $this->dbLink->query("UPDATE t_user SET token = ? WHERE mailaddress = ?", [$token,$email]);
-            return $rs;
-            /*
+            //return $rs;
+            
             $baseUrl = Helper::getURL(1);
             $image_src = $baseUrl.'/img/code-fill-page.png';
             //$resquest_uri = $_SERVER['REQUEST_URI'];
@@ -108,7 +108,7 @@ Class User {
             } catch (Exception $e) {
                 return "Le message ne peut pas être envoyé. Exception Error: ".$e->getMessage();
             }
-            */
+            
         }else{
             return 6;
         }

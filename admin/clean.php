@@ -55,13 +55,13 @@
         </div>
         <div class="pull-left info">
           <p><?php echo $_SESSION['nomsPsv'] ?></p>
-          <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+          <a href="#"><i class="fa fa-circle text-success"></i> Connecté</a>
         </div>
       </div>
       <!-- search form -->
       <form action="#" method="get" class="sidebar-form">
         <div class="input-group">
-          <input type="text" name="q" class="form-control" placeholder="Search...">
+          <input type="text" name="q" class="form-control" placeholder="rechercher...">
           <span class="input-group-btn">
                 <button type="submit" name="search" id="search-btn" class="btn btn-flat">
                   <i class="fa fa-search"></i>
@@ -72,21 +72,21 @@
       <!-- /.search form -->
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu" data-widget="tree">
-        <li class="header">MAIN NAVIGATION</li>
+       <!-- <li class="header">MAIN NAVIGATION</li>-->
         <li class="active treeview menu-open">
           <a href="#">
-            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+            <i class="fa fa-dashboard"></i> <span>MENU</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
           </a>
           <ul class="treeview-menu">
-            <li ><a href="dashboard.php"><i class="fa fa-circle-o"></i> Dashboard</a></li>
+            <li ><a href="dashboard.php"><i class="fa fa-circle-o"></i> Tableau de bord</a></li>
           </ul>
         </li>
         <li >
           <a href="import.php">
-            <i class="fa fa-cloud-download active"></i> <span>Import Data</span>
+            <i class="fa fa-cloud-download active"></i> <span>Récupération automatique</span>
           </a>
         </li>
         <li >
@@ -97,16 +97,16 @@
         
         <li class="active">
           <a href="clean.php">
-            <i class="fa fa-check-square-o"></i> <span>Journal du Cleaning</span>
+            <i class="fa fa-check-square-o"></i> <span>Résumé du Cleaning</span>
           </a>
         </li>
         <li >
           <a href="journal.php">
-            <i class="fa fa-list"></i> <span>Journal des Anomalies</span>
+            <i class="fa fa-list"></i> <span>Journal d'anomalies</span>
           </a>
         </li>
         <li class="header">AUTRES</li>
-        <li><a href="utilisateur.php"><i class="fa fa-circle-o text-red"></i> <span>Gestion d'Utilisateur</span></a></li>
+        <li><a href="utilisateur.php"><i class="fa fa-circle-o text-red"></i> <span>Gestion d'utilisateur</span></a></li>
         
       </ul>
     </section>
@@ -118,10 +118,10 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Journal Sommaire du Cleaning
+        Journal sommaire de traitement
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Acceuil</a></li>
         <li class="active">Journal Sommaire</li>
       </ol>
     </section>
@@ -139,7 +139,7 @@
         <div class="col-md-12">
           <div class="box box-info">
             <div class="box-header with-border">
-              <h3 class="box-title">Filtrer les données</h3>
+            <!--  <h3 class="box-title">Filtrer les données</h3>-->
             </div>
             <!-- /.box-header -->
             <!-- form start -->
@@ -149,17 +149,17 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="typeDonnee">Type de données</label>
+                            <label for="typeDonnee">Type des données</label>
                             <select id="typeDonnee" class="form-control selectTraitement">
-                                <option value="">Séléctionnez Type donnée</option>
-                                <option value="Reperage">Répérage</option>
-                                <option value="Realisation">Réalisation</option>
+                                <option value="">Séléctionnez</option>
+                                <option value="Reperage">Parcelles géo-référencées</option>
+                                <option value="Realisation">Branchements réalisés</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <label for="lot">Lot de données</label>
+                            <label for="lot">Lot</label>
                             <select id="lot" class="form-control selectTraitement">
                                 <option value="">Séléctionnez Lot</option>
                                 <option value="1">Lot 1</option>
@@ -177,7 +177,7 @@
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                          <label for="albumDate">Date Traitement du </label>
+                          <label for="albumDate">Traitement du  </label>
                            <input type="date" id="date_1" class="form-control selectTraitement" placeholder="jj/mm/yyyy" > 
                         </div>
                     </div>
@@ -204,7 +204,7 @@
         <div class="col-md-12">
           <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title">Liste des Opérations Traitement Réperage</h3>
+              <h3 class="box-title">Synthèse de traitement</h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -220,13 +220,13 @@
                       <table class="table table table-bordered table-striped table-hover" id="example2">
                        <thead>
                         <tr>
-                            <th>N°</th>
+                            <th>#</th>
                             <th width="5%">Lot</th>
-                            <th>Reperage Import</th>
-                            <th>Reperage</th>
+                            <th>Donnée Brutes</th>
+                            <th>Données traitées</th>
                             <th>Cleaned</th>
                             <th>Matching</th>
-                            <th>Anomalies</th>
+                            <th>Anomalies trouvées</th>
                             <th>Date</th>
                         </tr>
                        </thead>
@@ -263,7 +263,7 @@
                             <td>
                                 <?php 
                                     echo "Trouvé : ".$cus->total_match_found." </br>"; 
-                                    echo "Affecté : ".$cus->total_match_afected; 
+                                    echo "Secteur Affecté : ".$cus->total_match_afected; 
                                 ?>
                             </td>
                             <td>
@@ -282,7 +282,7 @@
                         <?php 
                                 }
                             }
-                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Pas de données dans le Journal</h3></td></tr>"
+                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune  données trouvées dans le Journal</h3></td></tr>"
                         ?>
                         </tbody>
                       </table>

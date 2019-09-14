@@ -46,4 +46,16 @@ Class RapportOperation{
         return 0;
     }
 
+    public function getLastOperation($lot)
+    {
+        $req = "SELECT id from t_journal_operations where lot=? order by id desc limit 1 ";
+        return $this->dbLink->query($req,[$lot]);
+    }
+
+    public function setStatIssues($params)
+    {
+        $req = "UPDATE t_journal_operations SET total_noObs=?, total_doublon=?, total_noObs_doublon=? WHERE id = ?";
+        return $this->dbLink->query($req,$params);
+    }
+
 }

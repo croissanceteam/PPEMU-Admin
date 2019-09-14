@@ -9,7 +9,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>PPEMU | Importation</title>
+  <title>PPEMU | Récupération automatique</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -66,13 +66,13 @@
         </div>
         <div class="pull-left info">
           <p><?php echo $_SESSION['nomsPsv'] ?></p>
-          <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+          <a href="#"><i class="fa fa-circle text-success"></i>Connecté</a>
         </div>
       </div>
       <!-- search form -->
       <form action="#" method="get" class="sidebar-form">
         <div class="input-group">
-          <input type="text" name="q" class="form-control" placeholder="Search...">
+          <input type="text" name="q" class="form-control" placeholder="rechercher...">
           <span class="input-group-btn">
                 <button type="submit" name="search" id="search-btn" class="btn btn-flat">
                   <i class="fa fa-search"></i>
@@ -83,21 +83,21 @@
       <!-- /.search form -->
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu" data-widget="tree">
-        <li class="header">MAIN NAVIGATION</li>
+        <!--  <li class="header">MAIN NAVIGATION</li>-->
         <li class="active treeview menu-open">
           <a href="#">
-            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+            <i class="fa fa-dashboard"></i> <span>MENU</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
           </a>
           <ul class="treeview-menu">
-            <li ><a href="dashboard.php"><i class="fa fa-circle-o"></i> Dashboard</a></li>
+            <li ><a href="dashboard.php"><i class="fa fa-circle-o"></i> Tableau de bord</a></li>
           </ul>
         </li>
         <li class="active">
           <a href="import.php">
-            <i class="fa fa-cloud-download active"></i> <span>Import Data</span>
+            <i class="fa fa-cloud-download active"></i> <span>Récupération automatique</span>
           </a>
         </li>
         <li>
@@ -107,12 +107,12 @@
         </li>
         <li>
           <a href="clean.php">
-            <i class="fa fa-check-square-o"></i> <span>Journal du Cleaning</span>
+            <i class="fa fa-check-square-o"></i> <span>Résumé du Cleaning</span>
           </a>
         </li>
         <li>
           <a href="journal.php">
-            <i class="fa fa-list"></i> <span>Journal des Anomalies</span>
+            <i class="fa fa-list"></i> <span>Journal d'anomalies</span>
           </a>
         </li>
         <li class="header">AUTRES</li>
@@ -131,8 +131,8 @@
         Importation des Données
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Dashboard</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
+        <li class="active">Tableau de bord</li>
       </ol>
     </section>
 
@@ -147,7 +147,7 @@
         <div class="col-md-12">
           <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title">Importation API KOBO.</h3>
+            <!--   <h3 class="box-title">Importation API KOBO.</h3>-->
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -163,11 +163,11 @@
                 <div class="col-md-7">
                     <button type="button" class="btn btn-warning grize" dir="" id="api_actualise" >
                         <i class="fa fa-refresh"></i>
-                        Actualise la Synchronisation
+                        Synchroniser
                     </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <button type="button" class="btn btn-success grize" dir="" id="api_downAll" >
                         <i class="fa fa-cloud-download"></i>
-                        Télécharger Tous les données
+                        Importer les données
                     </button><br>
                 </div>
                 <div class="col-md-5">
@@ -178,14 +178,14 @@
 
 
                 <div class="col-md-6">
-                    <h2>Listes des Répérages par Lot</h2>
+                    <h2>Synchronisation des parcelles référencées par lot</h2>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-bordered table-striped table-hover">
                         <tr>
                           <th>#</th>
                           <th>Lot</th>
-                          <th>Last Date</th>
-                          <th width="33%">Détails</th>
+                          <th>Dernière date</th>
+                          <th width="33%">Détail</th>
                           <th></th>
                         </tr>
                         <tbody id="lotApi_reperage">
@@ -219,14 +219,14 @@
                 </div>
 
                 <div class="col-md-6">
-                    <h2>Listes des Réalisations par Lot</h2>
+                    <h2>Synchronisation des branchements réalisés par lot</h2>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-bordered table-striped table-hover">
                         <tr>
                           <th>#</th>
                           <th>Lot</th>
-                          <th>Last Date</th>
-                          <th width="33%">Détails</th>
+                          <th>Dernière date</th>
+                          <th width="33%">Détail</th>
                           <th ></th>
                         </tr>
                         <tbody id="lotApi_realisation">
@@ -262,18 +262,18 @@
                 <br><br>
 
                 <div class="col-md-12 tableau_affichage" style="display:none">
-                    <h2>Affichage</h2>
+                    <h2>Liste détaillée</h2>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-bordered table-striped table-hover">
                         <tr>
-                          <th>N°</th>
+                          <th>#</th>
                           <th width="5%">Lot</th>
                           <th>Client</th>
-                          <th>Adresses</th>
+                          <th>Adresse</th>
 <!--                          <th>Géolocalisation</th>-->
                           <th>Catégorie</th>
-                          <th>Pt Vente</th>
-                          <th>Controlleur</th>
+                          <th>Etat Pt</th>
+                          <th>Agent Contrôleur</th>
                           <th>Date</th>
                         </tr>
                         <tbody id="lotApi_affichage"></tbody>
@@ -290,7 +290,7 @@
         <div class="col-md-12" id="Correction">
           <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title">Importation CSV / EXCEL. &nbsp;&nbsp; :: &nbsp;&nbsp; Correction des données erronées</h3>
+              <h3 class="box-title">Importer un fichier CSV / EXCEL. &nbsp;&nbsp; :: &nbsp;&nbsp;  <!--Correction des données erronées--></h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -317,11 +317,11 @@
 
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="typeDonnee">Type de données</label>
+                                  <!--  <label for="typeDonnee">Type de données</label>-->
                                     <select id="typeDonnee" name="typeDonnee" class="form-control" >
-                                        <option value="">Séléctionnez Type donnée</option>
-                                        <option value="Reperage">Répérage</option>
-                                        <option value="Realisation">Réalisation</option>
+                                        <option value="">Séléctionnez</option>
+                                        <option value="Reperage">Parcelles géo-référencées</option>
+                                        <option value="Realisation">Branchements réalisés</option>
                                     </select>
                                 </div>
                             </div>
@@ -331,7 +331,7 @@
                             </div>
                             <div class="col-md-3"><br>
                                 <input type="hidden" value="save_ImportCSV" name="pst">
-                                <button type="submit" class="btn btn-success grize_1" disabled >IMPORTER LE FICHIER</button>
+                                <button type="submit" class="btn btn-success grize_1" disabled >importer</button>
                             </div>
                         </div>
 

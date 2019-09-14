@@ -54,13 +54,13 @@
         </div>
         <div class="pull-left info">
           <p><?php echo $_SESSION['nomsPsv'] ?></p>
-          <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+          <a href="#"><i class="fa fa-circle text-success"></i> Connecté</a>
         </div>
       </div>
       <!-- search form -->
       <form action="#" method="get" class="sidebar-form">
         <div class="input-group">
-          <input type="text" name="q" class="form-control" placeholder="Search...">
+          <input type="text" name="q" class="form-control" placeholder="rechercher...">
           <span class="input-group-btn">
                 <button type="submit" name="search" id="search-btn" class="btn btn-flat">
                   <i class="fa fa-search"></i>
@@ -71,21 +71,21 @@
       <!-- /.search form -->
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu" data-widget="tree">
-        <li class="header">MAIN NAVIGATION</li>
+        <!-- <li class="header">MENU</li>-->
         <li class="active treeview menu-open">
           <a href="#">
-            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+            <i class="fa fa-dashboard"></i> <span>MENU</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
           </a>
           <ul class="treeview-menu">
-            <li class="active"><a href="dashboard.php"><i class="fa fa-circle-o"></i> Dashboard</a></li>
+            <li class="active"><a href="dashboard.php"><i class="fa fa-circle-o"></i> Tableau de bord</a></li>
           </ul>
         </li>
         <li>
           <a href="import.php">
-            <i class="fa fa-cloud-download"></i> <span>Import Data</span>
+            <i class="fa fa-cloud-download"></i> <span>Récupération automatique</span>
           </a>
         </li>
         <li>
@@ -95,12 +95,12 @@
         </li>
         <li>
           <a href="clean.php">
-            <i class="fa fa-check-square-o"></i> <span>Journal du Cleaning</span>
+            <i class="fa fa-check-square-o"></i> <span>Résumé du Cleaning</span>
           </a>
         </li>
         <li>
           <a href="journal.php">
-            <i class="fa fa-list"></i> <span>Journal des Anomalies</span>
+            <i class="fa fa-list"></i> <span>Journal d'anomalies</span>
           </a>
         </li>
         <li class="header">AUTRES</li>
@@ -120,8 +120,8 @@
         <small>Version 1.0</small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Dashboard</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
+        <li class="active">Tableau de bord</li>
       </ol>
     </section>
 
@@ -134,9 +134,9 @@
             <span class="info-box-icon bg-aqua"><i class="fa fa-cloud-download"></i></span>
 
             <div class="info-box-content">
-              <span class="info-box-text">Import Data</span>
+              <!-- <span class="info-box-text">Import Data</span>-->
               <span class="info-box-number">
-                  <small><a href="import.php">Importation des données</a></small>
+                  <small><a href="import.php">Récupération automatique </a></small>
               </span>
             </div>
             <!-- /.info-box-content -->
@@ -149,7 +149,7 @@
             <span class="info-box-icon bg-red"><i class="fa fa-check-square-o"></i></span>
 
             <div class="info-box-content">
-              <span class="info-box-text">Cleaning Data</span>
+               <!-- <span class="info-box-text">Cleaning Data</span>-->
               <span class="info-box-number">
                 <small><a href="cleaning.php">Cleaning Data</a></small>
             </span>
@@ -168,8 +168,8 @@
             <span class="info-box-icon bg-green"><i class="fa fa-list"></i></span>
 
             <div class="info-box-content">
-              <span class="info-box-text">Journal</span>
-              <span class="info-box-number"><small><a href="journal.php">Journal des Anomalies</a></small></span>
+               <!--  <span class="info-box-text">Journal</span>-->
+              <span class="info-box-number"><small><a href="journal.php">Journal d'anomalies</a></small></span>
             </div>
             <!-- /.info-box-content -->
           </div>
@@ -181,9 +181,9 @@
             <span class="info-box-icon bg-yellow"><i class="fa fa-history"></i></span>
 
             <div class="info-box-content">
-              <span class="info-box-text">Correction</span>
+            <!--    <span class="info-box-text">Correction</span>-->
               <span class="info-box-number">
-                 <small><a href="import.php#Correction">Ré-Importation Annomalies</a></small>
+                 <small><a href="import.php#Correction">Correction des données erronées</a></small>
                 </span>
             </div>
             <!-- /.info-box-content -->
@@ -202,7 +202,7 @@
         <div class="col-md-12">
           <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title">Journal des Opérations</h3>
+              <h3 class="box-title">Résumé des Opérations</h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -217,7 +217,7 @@
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-hover">
                         <tr>
-                          <th>N°</th>
+                          <th>#</th>
                           <th>Opérations</th>
                           <th>Description</th>
                           <th>Date</th>
@@ -244,7 +244,7 @@
                         <?php 
                                 }
                             }
-                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Pas de données dans le Journal</h3></td></tr>"
+                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune données dans le Journal</h3></td></tr>"
                         ?>
                         
                       </table>
@@ -279,7 +279,7 @@
   <!-- Add the sidebar's background. This div must be placed
        immediately after the control sidebar -->
   <div class="control-sidebar-bg"></div>
-  <?php include_once 'partials/modals.php' ?>
+
 </div>
 <!-- ./wrapper -->
 
@@ -304,7 +304,5 @@
 <script src="dist/js/pages/dashboard2.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="dist/js/chscript.js"></script>
 </body>
 </html>

@@ -23,7 +23,7 @@ Class Reperage{
         return $this->dbLink->query($query, $params);
     }
 
-    public function getLastDate($lot) {
+    public function getLastDateTIMESTAMP($lot) {
         $dateQ = $this->dbLink->query("SELECT UNIX_TIMESTAMP(date_export) as lastDate FROM t_reperage_import WHERE lot=? ORDER BY id DESC LIMIT 1", [$lot] );
         if ($dateQ->rowCount()>0) {
             $mylastD = $dateQ->fetch();
@@ -73,24 +73,24 @@ Class Reperage{
       return $query;
     }
 
-    public function getNotCleanedReperageImportByLot(){
+    public function getNotCleanedReperageImportByLot($lot){
       $query = $this->dbLink->query("SELECT * FROM t_reperage_import WHERE lot=? and issue=? ",[$lot,0]);
       return $query;
     }
 
-    public function getLastExportDate(){
-      $query = $this->dbLink->query("SELECT DISTINCT(date_export) FROM t_reperage_import ORDER BY date_export DESC LIMIT 1",[]);
+    public function getLastExportDate($lot){
+      $query = $this->dbLink->query("SELECT DISTINCT(date_export) FROM t_reperage_import WHERE lot=? ORDER BY date_export DESC LIMIT 1",[$lot])->fetch()->date_export;
       return $query;
     }
 
     public function findCleanDataByLot($lot){
-      $query = $this->dbLink->query("SELECT * FROM t_reperage_import WHERE lot=? AND issue='0' AND ref_client LIKE '%OBS' AND ref_client IN (SELECT ref_client FROM t_reperage_import GROUP BY ref_client  HAVING COUNT(*) = 1)",[$lot]);
+      $query = $this->dbLink->query("SELECT * FROM t_reperage_import WHERE lot=? AND issue=? AND ref_client LIKE '%OBS' AND ref_client IN (SELECT ref_client FROM t_reperage_import GROUP BY ref_client  HAVING COUNT(*) = 1)",[$lot,0]);
       return $query;
     }
 
     public function insert($params,$refclient){
       try{
-        $this->dbLink->beginTransaction();
+        $this->dbLink->getLink()->beginTransaction();
 
         $queryInsert = "INSERT INTO `t_reperage` (`name_client`,`avenue`,`num_home`,`commune`,`phone`,`category`,`ref_client`,`pt_vente`,`geopoint`,`lat`,`lng`,`altitude`,`precision`,`controller_name`,`comments`,`submission_time`,`town`,`lot`,`date_export`,`secteur`,`matching`,`error_matching`) VALUES(:name,:street,:home,:commune,:phone,:cat,:ref_client,:pt_vente,:geo,:lat,:lng,:alt,:precision,:ctrl_name,:comments,:submission_time,:town,:lot,:date_export,:secteur,:matching,:error_matching)";
         $this->dbLink->query($queryInsert,$params);
@@ -98,15 +98,14 @@ Class Reperage{
         $queryDelete = "DELETE FROM t_reperage_import WHERE ref_client = ?";
         $this->dbLink->query($queryDelete,[$refclient]);
 
-        $this->dbLink->commit();
+        $this->dbLink->getLink()->commit();
 
-        return $query;
       }catch (PDOException $ex) {
-        $this->dbLink->rollBack();
+        $this->dbLink->getLink()->rollBack();
         throw new \PDOException($ex->getMessage());
 
       } catch (Exception $exc) {
-        $this->dbLink->rollBack();
+        $this->dbLink->getLink()->rollBack();
         throw new \Exception($exc->getTraceAsString());
       }
 
@@ -116,6 +115,35 @@ Class Reperage{
     */
     public function get(){
       $req = "SELECT * FROM t_reperage";
+    }
+
+    public function findRootMatching($lot)
+    {
+      $req = "SELECT rt.secteur AS secteur_root,rt.refclient FROM t_reperage rep INNER JOIN t_root rt ON rep.ref_client = rt.refclient WHERE rep.lot=? ";
+      return $this->dbLink->query($req,[$lot]);
+    }
+
+    public function updateMatchingRep($params)
+    {
+      $req  = "UPDATE t_reperage SET secteur=:secteur, matching=:matching, error_matching=:error WHERE ref_client=:refClient";
+      return $this->dbLink->query($req,$params);
+    }
+
+    public function findNotMatchingReperage()
+    {
+      $req = "SELECT * FROM t_reperage rep LEFT JOIN t_root rt ON rep.ref_client = rt.refclient WHERE rt.refclient IS NULL";
+      return $this->dbLink->query($req);
+    }
+    public function getDurtyData($lot)
+    {
+      $req = "SELECT id, ref_client, (select id from t_reperage_import t1 where t1.id=t.id and t1.ref_client NOT LIKE '%OBS') as noObs, (select id from t_reperage_import t1 where t1.id=t.id and ref_client IN (SELECT ref_client FROM t_reperage_import t1 GROUP BY t1.ref_client  HAVING COUNT(*) > 1) ) as doublon FROM t_reperage_import t WHERE lot=? ";
+      return $this->dbLink->query($req,[$lot]);
+    }
+
+    public function setIssue($params)
+    {
+      $req = "UPDATE t_reperage_import SET issue=? WHERE id = ?";
+      return $this->dbLink->query($req,$params);
     }
 
 }
