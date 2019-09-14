@@ -77,8 +77,7 @@ $(document).ready(function () {
               error: function (error) {
                   document.querySelector('.loader').style.display="none";
                   alertify.error("L'opération n'a pas abouti!");
-                  console.log("ERROR :",error.responseText);
-                  
+                  console.log("ERROR :",error.responseText);                  
               }
             });
         }else{

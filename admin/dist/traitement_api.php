@@ -73,7 +73,7 @@ if(isset($_GET['traitement_api'])){
                 else 
                     throw new Exception("Lot $lot Non trouvé! ");
                 
-                $lastDate=$reperage->getLastDate($lot);
+                $lastDate=$reperage->getLastDateTIMESTAMP($lot);
             }
             else if($typeDonnee=='Realisation'){
                 if(array_key_exists($lot, $link_realisation))
@@ -130,7 +130,7 @@ if(isset($_GET['traitement_api'])){
                 else 
                     throw new Exception("Lot $lot Non trouvé! ");
 
-                $lastDate=$reperage->getLastDate($lot);
+                $lastDate=$reperage->getLastDateTIMESTAMP($lot);
             }
             else if($typeDonnee=='Realisation'){
                 if(array_key_exists($lot, $link_realisation))
@@ -185,7 +185,7 @@ if(isset($_GET['traitement_api'])){
                 else 
                     throw new Exception("Lot $lot Non trouvé! ");
 
-                $lastDate=$reperage->getLastDate($lot);
+                $lastDate=$reperage->getLastDateTIMESTAMP($lot);
             }
             else if($typeDonnee=='Realisation'){
                 if(array_key_exists($lot, $link_realisation))
