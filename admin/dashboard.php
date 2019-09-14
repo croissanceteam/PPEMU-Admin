@@ -279,7 +279,7 @@
   <!-- Add the sidebar's background. This div must be placed
        immediately after the control sidebar -->
   <div class="control-sidebar-bg"></div>
-
+  <?php include_once 'partials/modals.php' ?>
 </div>
 <!-- ./wrapper -->
 
@@ -304,5 +304,7 @@
 <script src="dist/js/pages/dashboard2.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="dist/js/chscript.js"></script>
 </body>
 </html>

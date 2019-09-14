@@ -31,14 +31,40 @@ if(isset($_POST['email']) && isset($_POST['sendmail'])){
         echo json_encode(['response'    =>  "Echec de l'opération", 'bug' =>  $th->getMessage(), 'number'=>0]);
     }
 
-}else if(isset($_POST['newpass'])){
+}else if(isset($_POST['newpass']) && isset($_POST['set'])){
     try {
-        $retour = $user->setPassword(isset($_POST['newpass']));
-        if($restour == 1)
-            echo json_encode(['response'=>"Mot de passe enregistré",'number'=>$retour]);
+        $rs = $user->setPassword($_POST['newpass'],$_SESSION['usrname']);
+        if($rs == 1)
+            echo json_encode(['response'=>"Mot de passe enregistré",'number'=>$rs]);
         else    
-            echo json_encode(['response'=>"L'enregistrement a échoué",'number'=>$retour]);
+            echo json_encode(['response'=>"L'enregistrement a échoué",'number'=>$rs]);
+        
     } catch (\Throwable $th) {
         echo json_encode(['response'    =>  "Echec de l'opération", 'bug' =>  $th->getMessage(), 'number'=>0]);
     }
+}else if(isset($_POST['username']) && isset($_POST['actual-password'])){
+    try {
+        $rs = $user->changePassword($_POST);
+        if($rs == 1)
+            echo json_encode(['response'=>"Votre mot de passe a été changé avec succès. Nous vous demandons de vous reconnecter avec le nouveau mot  de passe.",'number'=>$rs]);
+        else if($rs == 0)
+            echo json_encode(['response'=>"Aucun changement effectué",'number'=>$rs]);
+        else if($rs == 4){
+            $_SESSION['nbr_changepass_try']--;
+            $text = $_SESSION['nbr_changepass_try'] === 1 ? " essai." : " essais.";
+            if($_SESSION['nbr_changepass_try'] === 0){
+                //add a script to lock the user before logging him out.
+                echo json_encode(['response'=>"Vous avez épuisé vos tentatives.",'number'=>$rs]);
+            }else
+                echo json_encode(['response'=>"Le mot de passe est incorrect. Veuillez retaper. Il vous reste ".$_SESSION['nbr_changepass_try'].$text,'number'=>$rs]);
+
+        }else if($rs == 5)
+            echo json_encode(['response'=>"Vous avez mal retapé le nouveau mot de passe. Veuillez réessayer.",'number'=>$rs]);
+            
+    } catch (\PDOException $ex) {
+        echo json_encode(['response'=>"L'enregistrement a échoué",'bug'=>$ex->getMessage(),'number'=>0]);
+    } catch (\Throwable $th) {
+        echo json_encode(['response'=>"L'enregistrement a échoué",'bug'=>$th->getMessage(),'number'=>0]);
+    }
+        
 }

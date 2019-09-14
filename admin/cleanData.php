@@ -1,6 +1,6 @@
 <?php
     session_start();
-    if (!isset($_SESSION['pseudoPsv']) && !isset($_SESSION['rolePsv']) ) {
+    if (!isset($_SESSION['pseudoPsv'])) {
         header("location: index.php") ;
     }//else die ('dfddf');
     

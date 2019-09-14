@@ -1,36 +1,35 @@
 <?php
-include('../../sync/db.php');
-//include('../Sync/Database.php');
+
+include_once '../Metier/Autoloader.php';
+Autoloader::register();
 session_start();
 
 if(isset($_GET['cleanDataReper'])){
         //TODO: CLEANING PROCESS
-        
-    $lot=htmlentities($_GET['lot'], ENT_QUOTES);
-    
-    print("<u><b>CLEANING REPERAGE LOT $lot </b></u><br/>");
-    
-    $reqTotalReperage = "SELECT COUNT(*) AS total FROM t_reperage WHERE lot='$lot' ";
-    $reqTotalImport = "SELECT COUNT(*) AS total FROM t_reperage_import WHERE lot='$lot' and issue='0' ";
-    $reqGetDateExport = "SELECT DISTINCT(date_export) FROM t_reperage_import WHERE issue='0' ORDER BY date_export DESC LIMIT 1";
 
-    $total_reperage_before = $link->query($reqTotalReperage)->fetch()->total;
-    $total_import_before = $link->query($reqTotalImport)->fetch()->total;
-    $date_export = $link->query($reqGetDateExport)->fetch()->date_export;
+    $reperage = new Reperage();
+
+    $lot=htmlentities($_GET['lot'], ENT_QUOTES);
+
+    print("<u><b>CLEANING REPERAGE LOT $lot </b></u><br/>");
+
+
+    $total_reperage_before = $reperage->getReperageByLot($lot)->rowCount();
+    $total_import_before = $reperage->getNotCleanedReperageImportByLot($lot)->rowCount();
+    $date_export = $reperage->getLastExportDate()->fetch();
 
     print ("Total de lignes dans reperage : " . $total_reperage_before . ".<br/>Total de lignes des données exportées le " . $date_export . " de Kobo : " . $total_import_before . "<br/>");
     /*
      * First step: found clean data in reperage_import
-     * 
+     *
      * Une données correcte "clean" est une données dont le numéro du client est unique et se termine par OBS
      */
 
 
     print("<br/><u><b>Recherche des données clean à la date du $date_export </b></u><br/>");
 
-    $reqGetCleanData = "SELECT * FROM t_reperage_import WHERE lot='$lot' AND issue='0' AND ref_client LIKE '%OBS' AND ref_client IN (SELECT ref_client FROM t_reperage_import GROUP BY ref_client  HAVING COUNT(*) = 1)";
 
-    $resCleanData = $link->query($reqGetCleanData);
+    $resCleanData = $reperage->findCleanDataByLot($lot);
     $total_clean_data = $resCleanData->rowCount();
 
     if ($total_clean_data > 0) {
@@ -50,12 +49,7 @@ if(isset($_GET['cleanDataReper'])){
     //    print "\n";
 
             try {
-                $link->beginTransaction();
-
-                $reqInsert = "INSERT INTO `t_reperage` (`name_client`,`avenue`,`num_home`,`commune`,`phone`,`category`,`ref_client`,`pt_vente`,`geopoint`,`lat`,`lng`,`altitude`,`precision`,`controller_name`,`comments`,`submission_time`,`town`,`lot`,`date_export`,`secteur`,`matching`,`error_matching`) "
-                        . "VALUES(:name,:street,:home,:commune,:phone,:cat,:ref_client,:pt_vente,:geo,:lat,:lng,:alt,:precision,:ctrl_name,:comments,:submission_time,:town,:lot,:date_export,:secteur,:matching,:error_matching)";
-                $statement = $link->prepare($reqInsert);
-                $statement->execute([
+                $reperage->insert([
                     'name' => $cus->name_client,
                     'street' => $cus->avenue,
                     'home' => $cus->num_home,
@@ -79,20 +73,13 @@ if(isset($_GET['cleanDataReper'])){
                     'secteur' => $cus->secteur,
                     'matching' => $cus->matching,
                     'error_matching' => $cus->error_matching
-                ]);
+                ],$cus->ref_client);
 
-                $reqDelete = "DELETE FROM t_reperage_import WHERE ref_client = ?";
-                $stmt = $link->prepare($reqDelete);
-                $stmt->execute([$cus->ref_client]);
-
-                $link->commit();
                 $total_inserted += 1;
             } catch (PDOException $ex) {
-                $link->rollBack();
                 echo $ex->getMessage();
                 break;
             } catch (Exception $exc) {
-                $link->rollBack();
                 echo $exc->getTraceAsString();
                 break;
             }
@@ -107,7 +94,7 @@ if(isset($_GET['cleanDataReper'])){
         print("<b>Fin du transfert des données</b> <br/><br/>");
         print("<u><b>RAPPORT DE TRANSFERT</b></u><br>");
         print ("* " . $total_inserted . " lignes sur " . $total_clean_data . " ont été transferées <br/>");
-
+        
         print ("<b>Total de lignes dans reperage après transfert : $total_reperage_after.<br/>Total de lignes des données sales à la date du $date_export : $total_import_after </b><br/>");
         $uninserted_data = $total_clean_data - $total_inserted;
         if ($uninserted_data > 0)
@@ -120,8 +107,8 @@ if(isset($_GET['cleanDataReper'])){
     }else {
         print ("<br/><b>Aucune données clean trouvée dans les données en provenance de Kobo à la date du $date_export</b><br/>");
     }
-    
-    
+
+
     /*
      * Matching data between reperage and root
      */
@@ -186,11 +173,11 @@ if(isset($_GET['cleanDataReper'])){
         $link->beginTransaction();
 
         $reqInsert = "INSERT INTO `journal_operations` (`id`, `user`, `operation`, `detail_operation`, `lot`, `total_reper_before`, `total_reperImport_before`, `total_cleaned_found`, `total_cleaned_afected`, `total_reper_after`, `total_reperImport_after`, `total_match_found`, `total_match_afected`, `total_noObs`, `total_doublon`, `total_noObs_doublon`, `dateOperation`) "
-            
+
                 . "VALUES (NULL, :user, :operation, :detail_operation, :lot, :total_reper_before, :total_reperImport_before, :total_cleaned_found, :total_cleaned_afected, :total_reper_after, :total_reperImport_after, :total_match_found, :total_match_afected, :total_noObs, :total_doublon, :total_noObs_doublon, sysdate() )";
-        
+
         $detailOp="Cleaning Operation par $_SESSION[nomsPsv], result : $total_inserted traité sur $total_import_before";
-        
+
         $statement = $link->prepare($reqInsert);
         $statement->execute([
             'user' => $cus->name_client,
@@ -211,7 +198,7 @@ if(isset($_GET['cleanDataReper'])){
         ]);
 
         $link->commit();
-        
+
     } catch (PDOException $ex) {
         $link->rollBack();
         echo $ex->getMessage();
@@ -221,55 +208,55 @@ if(isset($_GET['cleanDataReper'])){
         echo $exc->getTraceAsString();
         break;
     }
-    
+
     $link = NULL;
-        
+
 }
 
 else if(isset($_GET['cleanDataReper_suite'])){
-    
+
     $lot=htmlentities($_GET['lot'], ENT_QUOTES);
-    
+
 //    $reqlastOperation = "SELECT id from journal_operations where lot='$lot' order by id desc limit 1 ";
     $reqGetDataAnomalie = "SELECT id, ref_client, (select id from t_reperage_import t1 where t1.id=t.id and t1.ref_client NOT LIKE '%OBS') as noObs, (select id from t_reperage_import t1 where t1.id=t.id and ref_client IN (SELECT ref_client FROM t_reperage_import t1 GROUP BY t1.ref_client  HAVING COUNT(*) > 1) ) as doublon FROM t_reperage_import t WHERE lot='$lot' ";
-    
+
     $reqlastOperation = $link->query("SELECT id from journal_operations where lot='$lot' order by id desc limit 1 ");
     foreach ($reqlastOperation as $cus)
         $lastOpId=$cus->id;
 
     $resDataAnomalie = $link->query($reqGetDataAnomalie);
     $total_anomalie = $resDataAnomalie->rowCount();
-    
+
     $total_doublon = 0;
     $total_noObs = 0;
     $total_noObs_doublon = 0;
-    
+
     if ($total_anomalie > 0) {
         foreach ($resDataAnomalie as $cus) {
 
             try {
                 $link->beginTransaction();
-                
+
                 $issue=0;
                 if ($cus->noObs !=null && $cus->doublon !=null){
                     $issue=3;
                     $total_noObs_doublon++;
-                } 
+                }
                 else if ($cus->noObs !=null ){
                     $issue=1;
                     $total_noObs++;
-                } 
+                }
                 else if ($cus->doublon !=null){
                     $issue=2;
                     $total_doublon++;
                 }
-                
+
                 $reqUpdate = "UPDATE t_reperage_import SET issue=? WHERE id = ?";
                 $stmt = $link->prepare($reqUpdate);
                 $stmt->execute([$issue, $cus->id]);
-                
+
                 $link->commit();
-                
+
             } catch (PDOException $ex) {
                 $link->rollBack();
                 echo $ex->getMessage();
@@ -281,7 +268,7 @@ else if(isset($_GET['cleanDataReper_suite'])){
             }
         }
     }
-    
+
     try {
         $link->beginTransaction();
 
@@ -300,17 +287,17 @@ else if(isset($_GET['cleanDataReper_suite'])){
         echo $exc->getTraceAsString();
         break;
     }
-    
+
     print ("<br/><br/><b><u>RAPPORT SUR LES ANOMALIES </u></b><br/>");
     print ("* <b>" . $total_anomalie . " lignes<b> trouvée(s) avec <b> anomalie </b> ; <br/>");
-    
+
     if ($total_anomalie > 0){
         print ("<br/><b>ANOMALIES </u></b><br/>");
         print ("* Erreurs sur les Références &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b>" . $total_noObs . " lignes </b> ;<br/>");
         print ("* Références avec Doublons  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b>" . $total_doublon . " lignes </b>;<br/>");
         print ("* Erreurs sur Référence et Doublons : <b>" . $total_noObs_doublon . " lignes</b>.<br/><br/>");
-        
-        
+
+
         print (" <b>FIN OPERATION CLEANING DU LOT $lot.</b><br/>");
     }
 }

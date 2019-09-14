@@ -20,6 +20,7 @@ Class User {
                 $_SESSION['nomsPsv'] = $myuser->fullname;
                 $_SESSION['avatarPsv'] = $myuser->avatar;
                 $_SESSION['tokenPsv'] = $myuser->token;
+                $_SESSION['nbr_changepass_try'] = 3;
 
                 return TRUE;
             }
@@ -35,8 +36,8 @@ Class User {
         $exist = $this->dbLink->query("SELECT COUNT(*) AS nbr FROM t_user WHERE mailaddress= ?",[$email])->fetch();
         if($exist->nbr == 1){
             $rs = $this->dbLink->query("UPDATE t_user SET token = ? WHERE mailaddress = ?", [$token,$email]);
-            //return $rs;
-
+            return $rs;
+            /*
             $baseUrl = Helper::getURL(1);
             $image_src = $baseUrl.'/img/code-fill-page.png';
             //$resquest_uri = $_SERVER['REQUEST_URI'];
@@ -107,7 +108,7 @@ Class User {
             } catch (Exception $e) {
                 return "Le message ne peut pas être envoyé. Exception Error: ".$e->getMessage();
             }
-
+            */
         }else{
             return 6;
         }
@@ -116,7 +117,7 @@ Class User {
 
     public function validateToken($email,$token){
 
-        $myuser = $this->dbLink->query("SELECT * FROM t_user WHERE mailaddress=? AND token= ?",[$email,$token]);
+        $myuser = $this->dbLink->query("SELECT * FROM t_user WHERE mailaddress=? AND `token`= ?",[$email,$token]);
         $rs =  $myuser->rowCount();
         if($rs == 1)
             $_SESSION['usrname'] = $myuser->fetch()->username;
@@ -124,9 +125,25 @@ Class User {
         return $rs;
     }
 
-    public function setPassword($newpass){
+    public function setPassword($newpass,$username){
         $pass = password_hash($newpass, PASSWORD_BCRYPT);
-        $rs = $this->dbLink->query("UPDATE t_user SET password=?,token=? WHERE username=?",[$pass,NULL,$_SESSION['usrname']]);
+        $rs = $this->dbLink->query("UPDATE `t_user` SET `password`=?,`token`=? WHERE `username`=?",[$pass,NULL,$username]);
         return $rs->rowCount();
+    }
+
+    public function changePassword($param)
+    {
+        if($param['new-password'] === $param['new-password-again']){
+          
+          $req = "SELECT username,`password` FROM t_user WHERE t_user.username=?";
+          $result = $this->dbLink->query($req,[$param['username']])->fetch();
+
+          if($result && password_verify($param['actual-password'],$result->password))
+            return $this->setPassword($param['new-password'],$param['username']);
+          else
+            return 4;
+        }else{
+          return 5;
+        }
     }
 }

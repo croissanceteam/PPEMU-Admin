@@ -39,10 +39,10 @@
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
-                  <a href="#" class="btn btn-default btn-flat">Profile</a>
+                  <a href="#" class="btn btn-default btn-flat" data-toggle="modal" data-target="#newPassModal">Changer le passe</a>
                 </div>
                 <div class="pull-right">
-                  <a href="deconnection.php" class="btn btn-default btn-flat">Se Déconnecter</a>
+                  <a href="deconnection.php" id="longwa" class="btn btn-danger btn-flat">Se déconnecter</a>
                 </div>
               </li>
             </ul>

@@ -68,4 +68,54 @@ Class Reperage{
         return 0;
     }
 
+    public function getReperageByLot($lot){
+      $query = $this->dbLink->query("SELECT * FROM t_reperage WHERE lot=? ",[$lot]);
+      return $query;
+    }
+
+    public function getNotCleanedReperageImportByLot(){
+      $query = $this->dbLink->query("SELECT * FROM t_reperage_import WHERE lot=? and issue=? ",[$lot,0]);
+      return $query;
+    }
+
+    public function getLastExportDate(){
+      $query = $this->dbLink->query("SELECT DISTINCT(date_export) FROM t_reperage_import ORDER BY date_export DESC LIMIT 1",[]);
+      return $query;
+    }
+
+    public function findCleanDataByLot($lot){
+      $query = $this->dbLink->query("SELECT * FROM t_reperage_import WHERE lot=? AND issue='0' AND ref_client LIKE '%OBS' AND ref_client IN (SELECT ref_client FROM t_reperage_import GROUP BY ref_client  HAVING COUNT(*) = 1)",[$lot]);
+      return $query;
+    }
+
+    public function insert($params,$refclient){
+      try{
+        $this->dbLink->beginTransaction();
+
+        $queryInsert = "INSERT INTO `t_reperage` (`name_client`,`avenue`,`num_home`,`commune`,`phone`,`category`,`ref_client`,`pt_vente`,`geopoint`,`lat`,`lng`,`altitude`,`precision`,`controller_name`,`comments`,`submission_time`,`town`,`lot`,`date_export`,`secteur`,`matching`,`error_matching`) VALUES(:name,:street,:home,:commune,:phone,:cat,:ref_client,:pt_vente,:geo,:lat,:lng,:alt,:precision,:ctrl_name,:comments,:submission_time,:town,:lot,:date_export,:secteur,:matching,:error_matching)";
+        $this->dbLink->query($queryInsert,$params);
+
+        $queryDelete = "DELETE FROM t_reperage_import WHERE ref_client = ?";
+        $this->dbLink->query($queryDelete,[$refclient]);
+
+        $this->dbLink->commit();
+
+        return $query;
+      }catch (PDOException $ex) {
+        $this->dbLink->rollBack();
+        throw new \PDOException($ex->getMessage());
+
+      } catch (Exception $exc) {
+        $this->dbLink->rollBack();
+        throw new \Exception($exc->getTraceAsString());
+      }
+
+    }
+    /*
+    *
+    */
+    public function get(){
+      $req = "SELECT * FROM t_reperage";
+    }
+
 }
