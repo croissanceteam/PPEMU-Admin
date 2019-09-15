@@ -42,6 +42,8 @@ reserved.
     </div>
   </div>
 </div>
+
+<!-- NEW USER-->
 <div class="modal" id="newUserModal" tabindex="-1" role="dialog" data-backdrop="static">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -57,23 +59,77 @@ reserved.
           <div class="form-group col-md-6">
           <input type="hidden" class="form-control" name="add" >
             <label class="col-form-label required">Nom d'utilisateur</label>
-            <input type="text" class="form-control" name="username" placeholder="Nom d'utilisateur"  value="ken"required>
+            <input type="text" class="form-control" name="username" placeholder="Nom d'utilisateur"  required>
           </div>
           <div class="form-group col-md-6">
             <label class="col-form-label required">Nom complet</label>
-            <input type="text" class="form-control" name="fullname" placeholder="Nom complet" value="ken" required>
+            <input type="text" class="form-control" name="fullname" placeholder="Nom complet" required>
           </div>
           <div class="form-group col-md-6">
             <label class="col-form-label">Numéro de téléphone</label>
-            <input type="text" class="form-control" name="phone" placeholder="Numéro de téléphone" value="09494949494">
+            <input type="text" class="form-control" name="phone" placeholder="Numéro de téléphone" >
           </div>
           <div class="form-group col-md-6">
             <label class="col-form-label required">Adresse e-mail</label>
-            <input type="email" class="form-control" name="email" placeholder="Adresse e-mail" value="ken@gmail.com" required>
+            <input type="email" class="form-control" name="email" placeholder="Adresse e-mail" required>
           </div>
           <div class="form-group col-md-6">
             <label class="col-form-label">Ville</label>
-            <input type="text" class="form-control" name="town" placeholder="Ville de résidence" value="KIN" required>
+            <input type="text" class="form-control" name="town" placeholder="Ville de résidence" required>
+          </div>
+          <div class="form-group col-md-6">
+            
+            <input type="checkbox" name="status" class="js-switch"  checked />
+            <label class="col-form-label" id="status-label">Actif</label>
+          </div>
+          </div>
+          <!-- /.row -->
+          
+        </div>
+        <!-- /.modal-body -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+        </div>
+        <!-- /.modal-footer -->
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- UPDATE-->
+<div class="modal" id="updateUserModal" tabindex="-1" role="dialog" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Nouvel utilisateur</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="new-user-form">
+        <div class="modal-body">
+          <div class="row">
+          <div class="form-group col-md-6">
+          <input type="hidden" class="form-control" name="add" >
+            <label class="col-form-label required">Nom d'utilisateur</label>
+            <input type="text" class="form-control" name="username" id="username" placeholder="Nom d'utilisateur"  required>
+          </div>
+          <div class="form-group col-md-6">
+            <label class="col-form-label required">Nom complet</label>
+            <input type="text" class="form-control" name="fullname" id="fullname" placeholder="Nom complet" required>
+          </div>
+          <div class="form-group col-md-6">
+            <label class="col-form-label">Numéro de téléphone</label>
+            <input type="text" class="form-control" name="phone" id="phone" placeholder="Numéro de téléphone" >
+          </div>
+          <div class="form-group col-md-6">
+            <label class="col-form-label required">Adresse e-mail</label>
+            <input type="email" class="form-control" name="email" id="email" placeholder="Adresse e-mail" required>
+          </div>
+          <div class="form-group col-md-6">
+            <label class="col-form-label">Ville</label>
+            <input type="text" class="form-control" name="town" id="town" placeholder="Ville de résidence" required>
           </div>
           <div class="form-group col-md-6">
             

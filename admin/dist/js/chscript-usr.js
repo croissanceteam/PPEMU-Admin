@@ -87,4 +87,7 @@ $(document).ready(function(){
             }
         });
     });
+    $('.update').on('click',function(){
+        $('#updateUserModal').modal('show');
+    });
 });
