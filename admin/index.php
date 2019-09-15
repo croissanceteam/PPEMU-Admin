@@ -2,10 +2,8 @@
     session_start();
     if (isset($_SESSION['pseudoPsv']) ) {
         header("location: dashboard.php") ;
+        //echo "<meta http-equiv='refresh' content='0; url = dashboard.php' />";
     }
-
-    include_once 'Metier/Autoloader.php';
-    Autoloader::register();
 ?>
 <!DOCTYPE html>
 <html>
@@ -25,6 +23,8 @@
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
   <!-- iCheck -->
   <link rel="stylesheet" href="plugins/iCheck/square/blue.css">
+  <!-- Alertify -->
+  <link rel="stylesheet" href="vendor/alertify/themes/alertify.css" />
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -44,34 +44,15 @@
   </div>
   <!-- /.login-logo -->
   <div class="login-box-body">
-<?php
-//echo password_hash("123", PASSWORD_BCRYPT);
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($_POST['password'])) {
-
-  try {
-    $user = new User();
-    $log = $user->signin($_POST['username'],$_POST['password']);
-    if($log){
-      echo "<meta http-equiv='refresh' content='0; url = dashboard.php' />";
-    }else{
-      echo "<span style='color:red'>Mot de passe ou nom d'utilisateur incorrect</span> ";
-    }
-  } catch (\Throwable $th) {
-      echo $th->getMessage();
-      echo "<span style='color:red'>Echec de connexion</span> ";
-  }
-}
-
-?>
     <p class="login-box-msg">Connectez-vous</p>
-
-    <form action="index.php" method="post" >
+    <a href="dashboard.php" id="home" style="display:none"></a>
+    <form id="form-login" method="post">
       <div class="form-group has-feedback">
-        <input type="text" name="username" class="form-control" placeholder="Nom d'utilisateur" autocomplete="off" required="required">
-        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+        <input type="text" name="username" id="username" class="form-control" placeholder="Nom d'utilisateur" autocomplete="off" required="required">
+        <span class="glyphicon glyphicon-user form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
-        <input type="password" name="password" class="form-control" placeholder="Mot de passe" autocomplete="off" required="required">
+        <input type="password" name="password" id="password" class="form-control" placeholder="Mot de passe" autocomplete="off" required="required">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
       <div class="row">
@@ -84,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
         </div>
         <!-- /.col -->
         <div class="col-xs-12">
-          <button type="submit" class="btn btn-primary btn-block btn-flat">Connexion</button>
+          <button type="submit" id="connect" class="btn btn-primary btn-block btn-flat">Connexion</button>
         </div>
         <!-- /.col -->
       </div>
@@ -108,7 +89,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <!-- iCheck -->
 <script src="plugins/iCheck/icheck.min.js"></script>
+<!-- alertify -->
+<script src="vendor/alertify/lib/alertify.min.js"></script>
 <script>
+  $(document).ready(function(){
+    $('#form-login').on('submit',function(e){
+      e.preventDefault();
+      var user = $('#username').val();
+      var pwd = $('#password').val();
+      $.ajax({
+        type: 'POST',
+        url: 'dist/userTrait.php',
+        data: 'usr=' + user + '&pwd='+pwd,
+        dataType: 'json',
+        success: function(result){
+          console.log('LOGIN RESULT : ', result);
+          if(result.number == 1){
+            document.getElementById('home').click();
+          }else{
+            alertify.error(result.response);
+          }
+        },
+        error: function(error){
+          console.log('ERROR : ', error);
+        }
+      });
+    });
+  });
   $(function () {
     $('input').iCheck({
       checkboxClass: 'icheckbox_square-blue',

@@ -24,12 +24,15 @@ $(document).ready(function(){
                 console.log('Statut success : ',statut);
                 
                 if (result.number == 1){
-                  alertify.alert(result.response);
+                  alert(result.response);
                   document.querySelector('#longwa').click();
+                }else if(result.number == 6){
+                    alert(result.response);
+                    document.querySelector('#longwa').click();
                 }else{
-                    alertify.alert(result.response);
-                  $('#newPassModal').modal('hide');
-                }
+                  alertify.alert(result.response);
+                //$('#newPassModal').modal('hide');
+              }
                 
       
              },

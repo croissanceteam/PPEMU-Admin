@@ -1,19 +1,17 @@
-<?php
-    session_start();
-    if (!isset($_SESSION['pseudoPsv']) ) {
+<?php 
+    session_start(); 
+    if (!isset($_SESSION['pseudoPsv']) && $_SESSION['usrpriority'] != 'root') {
         header("location: index.php") ;
     }
-
     include_once 'Metier/Autoloader.php';
     Autoloader::register();
-
 ?>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>PPEMU | Cleaning DATA</title>
+  <title>PPEMU | Gestion d'utilisateurs</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -26,11 +24,14 @@
   <link rel="stylesheet" href="bower_components/jvectormap/jquery-jvectormap.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
+<!--  <link rel="stylesheet" href="DataTables/DataTables-1.10.18/css/jquery.dataTables.css">-->
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
   <!-- Alertify -->
   <link rel="stylesheet" href="vendor/alertify/themes/alertify.css" />
+  <!-- Switchery -->
+  <link rel="stylesheet" href="plugins/switchery/dist/switchery.min.css" />
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -38,24 +39,23 @@
   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
+  <style>
+            .required.col-form-label:after {
+                color: #d00;
+                /* content: "*"; */
+                margin-left: 8px;
+                top:7px;
+
+                font-family: 'FontAwesome';
+                font-weight: normal;
+                font-size: 10px;
+                content: "\f069";
+            }
+        </style>
 
   <!-- Google Font -->
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-
-    <style>
-        .okTD{
-            font-size: 28px;
-            color:#27a203;
-            display: none
-        }
-        .failTD{
-            font-size: 28px;
-            color:red;
-            display: none
-        }
-    </style>
-
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -89,8 +89,8 @@
       <!-- /.search form -->
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu" data-widget="tree">
-       <li class="header">MENU</li>
-       <!--
+        <li class="header">MENU</li>
+        <!--
         <li class="active treeview menu-open">
           <a href="#">
             <i class="fa fa-dashboard"></i> <span>MENU</span>
@@ -111,12 +111,13 @@
             <i class="fa fa-cloud-download active"></i> <span>Récupération automatique</span>
           </a>
         </li>
-        <li class="active">
+        <li >
           <a href="cleaning.php">
             <i class="fa fa-check-square-o"></i> <span>Cleaning Data</span>
           </a>
         </li>
-        <li>
+        
+        <li >
           <a href="clean.php">
             <i class="fa fa-check-square-o"></i> <span>Résumé du Cleaning</span>
           </a>
@@ -125,14 +126,15 @@
           <a href="journal.php">
             <i class="fa fa-list"></i> <span>Journal d'anomalies</span>
           </a>
-        </li>
+        </li >
         <?php if(isset($_SESSION['usrpriority']) && $_SESSION['usrpriority'] == 'root') : ?>
         <li class="header">PARAMETRES</li>
-        <li>
+        <li class="active">
             <a href="sresu.php"><i class="fa fa-users"></i> <span>Gestion d'utilisateurs</span></a>
         </li>
 
         <?php endif ?>
+        
       </ul>
     </section>
     <!-- /.sidebar -->
@@ -143,26 +145,26 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Cleaning DATA
+        Gestion d'utilisateurs
       </h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
-        <li class="active">Tableau de bord</li>
-      </ol>
+      
     </section>
 
     <!-- Main content -->
     <section class="content">
       <!-- Info boxes -->
-
+      
       <!-- /.row -->
-
+        
+      
       <div class="row">
-
-        <div class="col-md-6">
-          <div class="box">
+       
+        <div class="col-md-12">
+          <div class="box box-info">
             <div class="box-header with-border">
-              <h3 class="box-title">Parcelles géo-référencées</h3>
+              <h3 class="box-title">
+                <button type="button" class="btn btn-primary add" data-toggle="modal" data-target="#newUserModal"><i class="fa fa-user-plus"></i>&nbsp;Ajouter</button>
+              </h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -174,48 +176,18 @@
             <div class="box-body">
               <div class="row">
                 <div class="col-md-12">
-                    <div class="box-body table-responsive no-padding">
-                      <table class="table table table-bordered table-striped table-hover">
-                        <tr>
-                          <th>#</th>
-                          <th>Lot</th>
-                          <th>Date d'export</th>
-                          <th>Description</th>
-                          <th width="80"></th>
-                        </tr>
-                        <?php
-                            $reperage = new Reperage();
-
-                            $resData=$reperage->getNoCleanByLot();
-
-                            if ($resData) {
-
-                                foreach ($resData as $cus) {
-                        ?>
-                        <tr>
-                            <td>
-                                <img src="./dist/img/ajax-loader.gif" align="center" class="loading" style="display:none">
-                                <i class="okTD fa fa-check" ></i>
-                                <i class="failTD fa fa-remove" ></i>
-                            </td>
-                            <td><?php echo 'Lot '.$cus->lot; ?></td>
-                            <td><?php echo date('d/m/Y', strtotime($cus->date_export)); ?></td>
-                            <td class="lot_detail">
-                                <?php
-                                    echo 'Nombre de Ligne : '.$cus->ligne;
-                                ?>
-                            </td>
-                            <td>
-                                <a class="btn btn-warning cleanDataReper grize" dir="<?php echo $cus->lot; ?>" >Clean</a>
-                            </td>
-                        </tr>
-                        <?php
-                                }
-                            }
-                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune donnée à Nétoyer</h3></td></tr>"
-                        ?>
-                      </table>
-                    </div>
+                    <table id="users-table"  class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nom d'utilisateur</th>
+                                <th>Nom complet</th>
+                                <th>Adresse e-mail</th>
+                                <th>Téléphone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
                 <!-- /.col -->
               </div>
@@ -225,121 +197,11 @@
           </div>
           <!-- /.box -->
         </div>
-
-        <div class="col-md-6">
-          <div class="box">
-            <div class="box-header with-border">
-              <h3 class="box-title">Rapport d'exécution</h3>
-
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body">
-              <div class="row">
-                <div class="col-md-12">
-                    <div class="box-body table-responsive no-padding" id="rapportCleaningReper">
-
-                    </div>
-                </div>
-                <!-- /.col -->
-              </div>
-              <!-- /.row -->
-            </div>
-            <!-- ./box-body -->
-          </div>
-          <!-- /.box -->
-        </div>
-
-
+       
+        
         <!-- /.col -->
       </div>
-
-      <div class="row">
-
-        <div class="col-md-6">
-          <div class="box">
-            <div class="box-header with-border">
-              <h3 class="box-title">Branchements réalisés</h3>
-
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body">
-              <div class="row">
-                <div class="col-md-12">
-                    <div class="box-body table-responsive no-padding">
-                      <table class="table table table-bordered table-striped table-hover">
-                        <tr>
-                          <th>#</th>
-                          <th>Lot</th>
-                          <th>Date d'export</th>
-                          <th>Description</th>
-                          <th width="80"></th>
-                        </tr>
-                        <?php
-//                            $cleanQ=$db->query("SELECT DISTINCT lot, date_export, (select count(*) from t_reperage_import t2 where t2.lot=t1.lot) as ligne  FROM t_reperage_import t1 where 1=3");
-//
-//                            $nb=0;
-//                            if ($cleanQ->rowCount() > 0) {
-//                            while($rClean=$cleanQ->fetch(PDO::FETCH_ASSOC)){
-//                                $nb++;
-                        ?>
-
-                        <?php
-                            echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune donnée à Nétoyer</h3></td></tr>"
-                        ?>
-                      </table>
-                    </div>
-                </div>
-                <!-- /.col -->
-              </div>
-              <!-- /.row -->
-            </div>
-            <!-- ./box-body -->
-          </div>
-          <!-- /.box -->
-        </div>
-
-        <div class="col-md-6">
-          <div class="box">
-            <div class="box-header with-border">
-              <h3 class="box-title">Rapport d'exécution</h3>
-
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body">
-              <div class="row">
-                <div class="col-md-12">
-                    <div class="box-body table-responsive no-padding" id="rapportCleaningReal">
-
-                    </div>
-                </div>
-                <!-- /.col -->
-              </div>
-              <!-- /.row -->
-            </div>
-            <!-- ./box-body -->
-          </div>
-          <!-- /.box -->
-        </div>
-
-
-        <!-- /.col -->
-      </div>
-
+      
       <!-- /.row -->
     </section>
     <!-- /.content -->
@@ -360,6 +222,9 @@
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <!-- Bootstrap 3.3.7 -->
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- DataTables -->
+<script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <!-- FastClick -->
 <script src="bower_components/fastclick/lib/fastclick.js"></script>
 <!-- AdminLTE App -->
@@ -375,12 +240,19 @@
 <script src="bower_components/chart.js/Chart.js"></script>
 <!-- alertify -->
 <script src="vendor/alertify/lib/alertify.min.js"></script>
+<!-- Switchery -->
+<script src="plugins/switchery/dist/switchery.min.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="dist/js/pages/dashboard2.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/chscript.js"></script>
-<script src="dist/script.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="dist/js/chscript-usr.js"></script>
+<script>
+    
+    </script>
+</script>
 </body>
 </html>

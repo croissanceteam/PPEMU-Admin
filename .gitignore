@@ -1,5 +1,5 @@
 #composer.lock
 #vendor/
-sync/*.*
-admin/Metier/sync/*.php
+#sync/*.*
+admin/Metier/sync/
 admin/Metier/Database.php

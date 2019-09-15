@@ -28,6 +28,8 @@
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
+  <!-- Alertify -->
+  <link rel="stylesheet" href="vendor/alertify/themes/alertify.css" />
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -72,7 +74,8 @@
       <!-- /.search form -->
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu" data-widget="tree">
-       <!-- <li class="header">MAIN NAVIGATION</li> -->
+        <li class="header">MENU</li>
+        <!--
         <li class="active treeview menu-open">
           <a href="#">
             <i class="fa fa-dashboard"></i> <span>MENU</span>
@@ -83,6 +86,10 @@
           <ul class="treeview-menu">
             <li ><a href="dashboard.php"><i class="fa fa-circle-o"></i> Tableau de bord</a></li>
           </ul>
+        </li>
+        -->
+        <li>
+          <a href="dashboard.php"><i class="fa fa-dashboard"></i> Tableau de bord</a>
         </li>
         <li >
           <a href="import.php">
@@ -105,9 +112,13 @@
             <i class="fa fa-list"></i> <span>Journal d'anomalies</span>
           </a>
         </li>
-        <li class="header">AUTRES</li>
-        <li><a href="utilisateur.php"><i class="fa fa-circle-o text-red"></i> <span>Gestion d'utilisateur</span></a></li>
-        
+        <?php if(isset($_SESSION['usrpriority']) && $_SESSION['usrpriority'] == 'root') : ?>
+        <li class="header">PARAMETRES</li>
+        <li>
+            <a href="sresu.php"><i class="fa fa-users"></i> <span>Gestion d'utilisateurs</span></a>
+        </li>
+
+        <?php endif ?>
       </ul>
     </section>
     <!-- /.sidebar -->
@@ -271,13 +282,7 @@
   </div>
   <!-- /.content-wrapper -->
 
-  <footer class="main-footer">
-    <div class="pull-right hidden-xs">
-      <b>Version</b> 1.0.0
-    </div>
-    <strong>Copyright &copy; 2016-2019 <a href="http://www.croissancehub.com">Croissance Hub</a>.</strong> All rights
-    reserved.
-  </footer>
+  <?php include_once 'partials/footer.php' ?>
 
   <!-- /.control-sidebar -->
   <!-- Add the sidebar's background. This div must be placed
@@ -307,10 +312,14 @@
 <script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 <!-- ChartJS -->
 <script src="bower_components/chart.js/Chart.js"></script>
+<!-- alertify -->
+<script src="vendor/alertify/lib/alertify.min.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="dist/js/pages/dashboard2.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="dist/js/chscript.js"></script>
 <script src="dist/script.js"></script>
 <script>
   $(function () {

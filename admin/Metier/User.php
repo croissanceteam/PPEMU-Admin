@@ -10,22 +10,27 @@ Class User {
     }
 
     public function signin($username, $password) {
-        $user = $this->dbLink->query("SELECT * FROM t_user WHERE username = ?", [$username]);
-        if ($user->rowCount()) {
-            $myuser = $user->fetch();
+        $rs = $this->dbLink->query("SELECT * FROM t_user WHERE username = ?", [$username]);
+        
+        if ($rs->rowCount()) {
+            $myuser = $rs->fetch();
+            if($myuser->status == 1){
+                if (password_verify($password, $myuser->password)) {
 
-            if (password_verify($password, $myuser->password)) {
-
-                $_SESSION['pseudoPsv'] = $myuser->username;
-                $_SESSION['nomsPsv'] = $myuser->fullname;
-                $_SESSION['avatarPsv'] = $myuser->avatar;
-                $_SESSION['tokenPsv'] = $myuser->token;
-                $_SESSION['nbr_changepass_try'] = 3;
-
-                return TRUE;
+                    $_SESSION['pseudoPsv'] = $myuser->username;
+                    $_SESSION['nomsPsv'] = $myuser->fullname;
+                    $_SESSION['avatarPsv'] = $myuser->avatar;
+                    $_SESSION['tokenPsv'] = $myuser->token;
+                    $_SESSION['usrpriority'] = $myuser->priority;
+                    $_SESSION['nbr_changepass_try'] = 3;
+    
+                    return 1;
+                }
+                return 0;
             }
+            return 6;
         }
-        return FALSE;
+        return 0;
     }
 
     public function sendToken($email){
@@ -33,10 +38,12 @@ Class User {
         $str = "123456789NBVCXWMLKJHGFDSQPOUYTREZA";
         $token = substr(str_shuffle(str_repeat($str,2)),0,4);
 
-        $exist = $this->dbLink->query("SELECT COUNT(*) AS nbr FROM t_user WHERE mailaddress= ?",[$email])->fetch();
-        if($exist->nbr == 1){
+        $rs = $this->dbLink->query("SELECT * FROM t_user WHERE mailaddress= ?",[$email]);
+        if($rs->rowCount() == 1){
+            if($rs->fetch()->status == 0)
+                return 6;
             $rs = $this->dbLink->query("UPDATE t_user SET token = ? WHERE mailaddress = ?", [$token,$email]);
-            //return $rs;
+            //return $rs->rowCount();
             
             $baseUrl = Helper::getURL(1);
             $image_src = $baseUrl.'/img/code-fill-page.png';
@@ -104,13 +111,13 @@ Class User {
                     return 0;
                 }
             } catch (phpmailerException $e) {
-                return "Le message ne peut pas être envoyé. Mailer Error: ".$e->errorMessage();
+                throw new Exception("Le message ne peut pas être envoyé. Mailer Error: ".$e->errorMessage(), 1);
             } catch (Exception $e) {
-                return "Le message ne peut pas être envoyé. Exception Error: ".$e->getMessage();
+                throw new Exception("Le message ne peut pas être envoyé. Exception Error: ".$e->getMessage(), 1);
             }
             
         }else{
-            return 6;
+            return 7;
         }
 
     }
@@ -145,5 +152,51 @@ Class User {
         }else{
           return 5;
         }
+    }
+
+    public function lock($username)
+    {
+        return $this->dbLink->query("UPDATE `t_user` SET `status`=? WHERE `username`=?",[0,$username])->rowCount();
+    }
+    
+    public function isLocked($email)
+    {
+        $rs = $this->dbLink->query("SELECT `status` FROM t_user WHERE mailaddress=?",[$email]);
+        if($rs->rowCount() == 1)
+            return $rs->fetch()->status;
+        else
+            return NULL;
+    }
+
+    public function all()
+    {
+        return $this->dbLink->query("SELECT * FROM t_user ORDER BY userID DESC");
+    }
+
+    public function add($param)
+    {
+        $rs = $this->dbLink->query("SELECT COUNT(*) AS nbr FROM t_user WHERE username=? ",[$param['username']]);
+        if($rs->fetch()->nbr == 1)
+            return 2;
+        $rs = $this->dbLink->query("SELECT COUNT(*) AS nbr FROM t_user WHERE mailaddress=? ",[$param['email']]);
+        if($rs->fetch()->nbr == 1)
+            return 3;
+        try {
+            $req = "INSERT INTO t_user(username,password,fullname,phone,mailaddress,avatar,town,`status`) VALUES(:username,:password,:fullanme,:phone,:email,:avatar,:town,:status)";
+            $this->dbLink->query($req,[
+                'username'  =>  $param['username'],
+                'password'  =>  password_hash("Pemu123@", PASSWORD_BCRYPT),
+                'fullanme'  =>  $param['fullname'],
+                'phone'  =>  $param['phone'],
+                'email'  =>  $param['email'],
+                'avatar'  =>  NULL,
+                'town'  =>  $param['town'],
+                'status'  =>  (isset($param['status']))? 1:0
+            ]);
+            return 1;
+        } catch (\PDOException $e) {
+            throw $e;
+        }
+        
     }
 }
