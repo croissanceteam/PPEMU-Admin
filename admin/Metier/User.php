@@ -170,7 +170,34 @@ Class User {
 
     public function all()
     {
-        return $this->dbLink->query("SELECT * FROM t_user ORDER BY userID DESC");
+        return $this->dbLink->query("SELECT * FROM t_user WHERE priority <> 'root' ORDER BY userID DESC ");
+    }
+
+    public function getList()
+    {
+        $rs = $this->dbLink->query("SELECT * FROM t_user ORDER BY userID DESC");
+        $list = [];
+        $i = 0;
+        while ($data = $rs->fetch()) {
+            $status = ($data->status == 0)? '<i class="fa fa-lock text-danger" text-danger"></i>':'';
+            $actions = ($data->priority != 'root')? '<a href="#modifier" id="'.$data->userID.'" class="update" title="Modifier" data-placement="top" data-toggle="tooltip" style="margin-right:11px;" >
+                                                        <i class="glyphicon glyphicon-pencil text-warning"></i>
+                                                    </a>
+                                                    <a href="#supprimer" id="'.$data->userID.'" class="delete" title="Supprimer" data-placement="top" data-toggle="tooltip" style="margin-right:11px;">
+                                                        <i class="glyphicon glyphicon-trash text-danger"></i>
+                                                    </a>':'';
+            $list [] = [
+                'position'  => ++$i,
+                'username'  =>  $status.' '.$data->username,
+                'fullname'  =>  $data->fullname,
+                'email'  =>  $data->mailaddress,
+                'phone'  =>  $data->phone,
+                'actions'  => $actions
+            ];
+            
+        }
+
+        return $list;
     }
 
     public function add($param)
@@ -198,5 +225,24 @@ Class User {
             throw $e;
         }
         
+    }
+
+    public function getById($id)
+    {
+        return $this->dbLink->query("SELECT * FROM t_user WHERE userID=?",[$id]);
+    }
+
+    public function update($user)
+    {
+        $req = "UPDATE t_user SET fullname=:fullname,phone=:phone,mailaddress=:email,town=:town,`status`=:etat WHERE username=:username";
+        $rs = $this->dbLink->query($req,[
+                                            'fullname'  =>  $user['fullname'],
+                                            'phone'     =>  $user['phone'],
+                                            'email'     =>  $user['email'],
+                                            'town'      =>  $user['town'],
+                                            'etat'      =>  (isset($user['status']) && $user['status'] == 'on')? 1:0,
+                                            'username'  =>  $user['username'],
+                                        ]);
+        return $rs->rowCount();
     }
 }

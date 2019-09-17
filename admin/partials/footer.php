@@ -11,7 +11,7 @@ reserved.
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">Changement de mon mot de passe</h3>
+        <h4 class="modal-title">Changement de mon mot de passe</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -48,7 +48,7 @@ reserved.
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">Nouvel utilisateur</h3>
+        <h4 class="modal-title">Nouvel utilisateur</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -102,39 +102,39 @@ reserved.
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">Nouvel utilisateur</h3>
+        <h4 class="modal-title">Modification des informations de l'utilisateur</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="new-user-form">
+      <form id="update-user-form">
         <div class="modal-body">
           <div class="row">
           <div class="form-group col-md-6">
-          <input type="hidden" class="form-control" name="add" >
+          <input type="hidden" class="form-control" name="update" id="update" >
             <label class="col-form-label required">Nom d'utilisateur</label>
-            <input type="text" class="form-control" name="username" id="username" placeholder="Nom d'utilisateur"  required>
+            <input type="text" class="form-control" name="username" id="username2" readonly>
           </div>
           <div class="form-group col-md-6">
             <label class="col-form-label required">Nom complet</label>
-            <input type="text" class="form-control" name="fullname" id="fullname" placeholder="Nom complet" required>
+            <input type="text" class="form-control" name="fullname" id="fullname" required>
           </div>
           <div class="form-group col-md-6">
             <label class="col-form-label">Numéro de téléphone</label>
-            <input type="text" class="form-control" name="phone" id="phone" placeholder="Numéro de téléphone" >
+            <input type="text" class="form-control" name="phone" id="phone">
           </div>
           <div class="form-group col-md-6">
             <label class="col-form-label required">Adresse e-mail</label>
-            <input type="email" class="form-control" name="email" id="email" placeholder="Adresse e-mail" required>
+            <input type="email" class="form-control" name="email" id="email" required>
           </div>
           <div class="form-group col-md-6">
             <label class="col-form-label">Ville</label>
-            <input type="text" class="form-control" name="town" id="town" placeholder="Ville de résidence" required>
+            <input type="text" class="form-control" name="town" id="town" required>
           </div>
           <div class="form-group col-md-6">
             
-            <input type="checkbox" name="status" id="status" class="js-switch"  checked />
-            <label class="col-form-label" id="status-label">Actif</label>
+            <input type="checkbox" name="status" id="status" class="js-switch-update"  checked />
+            <label class="col-form-label" id="status-label2">Actif</label>
           </div>
           </div>
           <!-- /.row -->

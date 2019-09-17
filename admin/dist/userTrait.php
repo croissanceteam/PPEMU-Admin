@@ -85,30 +85,38 @@ if(isset($_POST['usr']) && isset($_POST['pwd'])){
     }
         
 }else if(isset($_GET['list'])){
+    /**
+     * Prepare users datatable data
+     */
     $rs = $user->all();
     $list = [];
     $i = 0;
     while ($data = $rs->fetch()) {
-        $status = ($data->status == 0)? '<i class="fa fa-lock text-danger" text-danger"></i>':'';
-        $actions = ($data->priority != 'root')? '<a href="#modifier" id="'.$data->username.'" class="update" title="Modifier" data-placement="top" data-toggle="tooltip" style="margin-right:11px;" >
+        $status_icon = ($data->status == 0)? '<i class="fa fa-lock text-danger" text-danger"></i>':'';
+        /*$actions = ($data->priority != 'root')? '<a href="#modifier" id="'.$data->username.'" class="update" title="Modifier" data-placement="top" data-toggle="tooltip" style="margin-right:11px;" >
                                                     <i class="glyphicon glyphicon-pencil text-warning"></i>
                                                 </a>
                                                 <a href="#supprimer" id="'.$data->username.'" class="delete" title="Supprimer" data-placement="top" data-toggle="tooltip" style="margin-right:11px;">
                                                     <i class="glyphicon glyphicon-trash text-danger"></i>
-                                                </a>':'';
+                                                </a>':''; */
         $list [] = [
             'position'  => ++$i,
-            'username'  =>  $status.' '.$data->username,
+            'statusicon'  => $status_icon,
+            'username'  =>  $data->username,
             'fullname'  =>  $data->fullname,
             'email'  =>  $data->mailaddress,
             'phone'  =>  $data->phone,
-            'actions'  => $actions
+            'town'  =>  $data->town,
+            'status'  =>  ($data->status == 1)? 'Actif':'Vérouillé'
         ];
         
     }
 
     echo json_encode($list);
 }else if(isset($_POST['fullname']) && isset($_POST['add'])){
+    /**
+     * Add new user
+     */
     try {
         $rs = $user->add($_POST);
         if($rs == 1)
@@ -124,4 +132,24 @@ if(isset($_POST['usr']) && isset($_POST['pwd'])){
         echo json_encode(['response'=>"L'enregistrement a échoué",'bug'=>$th->getMessage(),'number'=>0]);
     }
     
+}else if(isset($_POST['id']) && isset($_POST['op'])){
+    // TO ERASE
+    try {
+        $rs = $user->getById($_POST['id']);
+        echo json_encode($rs->fetch());
+        
+    } catch (\Throwable $th) {
+        echo json_encode($th->getMessage());
+    }
+    
+}else if(isset($_POST['fullname']) && isset($_POST['update'])){
+    try {
+        $rs = $user->update($_POST);
+        if($rs == 1)
+            echo json_encode(['response'=>"Modifications enregistrées",'number'=>$rs]);
+        else
+            echo json_encode(['response'=>"Echec d'enregistrement",'number'=>$rs]);
+    } catch (\Throwable $th) {
+        echo json_encode(['response'=>"L'enregistrement a échoué",'bug'=>$th->getMessage(),'number'=>0]);
+    }
 }

@@ -156,7 +156,7 @@
       
       <!-- /.row -->
         
-      
+      <?php $user = new User() ?>
       <div class="row">
        
         <div class="col-md-12">
@@ -180,13 +180,19 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th></th>
                                 <th>Nom d'utilisateur</th>
                                 <th>Nom complet</th>
                                 <th>Adresse e-mail</th>
                                 <th>Téléphone</th>
-                                <th>Actions</th>
+                                <th>Ville</th>
+                                <th>Etat</th>
                             </tr>
                         </thead>
+                        <tbody style="cursor:pointer">
+                        
+                        </tbody>
+                        
                     </table>
                 </div>
                 <!-- /.col -->

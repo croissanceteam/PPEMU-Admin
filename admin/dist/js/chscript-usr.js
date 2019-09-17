@@ -10,11 +10,13 @@ $(document).ready(function(){
         responsive: 'true',
         columns: [
             {"data": "position"},        
+            {"data": "statusicon"}, 
             {"data": "username"},
             {"data": "fullname"},
             {"data": "email"},
             {"data": "phone"},
-            {"data": "actions"}
+            {"data": "town"},
+            {"data": "status"}
         ],
         "language": {
             "sProcessing": "Traitement en cours...",
@@ -41,8 +43,11 @@ $(document).ready(function(){
     });
 
     var elem = document.querySelector('.js-switch');
+    var switcheryUpdate = document.querySelector('.js-switch-update');
     var init = new Switchery(elem, { size: 'small' });
+    var init2 = new Switchery(switcheryUpdate, { size: 'small' });
     var statusLabel = document.getElementById('status-label');
+    var statusLabel2 = document.getElementById('status-label2');
     
     console.log('Status checked : ',elem.checked);
     elem.onchange = function() {
@@ -53,6 +58,24 @@ $(document).ready(function(){
             statusLabel.textContent = "Vérouillé";
         }
     };
+    switcheryUpdate.onchange = function() {
+        //alert(elem.checked);
+        if(switcheryUpdate.checked){
+            statusLabel2.textContent = "Actif";
+        }else{
+            statusLabel2.textContent = "Vérouillé";
+        }
+    };
+    function setTrue(checkbox,ref){
+        if(checkbox.checked == false){
+            $(ref).click();
+        }
+    }
+    function setFalse(checkbox,ref){
+        if(checkbox.checked == true){
+            $(ref).click();
+        }
+    }
     
     $('#new-user-form').on('submit',function(e){
         e.preventDefault();
@@ -87,7 +110,88 @@ $(document).ready(function(){
             }
         });
     });
+
     $('.update').on('click',function(){
+        
+        $.ajax({
+            url: "dist/userTrait.php",
+            method: "POST",
+            data: {id: $(this).attr('id'),op:'get'},
+            dataType: "json",
+            success: function (data) {
+                //console.log('DATA: ',data);
+
+                if(data.username != undefined){
+                    $('#username2').val(data.username);
+                    $('#fullname').val(data.fullname);
+                    $('#phone').val(data.phone);
+                    $('#email').val(data.mailaddress);
+                    $('#town').val(data.town);
+                    $('#update').val(data.userID);
+                    if(data.status == 1){
+                        if(switcheryUpdate.checked == false){
+                            $('.js-switch-update').click();
+                        }                                
+                    }else{
+                        if(switcheryUpdate.checked == true){
+                            $('.js-switch-update').click();
+                        }
+                    }
+                    $('#updateUserModal').modal('show');
+                }
+            },
+            error: function (error) {
+                console.log("ERROR :",error);
+                //console.log("ERROR :",error.responseText);
+            }
+        });
+        
+    });
+    $('#update-user-form').on('submit',function(e){
+        e.preventDefault();
+        var mydata = $('#update-user-form').serialize();
+        $.ajax({
+            url : 'dist/userTrait.php',
+            type : 'POST',
+            data : mydata,
+            dataType: 'json',
+            success : function(result, statut){
+               console.log('Resultat success :',result);
+               console.log('Statut success : ',statut);
+
+               if (result.number == 1){
+                    $('#updateUserModal').modal('hide');
+                    alertify.success(result.response);
+                    dataTable.ajax.reload();
+                }else{
+                     alertify.alert(result.response);
+                }
+             
+            },
+            error : function(result, statut, error){
+              console.log('Resultat error :',result);
+              console.log('Erreur :',error);
+              console.log('Statut error : ',statut);
+              alertify.error("L'opération n'a pas abouti.");
+            }
+        });
+    });
+
+    $('#users-table').on('click','tr',function(e){
+        var data = dataTable.data();
+        var i = e.target._DT_CellIndex.row;
+        var user = data[i];
+        //alert(user.position);
+        $('#username2').val(user.username);
+        $('#fullname').val(user.fullname);
+        $('#phone').val(user.phone);
+        $('#email').val(user.email);
+        $('#town').val(user.town);
+        if(user.status == 'Actif'){
+            setTrue(switcheryUpdate,'.js-switch-update');
+        }else{
+            setFalse(switcheryUpdate,'.js-switch-update');
+        }
         $('#updateUserModal').modal('show');
     });
 });
