@@ -7,8 +7,8 @@ $(document).ready(function(){
             url: "dist/userTrait.php?list",
             dataSrc: '',
         },
-        responsive: 'true',
-        columns: [
+        "responsive": 'true',
+        "columns": [
             {"data": "position"},        
             {"data": "statusicon"}, 
             {"data": "username"},

@@ -22,6 +22,8 @@
   <link rel="stylesheet" href="bower_components/Ionicons/css/ionicons.min.css">
   <!-- jvectormap -->
   <link rel="stylesheet" href="bower_components/jvectormap/jquery-jvectormap.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="plugins/datatables/dataTables.bootstrap.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
 <!--  <link rel="stylesheet" href="DataTables/DataTables-1.10.18/css/jquery.dataTables.css">-->
@@ -174,30 +176,24 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <div class="row">
-                <div class="col-md-12">
-                    <table id="users-table"  class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th></th>
-                                <th>Nom d'utilisateur</th>
-                                <th>Nom complet</th>
-                                <th>Adresse e-mail</th>
-                                <th>Téléphone</th>
-                                <th>Ville</th>
-                                <th>Etat</th>
-                            </tr>
-                        </thead>
-                        <tbody style="cursor:pointer">
-                        
-                        </tbody>
-                        
-                    </table>
-                </div>
-                <!-- /.col -->
-              </div>
-              <!-- /.row -->
+              <table id="users-table"  class="table table-hover">
+                  <thead>
+                      <tr>
+                          <th>#</th>
+                          <th></th>
+                          <th>Nom d'utilisateur</th>
+                          <th>Nom complet</th>
+                          <th>Adresse e-mail</th>
+                          <th>Téléphone</th>
+                          <th>Ville</th>
+                          <th>Etat</th>
+                      </tr>
+                  </thead>
+                  <tbody style="cursor:pointer">
+                  
+                  </tbody>
+                  
+              </table>
             </div>
             <!-- ./box-body -->
           </div>
@@ -229,8 +225,8 @@
 <!-- Bootstrap 3.3.7 -->
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <!-- DataTables -->
-<script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
 <!-- FastClick -->
 <script src="bower_components/fastclick/lib/fastclick.js"></script>
 <!-- AdminLTE App -->
