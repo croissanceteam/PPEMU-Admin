@@ -1,5 +1,6 @@
 <?php
-
+ header("Access-Control-Allow-Origin: *");
+ 
 if (isset($_GET['date']) && $_GET['date']=='true') {
     getLastUpdate();
 }
