@@ -41,7 +41,7 @@
 
 <body class="hold-transition login-page">
 <div class="login-box">
-<div class="loader" style="display:none"></div>
+<div class="loader"></div>
   <div class="login-logo">
     <a href="index.php"><b>CEP-O PEMU</b> Admin</a>
   </div>
@@ -96,6 +96,7 @@
 <script src="vendor/alertify/lib/alertify.min.js"></script>
 <script>
   $(document).ready(function(){
+    document.querySelector('.loader').style.display="none";
     $('#form-login').on('submit',function(e){
       e.preventDefault();
       var user = $('#username').val();
@@ -108,11 +109,12 @@
         dataType: 'json',
         success: function(result){
           console.log('LOGIN RESULT : ', result);
-          document.querySelector('.loader').style.display="none";
+          
           if(result.number == 1){
             document.getElementById('home').click();
           }else{
             alertify.error(result.response);
+            document.querySelector('.loader').style.display="none";
           }
         },
         error: function(error){
