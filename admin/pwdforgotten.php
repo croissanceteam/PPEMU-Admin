@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="plugins/iCheck/square/blue.css">
   <!-- Alertify -->
   <link rel="stylesheet" href="vendor/alertify/themes/alertify.css" />
+  <link rel="stylesheet" href="dist/css/chstyle.css">
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -39,25 +40,12 @@
 
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-  <style>
-  .loader{
-    background: url('dist/img/preloader3.gif') 50% 50% no-repeat rgba(255, 255, 255, 0.8);
-    cursor: wait;
-    height: 100%;
-    left: 0;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 9999;
-  }
-  </style>
+  
 </head>
 
 <body class="hold-transition login-page">
 <div class="login-box">
-  <div class="loader" style="display:none">
-
-  </div>
+  <div class="loader" style="display:none"></div>
   <div class="login-logo">
     <a href="index.php"><b>CEP-O PEMU</b> Admin</a>
   </div>

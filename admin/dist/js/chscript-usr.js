@@ -177,7 +177,7 @@ $(document).ready(function(){
         });
     });
 
-    $('#users-table').on('click','tr',function(e){
+    $('#users-table tbody').on('click','tr',function(e){
         var data = dataTable.data();
         console.log(data);
         var i = dataTable.row(this).index();

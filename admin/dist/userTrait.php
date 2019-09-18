@@ -4,8 +4,10 @@ Autoloader::register();
 $user = new User();
 
 if(isset($_POST['usr']) && isset($_POST['pwd'])){
+    
     try {
         $rs = $user->signin($_POST['usr'],$_POST['pwd']);
+
         if($rs == 1)
             echo json_encode(['response'    =>  "", 'number' =>  $rs]);
         else if ($rs == 6)
