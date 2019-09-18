@@ -60,7 +60,7 @@ Class Reperage{
     }
 
     public function deleteDoublon($ref, $id) {
-        $query = $this->dbLink->query("DELETE FROM t_reperage_import WHERE ref_client LIKE '%$ref%' and id!='$id'  " );
+        $query = $this->dbLink->query("DELETE FROM t_reperage_import WHERE ref_client = '$ref' and id!='$id'  " );
 
         if ($query->rowCount()>0)
             return $query;
