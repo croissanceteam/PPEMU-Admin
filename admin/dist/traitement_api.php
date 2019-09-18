@@ -92,7 +92,7 @@ if(isset($_GET['traitement_api'])){
             
             $detailOp="Synchronisation API $typeDonnee par $_SESSION[nomsPsv], resultat : $nbrligne Importé(s)";
 
-            $req = $rapportOp->saveRapport([
+            $req = $rapportOp->saveRapport([ //ok
                 'user' => $_SESSION['nomsPsv'],
                 'operation' => "Synchronisation automatique API KOBO",
                 'detail_operation' => $detailOp,
