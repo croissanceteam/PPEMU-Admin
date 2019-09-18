@@ -8,6 +8,7 @@ include_once '../Metier/Autoloader.php';
 Autoloader::register();
 
 $reperage = new Reperage();
+$realisation = new Realisation();
 $rapport = new RapportOperation();
 
 
@@ -92,11 +93,11 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                     /*
                      * Enregistrement de l operation dans le journal des operations
                      */
-                    $detailOp="Correction Anomalie(s) $typeDonnee par $_SESSION[nomsPsv], resultat : $compt Données Corrigé(s)";
+                    $detailOp="Correction Anomalie(s) Referencement $typeDonnee par $_SESSION[nomsPsv], resultat : $compt Données Corrigé(s)";
 
                     $req = $rapport->saveRapport([
                         'user' => $_SESSION['nomsPsv'],
-                        'operation' => "Correction Data CSV",
+                        'operation' => "Correction Referencement CSV",
                         'detail_operation' => $detailOp,
                         'lot' => $lot,
                         'total_reper_before' => 0,
@@ -116,7 +117,7 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                     {
                         echo '<div class="alert alert-success alert-dismissible" role="alert">
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                    <h3><strong>SUCCESS !!</strong> IMPORTATION avec succès. </h3>
+                                    <h3><strong>SUCCESS !!</strong> IMPORTATION REFERENCEMENT avec succès. </h3>
 
                                     <h4> '.$compt.' Données Corrigé(s) </h4>
                                 </div> ';
@@ -134,7 +135,112 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
             }
             
             else if ($typeDonnee=="Realisation") {
-                
+                if (($handle = @fopen("$target_path", "r")) !== FALSE) 
+                {
+                    $req=false;
+                    $ct=0;
+                    $compt=0;
+                    while (($data = @fgetcsv($handle, 1000, ";")) !== FALSE) 
+                    {
+                        if($ct<1){ } else {
+
+                            $id=@htmlentities($data[0], ENT_QUOTES);
+                            $commune=@htmlentities($data[1], ENT_QUOTES);
+                            $address=@htmlentities($data[2], ENT_QUOTES);
+                            $avenue=@htmlentities($data[3], ENT_QUOTES);
+                            $num_home=@htmlentities($data[4], ENT_QUOTES);
+                            $phone=@htmlentities($data[5], ENT_QUOTES);
+                            $town=@htmlentities($data[6], ENT_QUOTES);
+                            $type_branch=@htmlentities($data[7], ENT_QUOTES);
+                            $water_given=@htmlentities($data[8], ENT_QUOTES);
+                            $entreprise=@htmlentities($data[9], ENT_QUOTES);
+                            $consultant=@htmlentities($data[10], ENT_QUOTES);
+                            $geopoint=@htmlentities($data[11], ENT_QUOTES);
+                            $lat=@htmlentities($data[12], ENT_QUOTES);
+                            $lng=@htmlentities($data[13], ENT_QUOTES);
+                            $altitude=@htmlentities($data[14], ENT_QUOTES);
+                            $precision=@htmlentities($data[15], ENT_QUOTES);
+                            $submission_time=@htmlentities($data[17], ENT_QUOTES);
+                            $ref_client=@htmlentities($data[20], ENT_QUOTES);
+                            $client=@htmlentities($data[21], ENT_QUOTES);
+                            $lot=@htmlentities($data[18], ENT_QUOTES);
+                            $date_export=@htmlentities($data[19], ENT_QUOTES);
+                            $issue=@htmlentities($data[22], ENT_QUOTES);
+
+                            if($issue!=1 && $issue!=0){
+                                $req = $realisation->deleteDoublon($ref_client, $id);
+                            }
+    
+                            $req = $realisation->tempSaveImportCSV([
+                            'id'            =>  $id,
+                            'commune'       =>  $commune,
+                            'address'       =>  $address,
+                            'avenue'        =>  $avenue,
+                            'num_home'      =>  $num_home,
+                            'phone'         =>  $phone,
+                            'town'          =>  $town,
+                            'type_branch'   =>  $type_branch,
+                            'water_given'   =>  $water_given,
+                            'entreprise'    =>  $entreprise,
+                            'consultant'    =>  $consultant,
+                            'geopoint'      =>  $geopoint,
+                            'lat'           =>  $lat,
+                            'lng'           =>  $lng,
+                            'altitude'      =>  $altitude, 
+                            'precision'     =>  $precision,
+                        'submission_time'   =>  $submission_time,
+                        'ref_client'        =>  $ref_client, 
+                        'client'            =>  $client, 
+                        'lot'               =>  $lot, 
+                        ]);
+
+                            if($req) $compt++;
+                        }
+                        $ct++;
+                    } 
+                    @fclose($handle);
+
+                    /*
+                     * Enregistrement de l operation dans le journal des operations
+                     */
+                    $detailOp="Correction Anomalie(s) Branchement $typeDonnee par $_SESSION[nomsPsv], resultat : $compt Données Corrigé(s)";
+
+                    $req = $rapport->saveRapport([
+                        'user' => $_SESSION['nomsPsv'],
+                        'operation' => "Correction Branchement CSV",
+                        'detail_operation' => $detailOp,
+                        'lot' => $lot,
+                        'total_reper_before' => 0,
+                        'total_reperImport_before' => 0,
+                        'total_cleaned_found' => 0,
+                        'total_cleaned_afected' => 0,
+                        'total_reper_after' => 0,
+                        'total_reperImport_after' => 0,
+                        'total_match_found' => 0,
+                        'total_match_afected' => 0,
+                        'total_noObs' => 0,
+                        'total_doublon' => 0,
+                        'total_noObs_doublon' => 0,
+                    ]);
+
+                    if($req)
+                    {
+                        echo '<div class="alert alert-success alert-dismissible" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h3><strong>SUCCESS !!</strong> IMPORTATION BRANCHEMENTs avec succès. </h3>
+
+                                    <h4> '.$compt.' Données Corrigé(s) </h4>
+                                </div> ';
+                    }
+                    else
+                    {
+                        echo '<div class="alert alert-warning alert-dismissible" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h3><strong>ECHEC !!</strong> FICHIER non Importés... Re-essayer plus tard. </h3>
+                                </div> ';
+                    }
+
+                }
             }
             
         }
@@ -170,6 +276,16 @@ else if(@isset($_GET['journalAnomalie']) )
             $json[]=$cus;
         }
     }
+    else if(trim($typeDonnee)=="Realisation") {
+        if(trim($lot)!="") $where=$where." AND lot='$lot' ";
+        if(trim($anomalie)!="") $where=$where." AND issue='$anomalie' ";
+        
+        $resData=$realisation->getAnomalies($where);
+        if($resData){
+            foreach ($resData as $cus)
+            $json[]=$cus;
+        }
+    }
     
     echo json_encode($json);
 }
@@ -198,8 +314,16 @@ else if(@isset($_GET['rapportClean']) )
     $where=" 1=1 ";
     
     if(trim($typeDonnee)=="Reperage") {
-        if(trim($lot)!="") $where=$where." AND lot='$lot' ";
-        //if(trim($anomalie)!="") $where=$where." AND issue='$anomalie' ";
+        if(trim($lot)!="") $where=$where." AND lot='$lot' AND operation='Cleaning Referencement' ";
+        
+        $resData=$rapport->getJournaleByWhere($where);
+        if($resData){
+            foreach ($resData as $cus)
+                $json[]=$cus;
+        }
+    }
+    else if(trim($typeDonnee)=="Realisation") {
+        if(trim($lot)!="") $where=$where." AND lot='$lot' AND operation='Cleaning Branchement' ";
         
         $resData=$rapport->getJournaleByWhere($where);
         if($resData){
@@ -233,6 +357,33 @@ else if(@isset($_GET['exporter']) )
         if($resData){
             
             $fname="referencement_anomlaies";
+            
+            header('Content-Type:text/Excel; charset=utf-8');
+			header('Content-Disposition:attachment;filename='.$fname.'.csv');
+	       
+            $entete= array();
+            
+            for($i=0; $i<$resData->columnCount(); $i++ ){
+                $col=$resData->getColumnMeta($i);
+                $entete[]=$col['name'];
+            }
+            
+            imprcsv($entete);
+            
+            foreach ($resData as $cus)
+                imprcsv($cus);
+            
+        }
+    }
+    else if(trim($typeDonnee)=="Realisation") {
+        
+        if(trim($lot)!="") $where=$where." AND lot='$lot' ";
+        if(trim($anomalie)!="") $where=$where." AND issue='$anomalie' ";
+        
+        $resData=$realisation->getAnomalies($where);
+        if($resData){
+            
+            $fname="branchement_anomlaies";
             
             header('Content-Type:text/Excel; charset=utf-8');
 			header('Content-Disposition:attachment;filename='.$fname.'.csv');

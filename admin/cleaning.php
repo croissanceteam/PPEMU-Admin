@@ -285,16 +285,35 @@
                           <th width="80"></th>
                         </tr>
                         <?php
-//                            $cleanQ=$db->query("SELECT DISTINCT lot, date_export, (select count(*) from t_reperage_import t2 where t2.lot=t1.lot) as ligne  FROM t_reperage_import t1 where 1=3");
-//
-//                            $nb=0;
-//                            if ($cleanQ->rowCount() > 0) {
-//                            while($rClean=$cleanQ->fetch(PDO::FETCH_ASSOC)){
-//                                $nb++;
-                        ?>
+                            $realisation = new Realisation();
 
+                            $resData=$realisation->getNoCleanByLot();
+
+                            if ($resData) {
+
+                                foreach ($resData as $cus) {
+                        ?>
+                        <tr>
+                            <td>
+                                <img src="./dist/img/ajax-loader.gif" align="center" class="loading" style="display:none">
+                                <i class="okTD fa fa-check" ></i>
+                                <i class="failTD fa fa-remove" ></i>
+                            </td>
+                            <td><?php echo 'Lot '.$cus->lot; ?></td>
+                            <td><?php echo date('d/m/Y', strtotime($cus->date_export)); ?></td>
+                            <td class="lot_detail">
+                                <?php
+                                    echo 'Nombre de Ligne : '.$cus->ligne;
+                                ?>
+                            </td>
+                            <td>
+                                <a class="btn btn-warning cleanDataReal grize" dir="<?php echo $cus->lot; ?>" >Clean</a>
+                            </td>
+                        </tr>
                         <?php
-                            echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune donnée à Nétoyer</h3></td></tr>"
+                                }
+                            }
+                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune donnée à Nétoyer</h3></td></tr>"
                         ?>
                       </table>
                     </div>

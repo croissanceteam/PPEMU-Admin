@@ -51,6 +51,9 @@
             color:red;
             display: none
         }
+        .btn_display{
+            display: none
+        }
     </style>
 
 </head>
@@ -177,7 +180,7 @@
                         <i class="fa fa-refresh"></i>
                         Synchroniser
                     </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <button type="button" class="btn btn-success grize" dir="" id="api_downAll" >
+                    <button type="button" class="btn btn-success grize btn_display" dir="" id="api_downAll" >
                         <i class="fa fa-cloud-download"></i>
                         Importer les données
                     </button><br>
@@ -215,10 +218,10 @@
                                     <button name='<?php echo $i; ?>' class='btn btn-warning api_actualiseLot grize' dir='Reperage' title='Actualise' >
                                         <i class="fa fa-refresh"></i>
                                     </button>
-                                    <button name='<?php echo $i; ?>' class='btn btn-info api_affichLot grize' dir='Reperage' title="Affichage" >
+                                    <button name='<?php echo $i; ?>' class='btn btn-info api_affichLot grize btn_display' dir='Reperage' title="Affichage" >
                                         <i class="fa fa-eye"></i>
                                     </button>
-                                    <button name='<?php echo $i; ?>' class='btn btn-success api_TelechargeLot grize' dir='Reperage' title="Télécharge" >
+                                    <button name='<?php echo $i; ?>' class='btn btn-success api_TelechargeLot grize btn_display' dir='Reperage' title="Télécharge" >
                                         <i class="fa fa-cloud-download"></i>
                                     </button>
                                 </td>
@@ -256,10 +259,10 @@
                                     <button name='<?php echo $i; ?>' class='btn btn-warning api_actualiseLot grize' dir='Realisation' value='Affiche' >
                                         <i class="fa fa-refresh"></i>
                                     </button>
-                                    <button name='<?php echo $i; ?>' class='btn btn-info api_affichLot grize' dir='Realisation' title="Affichage" >
+                                    <button name='<?php echo $i; ?>' class='btn btn-info api_affichLot grize btn_display' dir='Realisation' title="Affichage" >
                                         <i class="fa fa-eye"></i>
                                     </button>
-                                    <button name='<?php echo $i; ?>' class='btn btn-success api_TelechargeLot grize' dir='Realisation' >
+                                    <button name='<?php echo $i; ?>' class='btn btn-success api_TelechargeLot grize btn_display' dir='Realisation' >
                                         <i class="fa fa-cloud-download"></i>
                                     </button>
                                 </td>
@@ -329,7 +332,6 @@
 
                             <div class="col-md-3">
                                 <div class="form-group">
-                                  <!--  <label for="typeDonnee">Type de données</label>-->
                                     <select id="typeDonnee" name="typeDonnee" class="form-control" >
                                         <option value="">Séléctionnez</option>
                                         <option value="Reperage">Parcelles géo-référencées</option>

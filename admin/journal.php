@@ -173,16 +173,6 @@
                             <label for="lot">Lot</label>
                             <select id="lot" class="selectAnomalie form-control"  disabled>
                                 <option value="">Séléctionnez Lot</option>
-                                <?php 
-//                                    $resData=$reperage->getLot(); 
-//
-//                                    if ($resData) {
-//
-//                                        foreach ($resData as $cus) {
-//                                    echo "<option value='$cus->lot'>Lot $cus->lot</option>";
-//                                    }
-//                                    }
-                                ?>
                                     <option value="1">Lot 1</option>
                                     <option value="2">Lot 2</option>
                                     <option value="3">Lot 3</option>
@@ -251,11 +241,11 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th width="5%">Lot</th>
+                            <th width="7%">Lot</th>
                             <th>Client</th>
-                            <th>Numéro site erroné</th>  <!-- Adresse et Téléphone -->
+                            <th>Réf. Client</th>
+                            <th>Numéro site erroné</th>
                             <th>Agent contrôleur</th>
-                         <!--    <th>Commentaire</th> -->
                             <th width="17%">Anomalie trouvée</th>
                         </tr>
                         </thead>
