@@ -100,7 +100,7 @@ $(document).ready(function (e){
                             $(".real_BtnAll").show();
                         }
                         
-                        jsonKobo[value[0]-1]=value[4]; //ok
+                        jsonKobo[value[0]-1]=value[4];
                         
                     });
                     ligne.find('.ldTD').hide();    

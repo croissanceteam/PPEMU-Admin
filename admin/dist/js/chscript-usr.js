@@ -177,9 +177,11 @@ $(document).ready(function(){
         });
     });
 
-    $('#users-table').on('click','tr',function(e){
+    $('#users-table tbody').on('click','tr',function(e){
         var data = dataTable.data();
-        var i = e.target._DT_CellIndex.row;
+        console.log(data);
+        var i = dataTable.row(this).index();
+        console.log(i);
         var user = data[i];
         //alert(user.position);
         $('#username2').val(user.username);

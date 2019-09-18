@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="plugins/iCheck/square/blue.css">
   <!-- Alertify -->
   <link rel="stylesheet" href="vendor/alertify/themes/alertify.css" />
+  <link rel="stylesheet" href="dist/css/chstyle.css">
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -35,10 +36,12 @@
 
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+  
 </head>
 
 <body class="hold-transition login-page">
 <div class="login-box">
+<div class="loader"></div>
   <div class="login-logo">
     <a href="index.php"><b>CEP-O PEMU</b> Admin</a>
   </div>
@@ -93,10 +96,12 @@
 <script src="vendor/alertify/lib/alertify.min.js"></script>
 <script>
   $(document).ready(function(){
+    document.querySelector('.loader').style.display="none";
     $('#form-login').on('submit',function(e){
       e.preventDefault();
       var user = $('#username').val();
       var pwd = $('#password').val();
+      document.querySelector('.loader').style.display="block";
       $.ajax({
         type: 'POST',
         url: 'dist/userTrait.php',
@@ -104,14 +109,17 @@
         dataType: 'json',
         success: function(result){
           console.log('LOGIN RESULT : ', result);
+          
           if(result.number == 1){
             document.getElementById('home').click();
           }else{
             alertify.error(result.response);
+            document.querySelector('.loader').style.display="none";
           }
         },
         error: function(error){
           console.log('ERROR : ', error);
+          document.querySelector('.loader').style.display="none";
         }
       });
     });
