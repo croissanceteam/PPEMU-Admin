@@ -1,6 +1,7 @@
     
 $(document).ready(function (e){
     var jsonKobo= new Array(20);
+    var incr=0;
     
     $(document).on('click', '.grize', function(e){
         $('.grize').attr('disabled', 'on');
@@ -147,7 +148,7 @@ $(document).ready(function (e){
             data:'traitement_api' + '&btn=' + 'api_actualiseLot' + '&lot=' + lot + '&typeDonnee=' + typeD,
             dataType:'json',
             success: function(json){
-                $(".btn_display").show();
+                $("#api_downAll").show();
             }})
             
             .done(function(data) {
@@ -184,8 +185,9 @@ $(document).ready(function (e){
                     ligne1.find('.ldTD').hide();
                     ligne1.find('.okTD').show();
                     ligne1.find('.btn_display').show();
+                    ligne1.find('.grize').removeAttr('disabled');
                 }
-                $('.grize').removeAttr('disabled');
+                //$('.grize').removeAttr('disabled');
             })
             .fail(function(data) {
                 var ligne1;
@@ -358,6 +360,7 @@ $(document).ready(function (e){
     
     //TODO:: Envoi + Reponse TELECHARGEMENT DONNE API PAR LOT
     $(document).on('click', '.api_TelechargeLot', function(e){
+        incr=0;
         var lot =$(this).attr('name');
         var typeD =$(this).attr('dir');
         var ligne=$(this).parent('td').parent('tr');
@@ -375,21 +378,22 @@ $(document).ready(function (e){
             i++;
             
             var finTour=0;
-            if(jsonKobo.length==i) finTour=jsonKobo.length;
+            //alert(jsonKobo[lot-1].length+' '+jsonKobo.length);
+            if(jsonKobo[lot-1].length==incr) finTour=jsonKobo[lot-1].length;
             
             $.ajax({
                 type:'get',
                 url:'dist/traitement_api.php',
-                async: false,
+                //async: false,
                 data:'traitement_api' + '&btn=' + 'api_TelechargeLot' + '&lot=' + lot + '&typeDonnee=' + typeD+ '&row='+JSON.stringify(value)+'&finTour='+finTour,
                 dataType:'json',
-                complete: function(data){
-                    ligne.find('.lot_detail').text("Récuperation : "+i+"/"+jsonKobo[lot-1].length);
-                },
+//                complete: function(data){
+//                    ligne.find('.lot_detail').text("Récuperation : "+i+"/"+jsonKobo[lot-1].length);
+//                },
                 success: function(json){
                     if(json[1]=="Error"){
                         ligne.find('.ldTD').hide();
-                         ligne.find('.okTD').hide();
+                        ligne.find('.okTD').hide();
                         ligne.find('.failTD').show();
                         ligne.find('.lot_detail').text(json[3]);
                     }
@@ -401,8 +405,42 @@ $(document).ready(function (e){
                         ligne.find('.ldTD').hide();
                         ligne.find('.okTD').show();
                     }
+                    //$('.grize').removeAttr('disabled');
+                }})
+                .done(function(data) {
+                    var ligne1;
+                    if(data[1]=="Error"){
+                        ligne.find('.ldTD').hide();
+                        ligne.find('.okTD').hide();
+                        ligne.find('.failTD').show();
+                        ligne.find('.btn_display').hide();
+                        ligne.find('.lot_detail').text(data[3]);
+                        $('.grize').removeAttr('disabled');
+                    }
+                    else {
+                        incr++;
+                        $.each(data, function(index, value){
+                            ligne.find('.lot_detail').text("Récuperation : "+incr+"/"+jsonKobo[value[0]-1].length);
+
+                            //jsonKobo[value[0]-1]=value[4];
+                        });
+                        $('.grize').removeAttr('disabled');
+//                        ligne1.find('.ldTD').hide();
+//                        ligne1.find('.okTD').show();
+//                        ligne1.find('.btn_display').show();
+//                        ligne1.find('.grize').removeAttr('disabled');
+                    }
+                    //$('.grize').removeAttr('disabled');
+                })
+                .fail(function(data) {
+                    ligne.find('.ldTD').hide();
+                    ligne.find('.okTD').hide();
+                    ligne.find('.failTD').show();
+                    ligne.find('.btn_display').hide();
+                    ligne.find('.lot_detail').text(data[3]);
                     $('.grize').removeAttr('disabled');
-                }});
+                });
+            ;
         });
         
     });
@@ -503,10 +541,17 @@ $(document).ready(function (e){
         
         var typeD = $("#typeDonnee").val();
         
-        if(typeD!=""){
+        //if(typeD!=""){
             var lot = $("#lot").val();
             var date_1=$("#date_1").val();
             var date_2=$("#date_2").val();
+            
+            $('#typeDonnee').attr('disabled', 'on');
+            $('#lot').attr('disabled', 'on');
+            $('#date_1').attr('disabled', 'on');
+            $('#date_2').attr('disabled', 'on');
+            
+            $(this).removeAttr('disabled');
         
             $("#listTraitementClean").empty();
 
@@ -517,22 +562,41 @@ $(document).ready(function (e){
                 dataType:'json',
                 success: function(json){
                     
-                    $.each(json, function(i, v){
+                    if(json=="0"){
+                        $("#listTraitementClean").append("<tr><td colspan='8'><h3 style='color:#d44d06'>Aucune information trouvée dans le Résumé</h3></td></tr>");
                         
-                        $("#listTraitementClean").append("<tr><td>"+(i+1)+"</td><td>Lot "+v.lot+"</td>"
-                                +"<td>Avant :"+v.total_reperImport_before+" </br>Aprés : "+v.total_reperImport_after+"</td>"
-                                +"<td>Avant : "+ v.total_reper_before + "</br>Aprés : "+v.total_reper_after+ "</td>"
-                                +"<td>Trouvé : "+ v.total_cleaned_found + "</br>Traité : "+ v.total_cleaned_afected+ "</td>"
-                                +"<td>Trouvé : "+ v.total_match_found+" </br>Affecté : "+v.total_match_afected+"</td>"
-                                +"<td> No Obs : "+ v.total_noObs+"</br> Doublon : "+ v.total_doublon+" </br>No Obs et Doublon : "+ v.total_noObs_doublon+"</td>"
-                                +"<td>"+v.dateOperation+"</td>"
-                                                        );
-                    });
+                        $('.loading').hide();
+                        $("#typeDonnee").removeAttr('disabled');
+                        $("#lot").removeAttr('disabled');
+                        $("#date_1").removeAttr('disabled');
+                        $("#date_2").removeAttr('disabled');
+                    }
+                    else{
                     
+                        $.each(json, function(i, v){
+                            if(v.operation=='Cleaning Referencement') var typ= "Référencement"; 
+                            else if(v.operation=='Cleaning Branchement') var typ= "Branchement";
+                            
+                            $("#listTraitementClean").append("<tr><td>"+(i+1)+"</td><td>"+typ+"</td><td>Lot "+v.lot+"</td>"
+                                    +"<td>"+v.total_reperImport_after+"</td>"
+                                    +"<td>"+v.total_reper_after+ "</td>"
+                                    +"<td>Traité : "+ v.total_cleaned_afected+ "</td>"
+                                    +"<td>Affecté : "+v.total_match_afected+"</td>"
+                                    +"<td> No Obs : "+ v.total_noObs+"</br> Doublon : "+ v.total_doublon+"</td>"
+                                    +"<td>"+v.dateOperation+"</td>"
+                                                            );
+                        });
+                        
+                        $('.loading').hide();
+                        $("#typeDonnee").removeAttr('disabled');
+                        $("#lot").removeAttr('disabled');
+                        $("#date_1").removeAttr('disabled');
+                        $("#date_2").removeAttr('disabled');
+                    }
             }});
-        }
-        else {
-        }
+//        }
+//        else {
+//        }
         
     });
     
@@ -545,7 +609,14 @@ $(document).ready(function (e){
         if(typeD!=""){
             var lot = $("#lot").val();
             var anomalie=$("#anomalie").val();
+            
+            $('#typeDonnee').attr('disabled', 'on');
+            $('#lot').attr('disabled', 'on');
+            $('#anomalie').attr('disabled', 'on');
+            
+            $(this).removeAttr('disabled');
         
+            $('.loading').show();
             $('#btn_export').hide();
 
             $("#listDataAnomalies").empty();
@@ -556,35 +627,44 @@ $(document).ready(function (e){
                 data:'journalAnomalie' + '&typeDonnee=' + typeD + '&lot=' + lot + '&anomalie=' + anomalie,
                 dataType:'json',
                 success: function(json){
-                    
-                    $.each(json, function(i, v){
-                        if(typeD=='Reperage'){
-                            $("#listDataAnomalies").append("<tr><td>"+(i+1)+"</td><td>Lot "+v.lot+"</td>"
-                            +"<td>"+v.name_client+"</td><td><b>"+v.ref_client+"</b> </td>" 
-                            +"<td>"+v.num_home+", "+v.avenue+", <br/>"+v.commune+"</td>"
-                            +"<td>"+v.controller_name+"</td><td>"+v.label+"</td></tr>");
-                        }
-                        else if(typeD=='Realisation'){
-                            $("#listDataAnomalies").append("<tr><td>"+(i+1)+"</td><td>Lot "+v.lot+"</td>"
-                                +"<td>"+v.client+"</td><td><b>"+v.ref_client+"</b> </td>" 
-                                +"<td>"+v.num_home+", "+v.avenue+", <br/>"+v.address+", "+v.commune+"</td>"
-                                +"<td>"+v.entreprise+"</td><td>"+v.label+"</td></tr>");
-                        }
-                    });
-                    
-                    $('#btn_export').show();
-                    $("#lot").removeAttr('disabled');
-                    $("#anomalie").removeAttr('disabled');
-                    $('#example').DataTable().ajax.reload();
-                    //$('#example').DataTable().ajax.reload();alert("mmlm");
-                    //$('#example').reload(); 
+                    if(json=="0"){
+                        $("#listDataAnomalies").append("<tr><td colspan='7'><h3 style='color:#d44d06'>Aucune Anomalie trouvée ...</h3></td></tr>");
+                        
+                        $('.loading').hide();
+                        $('#btn_export').hide();
+                        $("#typeDonnee").removeAttr('disabled');
+                        $("#lot").removeAttr('disabled');
+                        $("#anomalie").removeAttr('disabled');
+                    }
+                    else{
+                        $.each(json, function(i, v){
+                            if(typeD=='Reperage'){
+                                $("#listDataAnomalies").append("<tr><td>"+(i+1)+"</td><td>Lot "+v.lot+"</td>"
+                                +"<td>"+v.name_client+"</td><td><b>"+v.ref_client+"</b> </td>" 
+                                +"<td>"+v.num_home+", "+v.avenue+", <br/>"+v.commune+"</td>"
+                                +"<td>"+v.controller_name+"</td><td>"+v.label+"</td></tr>");
+                            }
+                            else if(typeD=='Realisation'){
+                                $("#listDataAnomalies").append("<tr><td>"+(i+1)+"</td><td>Lot "+v.lot+"</td>"
+                                    +"<td>"+v.client+"</td><td><b>"+v.ref_client+"</b> </td>" 
+                                    +"<td>"+v.num_home+", "+v.avenue+", <br/>"+v.address+", "+v.commune+"</td>"
+                                    +"<td>"+v.entreprise+"</td><td>"+v.label+"</td></tr>");
+                            }
+                        });
+
+                        $('.loading').hide();
+                        $('#btn_export').show();
+                        $("#typeDonnee").removeAttr('disabled');
+                        $("#lot").removeAttr('disabled');
+                        $("#anomalie").removeAttr('disabled');
+                    }
             }});
         }
         else {
             $("#listDataAnomalies").empty();
             $('#btn_export').hide();
-            $("#lot").removeAttr('disabled');
-            $("#anomalie").removeAttr('disabled');
+            $('#lot').attr('disabled', 'on');
+            $('#anomalie').attr('disabled', 'on');
         }
         
     });

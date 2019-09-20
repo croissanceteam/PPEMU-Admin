@@ -60,7 +60,7 @@ Class Realisation{
     }
 
     public function deleteDoublon($ref, $id) {
-        $query = $this->dbLink->query("DELETE FROM t_realised_import WHERE ref_client ='$ref' and id!='$id'  " );
+        $query = $this->dbLink->query("DELETE FROM t_realised_import WHERE ref_client=? and id!=? and issue!=?", [$ref, $id, 0] );
 
         if ($query->rowCount()>0)
             return $query;

@@ -171,7 +171,7 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="lot">Lot</label>
-                            <select id="lot" class="form-control selectTraitement">
+                            <select id="lot" class="form-control selectTraitement" disabled>
                                 <option value="">Séléctionnez Lot</option>
                                 <option value="1">Lot 1</option>
                                 <option value="2">Lot 2</option>
@@ -189,13 +189,13 @@
                     <div class="col-md-2">
                         <div class="form-group">
                           <label for="albumDate">Traitement du  </label>
-                           <input type="date" id="date_1" class="form-control selectTraitement" placeholder="jj/mm/yyyy" > 
+                           <input type="date" id="date_1" class="form-control selectTraitement" placeholder="jj/mm/yyyy" disabled > 
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
                           <label for="albumDate">au </label>
-                          <input type="date" id="date_2" class="form-control selectTraitement" placeholder="jj/mm/yyyy">
+                          <input type="date" id="date_2" class="form-control selectTraitement" placeholder="jj/mm/yyyy" disabled>
                         </div>
                     </div>
                 </div>
@@ -215,7 +215,10 @@
         <div class="col-md-12">
           <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title">Synthèse de traitement</h3>
+              <h3 class="box-title">
+                  Synthèse de traitement
+                  <span class="loading" style="margin-left:200px; display:none"><img src="./dist/img/ajax-loader.gif" align="center" width="25"> Chargement de la liste ...</span>
+              </h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -228,12 +231,13 @@
               <div class="row">
                 <div class="col-md-12">
                     <div class="box-body table-responsive no-padding">
-                      <table class="table table table-bordered table-striped table-hover" id="example2">
+                      <table class="table table table-bordered table-striped table-hover" id="">
                        <thead>
                         <tr>
                             <th>#</th>
+                            <th>Type Données</th>
                             <th width="5%">Lot</th>
-                            <th>Donnée Brutes</th>
+                            <th>Données Brutes</th>
                             <th>Données traitées</th>
                             <th>Cleaned</th>
                             <th>Matching</th>
@@ -243,7 +247,7 @@
                        </thead>
                         <tbody id="listTraitementClean">
                         <?php
-                            $resData=$rapport->getJournaleByWhere(" operation='Cleaning Data' "); 
+                            $resData=$rapport->getJournaleByWhere(" operation='Cleaning Branchement' OR operation='Cleaning Referencement' "); 
     
                             if ($resData) {
                                 $nb=0;
@@ -252,36 +256,41 @@
                         ?>
                         <tr>
                             <td><?php echo $nb; ?></td>
+                            <td>
+                                <?php 
+                                    if($cus->operation=='Cleaning Referencement') echo "Référencement"; 
+                                    else if($cus->operation=='Cleaning Branchement') echo "Branchement"; 
+                                ?>
+                            </td>
                             <td><?php echo "Lot ".$cus->lot; ?></td>
                             <td>
                                 <?php 
-                                    echo "Avant : ".$cus->total_reperImport_before." </br>"; 
-                                    echo "Aprés : ".$cus->total_reperImport_after; 
+                                    //echo "Avant : ".$cus->total_reperImport_before." </br>"; 
+                                    echo $cus->total_reperImport_after; 
                                 ?>
                             </td>
                             <td>
                                 <?php 
-                                    echo "Avant : ".$cus->total_reper_before." </br>"; 
-                                    echo "Aprés : ".$cus->total_reper_after; 
+                                    //echo "Avant : ".$cus->total_reper_before." </br>"; 
+                                    echo $cus->total_reper_after; 
                                 ?>
                             </td>
                             <td>
                                 <?php 
-                                    echo "Trouvé : ".$cus->total_cleaned_found." </br>"; 
+                                    //echo "Trouvé : ".$cus->total_cleaned_found." </br>"; 
                                     echo "Traité : ".$cus->total_cleaned_afected; 
                                 ?>
                             </td>
                             <td>
                                 <?php 
-                                    echo "Trouvé : ".$cus->total_match_found." </br>"; 
-                                    echo "Secteur Affecté : ".$cus->total_match_afected; 
+                                    //echo "Trouvé : ".$cus->total_match_found." </br>"; 
+                                    echo "Affecté : ".$cus->total_match_afected; 
                                 ?>
                             </td>
                             <td>
                                 <?php 
                                     echo "No Obs : ".$cus->total_noObs." </br>"; 
                                     echo "Doublon : ".$cus->total_doublon." </br>"; 
-                                    echo "No Obs et Doublon : ".$cus->total_noObs_doublon; 
                                 ?>
                             </td>
                             <td>
@@ -293,7 +302,7 @@
                         <?php 
                                 }
                             }
-                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune  données trouvées dans le Journal</h3></td></tr>"
+                            else echo "<tr><td colspan='8'><h3 style='color:#d44d06'>Aucune information trouvée dans le Résumé</h3></td></tr>"
                         ?>
                         </tbody>
                       </table>

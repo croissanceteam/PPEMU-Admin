@@ -189,11 +189,11 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="anomalie">Type Anomalies</label>
-                            <select id="anomalie" class="selectAnomalie form-control" disabled >
+                            <select id="anomalie" class="selectAnomalie form-control" disabled  >
                                 <option value="">Séléctionnez Anomalie</option>
                                 <option value="1">Brchnt réalisé saisi avec clé sans OBS</option>
                                 <option value="2">Doublon</option>
-                                <option value="3">Le deux</option>
+<!--                                <option value="3">Le deux</option>-->
                             </select>
                         </div>
                     </div>
@@ -201,7 +201,7 @@
                         <div class="form-group">
                             <br>
                             <button type="button" class="btn btn-info" dir="" id="btn_export" style="display:none" >
-                                <img src="./dist/img/ajax-loader.gif" align="center" class="loading" style="display:none" width="20">
+                                <img src="./dist/img/ajax-loader.gif" align="center" class="loading1" style="display:none" width="20">
                                 <i class="fa fa-share-square-o" class="iExport"></i> &nbsp;&nbsp;
                                 Exporter la liste &nbsp;&nbsp;
                             </button>
@@ -224,7 +224,10 @@
         <div class="col-md-12">
           <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title">Liste détaillée</h3>
+              <h3 class="box-title">
+                    Liste détaillée 
+                    <span class="loading" style="margin-left:200px; display:none"><img src="./dist/img/ajax-loader.gif" align="center" width="25"> Chargement de la liste ...</span>
+              </h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -237,14 +240,14 @@
               <div class="row">
                 <div class="col-md-12">
                     <div class="box-body table-responsive no-padding">
-                      <table id="example2" class="table table table-bordered table-striped table-hover">
+                      <table id="" class="table table table-bordered table-striped table-hover">
                         <thead>
                         <tr>
                             <th>#</th>
                             <th width="7%">Lot</th>
-                            <th>Client</th>
-                            <th>Réf. Client</th>
-                            <th>Numéro site erroné</th>
+                            <th>Nom du Client</th>
+                            <th>Numéro site</th>
+                            <th>Adresse</th>
                             <th>Agent contrôleur</th>
                             <th width="17%">Anomalie trouvée</th>
                         </tr>
@@ -311,18 +314,5 @@
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/chscript.js"></script>
 <script src="dist/script.js"></script>
-<script>
-  $(function () {
-    $('#example1').DataTable()
-    $('#example2').DataTable({
-      'paging'      : true,
-      'lengthChange': true,
-      'searching'   : true,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : true
-    })
-  })
-</script>
 </body>
 </html>

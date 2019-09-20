@@ -58,10 +58,6 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                             $secteur=@htmlentities($data[20], ENT_QUOTES);
                             $issue=@htmlentities($data[21], ENT_QUOTES);
 
-                            if($issue!=1 && $issue!=0){
-                                $req = $reperage->deleteDoublon($ref_client, $id);
-                            }
-
                             $req = $reperage->tempSaveImportCSV([
                             'id'            =>  $id,
                             'name_client'   =>  $name_client,
@@ -83,8 +79,13 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                         'town'              =>  $town, 
                         'lot'               =>  $lot, 
                         ]);
-
+                            
                             if($req) $compt++;
+                            
+                            if($issue!=1 && $issue!=0){
+                                $req = $reperage->deleteDoublon($ref_client, $id);
+                            }
+
                         }
                         $ct++;
                     } 
@@ -166,10 +167,6 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                             $lot=@htmlentities($data[18], ENT_QUOTES);
                             $date_export=@htmlentities($data[19], ENT_QUOTES);
                             $issue=@htmlentities($data[22], ENT_QUOTES);
-
-                            if($issue!=1 && $issue!=0){
-                                $req = $realisation->deleteDoublon($ref_client, $id);
-                            }
     
                             $req = $realisation->tempSaveImportCSV([
                             'id'            =>  $id,
@@ -195,6 +192,10 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                         ]);
 
                             if($req) $compt++;
+                            
+                            if($issue!=1 && $issue!=0){
+                                $req = $realisation->deleteDoublon($ref_client, $id);
+                            }
                         }
                         $ct++;
                     } 
@@ -271,23 +272,31 @@ else if(@isset($_GET['journalAnomalie']) )
         if(trim($anomalie)!="") $where=$where." AND issue='$anomalie' ";
         
         $resData=$reperage->getAnomalies($where);
+        
         if($resData){
             foreach ($resData as $cus)
-            $json[]=$cus;
+                $json[]=$cus;
+            
+            echo json_encode($json);
         }
+        else echo "0";
     }
     else if(trim($typeDonnee)=="Realisation") {
         if(trim($lot)!="") $where=$where." AND lot='$lot' ";
         if(trim($anomalie)!="") $where=$where." AND issue='$anomalie' ";
         
         $resData=$realisation->getAnomalies($where);
+        
         if($resData){
             foreach ($resData as $cus)
-            $json[]=$cus;
+                $json[]=$cus;
+            
+            echo json_encode($json);
         }
+        else echo "0";
     }
+    else echo "0";
     
-    echo json_encode($json);
 }
 
 
@@ -315,24 +324,44 @@ else if(@isset($_GET['rapportClean']) )
     
     if(trim($typeDonnee)=="Reperage") {
         if(trim($lot)!="") $where=$where." AND lot='$lot' AND operation='Cleaning Referencement' ";
+        else $where=$where." AND operation='Cleaning Referencement' ";
         
         $resData=$rapport->getJournaleByWhere($where);
         if($resData){
             foreach ($resData as $cus)
                 $json[]=$cus;
+            
+            echo json_encode($json);
         }
+        else echo "0";
     }
     else if(trim($typeDonnee)=="Realisation") {
         if(trim($lot)!="") $where=$where." AND lot='$lot' AND operation='Cleaning Branchement' ";
+        else $where=$where." AND operation='Cleaning Branchement' ";
         
         $resData=$rapport->getJournaleByWhere($where);
         if($resData){
             foreach ($resData as $cus)
                 $json[]=$cus;
+            
+            echo json_encode($json);
         }
+        else echo "0";
+    }
+    else {
+        if(trim($lot)!="") $where=$where." AND lot='$lot' AND (operation='Cleaning Branchement' OR operation='Cleaning Referencement') ";
+        else $where=$where." AND (operation='Cleaning Branchement' OR operation='Cleaning Referencement') ";
+        
+        $resData=$rapport->getJournaleByWhere($where);
+        if($resData){
+            foreach ($resData as $cus)
+                $json[]=$cus;
+            
+            echo json_encode($json);
+        }
+        else echo "0";
     }
     
-    echo json_encode($json);
 }
 
 

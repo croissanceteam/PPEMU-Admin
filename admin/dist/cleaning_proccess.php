@@ -14,12 +14,13 @@ if(isset($_GET['cleanDataReper'])){
     $lot=htmlentities($_GET['lot'], ENT_QUOTES);
 
     print("<u><b>CLEANING REFERENCEMENT LOT $lot </b></u><br/>");
-
+    
+    $date_exportClean=date('Y-m-d H:i:s');
 
     $total_reperage_before = $reperage->getReperageByLot($lot)->rowCount();
-    print("total_reperage_before : $total_reperage_before <br/>");
+//    print("total_reperage_before : $total_reperage_before <br/>");
     $total_import_before = $reperage->getNotCleanedReperageImportByLot($lot)->rowCount();
-    print("total_import_before : $total_import_before <br/>");
+//    print("total_import_before : $total_import_before <br/>");
     $date_export = $reperage->getLastExportDate($lot);
     print("date_export : $date_export <br/>");
 
@@ -31,7 +32,7 @@ if(isset($_GET['cleanDataReper'])){
      */
 
 
-    print("<br/><u><b>Recherche des données clean à la date du $date_export </b></u><br/>");
+    print("<br/><u><b>Recherche des données clean à la date du $date_exportClean </b></u><br/>");
 
 
     $resCleanData = $reperage->findCleanDataByLot($lot);
@@ -73,7 +74,7 @@ if(isset($_GET['cleanDataReper'])){
                     'submission_time' => $cus->submission_time,
                     'town' => $cus->town,
                     'lot' => $cus->lot,
-                    'date_export' => $cus->date_export,
+                    'date_export' => $date_exportClean,
                     //'date_export' => date('Y-m-d'),
                     'secteur' => $cus->secteur,
                     'matching' => $cus->matching,
@@ -89,6 +90,13 @@ if(isset($_GET['cleanDataReper'])){
                 break;
             }
         }
+        
+        $txt= '{"updated":"'.date('d F Y, H:i:s').'"}';
+//        $txt= '{"updated":"27 Juillet 2019, 12:00:30"}';
+        $filen="../../mobile/date.json";
+        $fp = fopen($filen, 'w');
+        fwrite($fp, $txt);
+        fclose($fp);
 
 
         $total_reperage_after = $reperage->getReperageByLot($lot)->rowCount();//$link->query($reqTotalReperage)->fetch()->total;
@@ -100,7 +108,7 @@ if(isset($_GET['cleanDataReper'])){
         print("<u><b>RAPPORT DE TRANSFERT</b></u><br>");
         print ("* " . $total_inserted . " lignes sur " . $total_clean_data . " ont été transferées <br/>");
         
-        print ("<b>Total de lignes dans reperage après transfert : $total_reperage_after.<br/>Total de lignes des données sales à la date du $date_export : $total_import_after </b><br/>");
+        print ("<b>Total de lignes dans reperage après transfert : $total_reperage_after.<br/>Total de lignes des données sales à la date du $date_exportClean : $total_import_after </b><br/>");
         $uninserted_data = $total_clean_data - $total_inserted;
         if ($uninserted_data > 0)
             print ($uninserted_data . " lignes n'ont pas pu être transferées");
@@ -110,7 +118,7 @@ if(isset($_GET['cleanDataReper'])){
          *  Means data with 100% of coherence
          */
     }else {
-        print ("<br/><b>Aucune données clean trouvée dans les données en provenance de Kobo à la date du $date_export</b><br/>");
+        print ("<br/><b>Aucune données clean trouvée dans les données en provenance de Kobo à la date du $date_exportClean</b><br/>");
     }
 
 
@@ -158,12 +166,12 @@ if(isset($_GET['cleanDataReper'])){
 
     print ("<br/><b><u>RAPPORT DE MATCHING</u></b><br/>");
 
-    print ("* " . $updated_rows . " lignes sur " . $countRootMatching . " ont été mises à jour;<br/>");
+    print ("* " . $updated_rows . " ligne(s) sur " . $countRootMatching . " ont été mises à jour;<br/>");
 
     if ($notupdated > 0)
-        print ("* " . $notupdated . " lignes n'ont pas pu être mises à jour;<br/>");
+        print ("* " . $notupdated . " ligne(s) n'ont pas pu être mises à jour;<br/>");
 
-    print ("<br/>Exception : " . $totalNotMatchingReperage . " lignes dans reperages ne matchent pas avec les données de Wambe.");
+    print ("<br/>Exception : " . $totalNotMatchingReperage . " ligne(s) dans reperages ne matchent pas avec les données de Wambe.");
 
     /*
      * Enregistrement de l operation dans le journal des operations
@@ -202,12 +210,13 @@ else if(isset($_GET['cleanDataReal'])){
     $lot=htmlentities($_GET['lot'], ENT_QUOTES);
 
     print("<u><b>CLEANING BRANCHEMENT LOT $lot </b></u><br/>");
-
+    
+    $date_exportClean=date('Y-m-d H:i:s');
 
     $total_realisation_before = $realisation->getRealisationByLot($lot)->rowCount();
-    print("total_realisation_before : $total_realisation_before <br/>");
+//    print("total_realisation_before : $total_realisation_before <br/>");
     $total_import_before = $realisation->getNotCleanedRealisationImportByLot($lot)->rowCount();
-    print("total_import_before : $total_import_before <br/>");
+//    print("total_import_before : $total_import_before <br/>");
     $date_export = $realisation->getLastExportDate($lot);
     print("date_export : $date_export <br/>");
 
@@ -219,7 +228,7 @@ else if(isset($_GET['cleanDataReal'])){
      */
 
 
-    print("<br/><u><b>Recherche des données clean à la date du $date_export </b></u><br/>");
+    print("<br/><u><b>Recherche des données clean à la date du $date_exportClean </b></u><br/>");
 
 
     $resCleanData = $realisation->findCleanDataByLot($lot);
@@ -263,7 +272,7 @@ else if(isset($_GET['cleanDataReal'])){
                 'ref_client'        =>  $cus->ref_client,
                 'client'            =>  $cus->client,
                 'lot'               =>  $cus->lot,
-                'date_export'       => $cus->date_export,
+                'date_export'       => $date_exportClean,
                     //'date_export' => '2019-07-22',
                 ],$cus->ref_client);
 
@@ -276,6 +285,13 @@ else if(isset($_GET['cleanDataReal'])){
                 break;
             }
         }
+        
+        $txt= '{"updated":"'.date('d F Y, H:i:s').'"}';
+//        $txt= '{"updated":"27 Juillet 2019, 12:00:30"}';
+        $filen="../../mobile/date.json";
+        $fp = fopen($filen, 'w');
+        fwrite($fp, $txt);
+        fclose($fp);
 
 
         $total_realisation_after = $realisation->getRealisationByLot($lot)->rowCount();
@@ -285,13 +301,13 @@ else if(isset($_GET['cleanDataReal'])){
         print("<u><b>RAPPORT DE TRANSFERT</b></u><br>");
         print ("* " . $total_inserted . " lignes sur " . $total_clean_data . " ont été transferées <br/>");
         
-        print ("<b>Total de lignes dans realisation après transfert : $total_realisation_after.<br/>Total de lignes des données sales à la date du $date_export : $total_import_after </b><br/>");
+        print ("<b>Total de lignes dans realisation après transfert : $total_realisation_after.<br/>Total de lignes des données sales à la date du $date_exportClean : $total_import_after </b><br/>");
         $uninserted_data = $total_clean_data - $total_inserted;
         if ($uninserted_data > 0)
             print ($uninserted_data . " lignes n'ont pas pu être transferées <br/>");
 
     }else {
-        print ("<br/><b>Aucune données clean trouvée dans les données en provenance de Kobo à la date du $date_export</b><br/>");
+        print ("<br/><b>Aucune données clean trouvée dans les données en provenance de Kobo à la date du $date_exportClean </b><br/>");
     }
 
     
@@ -346,11 +362,12 @@ else if(isset($_GET['cleanDataReper_suite'])){
 
             try {
                 $issue=0;
-                if ($cus->noObs !=null && $cus->doublon !=null){
-                    $issue=3;
-                    $total_noObs_doublon++;
-                }
-                else if ($cus->noObs !=null ){
+//                if ($cus->noObs !=null && $cus->doublon !=null){
+//                    $issue=3;
+//                    $total_noObs_doublon++;
+//                }
+//                else 
+                if ($cus->noObs !=null ){
                     $issue=1;
                     $total_noObs++;
                 }
@@ -380,16 +397,16 @@ else if(isset($_GET['cleanDataReper_suite'])){
     }
 
     print ("<br/><br/><b><u>RAPPORT SUR LES ANOMALIES </u></b><br/>");
-    print ("* <b>" . $total_anomalie . " lignes<b> trouvée(s) avec <b> anomalie </b> ; <br/>");
+    print ("* <b>" . $total_anomalie . " ligne(s)<b> trouvée(s) avec <b> anomalie </b> ; <br/>");
 
     if ($total_anomalie > 0){
         print ("<br/><b>ANOMALIES </u></b><br/>");
-        print ("* Erreurs sur les Références &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b>" . $total_noObs . " lignes </b> ;<br/>");
-        print ("* Références avec Doublons  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b>" . $total_doublon . " lignes </b>;<br/>");
-        print ("* Erreurs sur Référence et Doublons : <b>" . $total_noObs_doublon . " lignes</b>.<br/><br/>");
+        print ("* Erreurs sur les Références &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b>" . $total_noObs . " ligne(s) </b> ;<br/>");
+        print ("* Références avec Doublons  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b>" . $total_doublon . " ligne(s) </b>;<br/>");
+        //print ("* Erreurs sur Référence et Doublons : <b>" . $total_noObs_doublon . " lignes</b>.<br/><br/>");
 
 
-        print (" <b>FIN OPERATION CLEANING BRANCHEMENT DU LOT $lot.</b><br/>");
+        print ("<br/> <b>FIN OPERATION CLEANING BRANCHEMENT DU LOT $lot.</b><br/>");
     }
 }
 
@@ -413,11 +430,12 @@ else if(isset($_GET['cleanDataReal_suite'])){
 
             try {
                 $issue=0;
-                if ($cus->noObs !=null && $cus->doublon !=null){
-                    $issue=3;
-                    $total_noObs_doublon++;
-                }
-                else if ($cus->noObs !=null ){
+//                if ($cus->noObs !=null && $cus->doublon !=null){
+//                    $issue=3;
+//                    $total_noObs_doublon++;
+//                }
+//                else 
+                if ($cus->noObs !=null ){
                     $issue=1;
                     $total_noObs++;
                 }
@@ -447,13 +465,13 @@ else if(isset($_GET['cleanDataReal_suite'])){
     }
 
     print ("<br/><br/><b><u>RAPPORT SUR LES ANOMALIES </u></b><br/>");
-    print ("* <b>" . $total_anomalie . " lignes<b> trouvée(s) avec <b> anomalie </b> ; <br/>");
+    print ("* <b>" . $total_anomalie . " ligne(s)<b> trouvée(s) avec <b> anomalie </b> ; <br/>");
 
     if ($total_anomalie > 0){
         print ("<br/><b>ANOMALIES </u></b><br/>");
-        print ("* Erreurs sur les Références &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b>" . $total_noObs . " lignes </b> ;<br/>");
-        print ("* Références avec Doublons  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b>" . $total_doublon . " lignes </b>;<br/>");
-        print ("* Erreurs sur Référence et Doublons : <b>" . $total_noObs_doublon . " lignes</b>.<br/><br/>");
+        print ("* Erreurs sur les Références &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b>" . $total_noObs . " ligne(s) </b> ;<br/>");
+        print ("* Références avec Doublons  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b>" . $total_doublon . " ligne(s) </b>;<br/>");
+        //print ("* Erreurs sur Référence et Doublons : <b>" . $total_noObs_doublon . " lignes</b>.<br/><br/>");
 
 
         print (" <b>FIN OPERATION CLEANING BRANCHEMENT DU LOT $lot.</b><br/>");
