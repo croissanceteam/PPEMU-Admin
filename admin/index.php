@@ -41,7 +41,8 @@
 
 <body class="hold-transition login-page">
 <div class="login-box">
-<div class="loader"></div>
+<div id="cover-spin"></div>
+
   <div class="login-logo">
     <a href="index.php"><b>CEP-O PEMU</b> Admin</a>
   </div>
@@ -95,13 +96,19 @@
 <!-- alertify -->
 <script src="vendor/alertify/lib/alertify.min.js"></script>
 <script>
+// Set the cursor ASAP to "Wait"
+//document.body.style.cursor='wait';
+
+// When the window has finished loading, set it back to default...
+window.onload=function(){document.querySelector('#cover-spin').style.display="none";}
+
   $(document).ready(function(){
-    document.querySelector('.loader').style.display="none";
+    
     $('#form-login').on('submit',function(e){
       e.preventDefault();
       var user = $('#username').val();
       var pwd = $('#password').val();
-      document.querySelector('.loader').style.display="block";
+      document.querySelector('#cover-spin').style.display="block";
       $.ajax({
         type: 'POST',
         url: 'dist/userTrait.php',
@@ -114,12 +121,15 @@
             document.getElementById('home').click();
           }else{
             alertify.error(result.response);
-            document.querySelector('.loader').style.display="none";
+            document.querySelector('#cover-spin').style.display="none";
           }
         },
-        error: function(error){
-          console.log('ERROR : ', error);
-          document.querySelector('.loader').style.display="none";
+        error: function(result, statut, error){
+          console.log('Resultat error :',result);
+          console.log('Erreur :',error);
+          console.log('Statut error : ',statut);
+          alertify.error("L'opération n'a pas abouti.");
+          document.querySelector('#cover-spin').style.display="none";
         }
       });
     });

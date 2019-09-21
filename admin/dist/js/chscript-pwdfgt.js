@@ -6,7 +6,7 @@ $(document).ready(function () {
           console.log('EMAIL :',  email.trim() != "");
           
           if(email.trim() != ""){
-            document.querySelector('.loader').style.display="block";
+            document.querySelector('#cover-spin').style.display="block";
             $.ajax({
               type: 'POST',
               url: 'dist/userTrait.php',
@@ -15,7 +15,7 @@ $(document).ready(function () {
               success : function(result){
                   console.log('SENDING RESULT : ', result);
                   console.log('RESULT RESPONSE : ', result.response);
-                  document.querySelector('.loader').style.display="none";
+                  document.querySelector('#cover-spin').style.display="none";
                   if(result.number == 1){
                     
                     document.querySelector('#token-field').style.display="block";
@@ -30,7 +30,7 @@ $(document).ready(function () {
                   }
               },
               error: function (error) {
-                  document.querySelector('.loader').style.display="none";
+                  document.querySelector('#cover-spin').style.display="none";
                   alertify.error("L'opération n'a pas abouti!");
                   console.log("ERROR :",error);
                   console.log("ERROR :",error.responseText);
@@ -50,7 +50,7 @@ $(document).ready(function () {
         
         console.log('TOKEN LENGTH', token.length);
         if(token.length == 4){
-          document.querySelector('.loader').style.display="block";
+          document.querySelector('#cover-spin').style.display="block";
             $.ajax({
               type: 'POST',
               url: 'dist/userTrait.php',
@@ -59,7 +59,7 @@ $(document).ready(function () {
               success : function(result){
                   console.log('TOKEN VALIDATING RESULT : ', result);
                   console.log('RESULT RESPONSE : ', result.response);
-                  document.querySelector('.loader').style.display="none";
+                  document.querySelector('#cover-spin').style.display="none";
                   if(result.number == 1){
                     document.querySelector('#box-msg').textContent = "Nouveau mot de passe";
                     document.querySelector('#newpass-field').style.display="block";
@@ -69,13 +69,14 @@ $(document).ready(function () {
                     document.querySelector('#saving').style.display="block";
                     
                     //document.querySelector('#send-token').text = "Enregistrer";
-                    alertify.log(result.response);
+                    alertify.alert(result.response);
+                    //alertify.log(result.response);
                   }else{
                     alertify.error(result.response);
                   }
               },
               error: function (error) {
-                  document.querySelector('.loader').style.display="none";
+                  document.querySelector('#cover-spin').style.display="none";
                   alertify.error("L'opération n'a pas abouti!");
                   console.log("ERROR :",error.responseText);                  
               }
@@ -100,18 +101,18 @@ $(document).ready(function () {
                   console.log('NEW PASS RESULT : ', result);
                   //console.log('RESULT RESPONSE : ', result.response);
                   //alert('RESULT RESPONSE : ', result.response);
-                  document.querySelector('.loader').style.display="none";
+                  document.querySelector('#cover-spin').style.display="none";
                   if(result.number == 1){
-                    document.getElementById('login-url').click();
-                    
-                    //alertify.log(result.response);
+                    alertify.log(result.response);
+                    setTimeout(function () { document.getElementById('login-url').click(); }, 2500);
+
                   }else{
                     alertify.error(result.response);
                   }
               },
               error: function (error) {
                   console.log("ERROR :",error);
-                  document.querySelector('.loader').style.display="none";
+                  document.querySelector('#cover-spin').style.display="none";
                   //document.getElementById('login-url').click();
                   alert(error);
                   alertify.error("L'opération n'a pas abouti!");

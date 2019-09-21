@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
+  <link rel="stylesheet" href="dist/css/chstyle.css">
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
@@ -46,6 +47,7 @@
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
+<div id="cover-spin"></div>
 <?php include_once 'partials/header.php' ?>
   <!-- Left side column. contains the logo and sidebar -->
   <aside class="main-sidebar">
@@ -285,6 +287,7 @@
 <script src="dist/js/demo.js"></script>
 <!-- page script -->
 <script>
+  window.onload=function(){document.querySelector('#cover-spin').style.display="none";}
   $(function () {
     $('#example1').DataTable()
     $('#example2').DataTable({

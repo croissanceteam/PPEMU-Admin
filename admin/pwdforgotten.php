@@ -45,7 +45,7 @@
 
 <body class="hold-transition login-page">
 <div class="login-box">
-  <div class="loader" style="display:none"></div>
+  <div id="cover-spin"></div>
   <div class="login-logo">
     <a href="index.php"><b>CEP-O PEMU</b> Admin</a>
   </div>
@@ -132,8 +132,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
 <!-- alertify -->
 <script src="vendor/alertify/lib/alertify.min.js"></script>
 <!-- -->
-<script src="dist/js/chscript-pwdfgt.js">
+<script src="dist/js/chscript-pwdfgt.js"></script>
 <script>
+window.onload=function(){document.querySelector('#cover-spin').style.display="none";}
   $(function () {
     $('input').iCheck({
       checkboxClass: 'icheckbox_square-blue',

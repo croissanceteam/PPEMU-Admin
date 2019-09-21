@@ -12,7 +12,7 @@ reserved.
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Changement de mon mot de passe</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close hidden" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -35,7 +35,7 @@ reserved.
         <!-- /.modal-body -->
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Enregistrer le changement</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+          <button type="reset" class="btn btn-default" data-dismiss="modal" onclick="this.form.reset();">Annuler</button>
         </div>
         <!-- /.modal-footer -->
       </form>
@@ -75,7 +75,12 @@ reserved.
           </div>
           <div class="form-group col-md-6">
             <label class="col-form-label">Ville</label>
-            <input type="text" class="form-control" name="town" placeholder="Ville de résidence" required>
+            <select class="form-control" name="town" required>
+              <option value="KINSHASA" selected="selected">KINSHASA</option>
+              <option value="MATADI">MATADI</option>
+              <option value="LUBUMBASHI">LUBUMBASHI</option>
+            </select>
+            
           </div>
           <div class="form-group col-md-6">
             
@@ -89,7 +94,7 @@ reserved.
         <!-- /.modal-body -->
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Enregistrer</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+          <button type="reset" class="btn btn-default" data-dismiss="modal" onclick="this.form.reset();">Annuler</button>
         </div>
         <!-- /.modal-footer -->
       </form>
@@ -129,7 +134,11 @@ reserved.
           </div>
           <div class="form-group col-md-6">
             <label class="col-form-label">Ville</label>
-            <input type="text" class="form-control" name="town" id="town" required>
+            <select class="form-control" name="town" id="town" required>
+              <option value="KINSHASA" selected="selected">KINSHASA</option>
+              <option value="MATADI">MATADI</option>
+              <option value="LUBUMBASHI">LUBUMBASHI</option>
+            </select>
           </div>
           <div class="form-group col-md-6">
             
@@ -143,7 +152,7 @@ reserved.
         <!-- /.modal-body -->
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Enregistrer</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
         </div>
         <!-- /.modal-footer -->
       </form>

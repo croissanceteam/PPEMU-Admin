@@ -80,6 +80,7 @@ $(document).ready(function(){
     $('#new-user-form').on('submit',function(e){
         e.preventDefault();
         var mydata = $('#new-user-form').serialize();
+        document.querySelector('#cover-spin').style.display="block";
         $.ajax({
             url : 'dist/userTrait.php',
             type : 'POST',
@@ -91,65 +92,30 @@ $(document).ready(function(){
                
                
                if (result.number == 1){
+                document.querySelector('#cover-spin').style.display="none";
                 $('#newUserModal').modal('hide');
                  alertify.alert(result.response);
                  dataTable.ajax.reload();
-               }else if(result.number == 2 || result.number == 3){
-                   alert(result.response);
-                   document.querySelector('#longwa').click();
                }else{
-                 alertify.alert(result.response);
-             }
+                    document.querySelector('#cover-spin').style.display="none";
+                    alertify.alert(result.response);
+                }
              
             },
             error : function(result, statut, error){
-              console.log('Resultat error :',result);
-              console.log('Erreur :',error);
-              console.log('Statut error : ',statut);
-              alertify.error("L'opération n'a pas abouti.");
+                document.querySelector('#cover-spin').style.display="none";
+                console.log('Resultat error :',result);
+                console.log('Erreur :',error);
+                console.log('Statut error : ',statut);
+                alertify.error("L'opération n'a pas abouti.");
             }
         });
     });
 
-    $('.update').on('click',function(){
-        
-        $.ajax({
-            url: "dist/userTrait.php",
-            method: "POST",
-            data: {id: $(this).attr('id'),op:'get'},
-            dataType: "json",
-            success: function (data) {
-                //console.log('DATA: ',data);
-
-                if(data.username != undefined){
-                    $('#username2').val(data.username);
-                    $('#fullname').val(data.fullname);
-                    $('#phone').val(data.phone);
-                    $('#email').val(data.mailaddress);
-                    $('#town').val(data.town);
-                    $('#update').val(data.userID);
-                    if(data.status == 1){
-                        if(switcheryUpdate.checked == false){
-                            $('.js-switch-update').click();
-                        }                                
-                    }else{
-                        if(switcheryUpdate.checked == true){
-                            $('.js-switch-update').click();
-                        }
-                    }
-                    $('#updateUserModal').modal('show');
-                }
-            },
-            error: function (error) {
-                console.log("ERROR :",error);
-                //console.log("ERROR :",error.responseText);
-            }
-        });
-        
-    });
     $('#update-user-form').on('submit',function(e){
         e.preventDefault();
         var mydata = $('#update-user-form').serialize();
+        document.querySelector('#cover-spin').style.display="block";
         $.ajax({
             url : 'dist/userTrait.php',
             type : 'POST',
@@ -160,15 +126,18 @@ $(document).ready(function(){
                console.log('Statut success : ',statut);
 
                if (result.number == 1){
+                    document.querySelector('#cover-spin').style.display="none";
                     $('#updateUserModal').modal('hide');
                     alertify.success(result.response);
                     dataTable.ajax.reload();
                 }else{
+                    document.querySelector('#cover-spin').style.display="none";
                      alertify.alert(result.response);
                 }
              
             },
             error : function(result, statut, error){
+                document.querySelector('#cover-spin').style.display="none";
               console.log('Resultat error :',result);
               console.log('Erreur :',error);
               console.log('Statut error : ',statut);

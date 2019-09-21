@@ -26,6 +26,7 @@
   <link rel="stylesheet" href="plugins/datatables/dataTables.bootstrap.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
+  <link rel="stylesheet" href="dist/css/chstyle.css">
 <!--  <link rel="stylesheet" href="DataTables/DataTables-1.10.18/css/jquery.dataTables.css">-->
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
@@ -41,25 +42,14 @@
   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
-  <style>
-            .required.col-form-label:after {
-                color: #d00;
-                /* content: "*"; */
-                margin-left: 8px;
-                top:7px;
-
-                font-family: 'FontAwesome';
-                font-weight: normal;
-                font-size: 10px;
-                content: "\f069";
-            }
-        </style>
+  
 
   <!-- Google Font -->
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
+<div id="cover-spin"></div>
 <div class="wrapper">
 
 <?php include_once 'partials/header.php' ?>
@@ -92,19 +82,6 @@
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu" data-widget="tree">
         <li class="header">MENU</li>
-        <!--
-        <li class="active treeview menu-open">
-          <a href="#">
-            <i class="fa fa-dashboard"></i> <span>MENU</span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li ><a href="dashboard.php"><i class="fa fa-circle-o"></i> Tableau de bord</a></li>
-          </ul>
-        </li>
-        -->
         <li>
           <a href="dashboard.php"><i class="fa fa-dashboard"></i> Tableau de bord</a>
         </li>
@@ -253,8 +230,8 @@
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/chscript-usr.js"></script>
 <script>
-    
-    </script>
+    window.onload=function(){document.querySelector('#cover-spin').style.display="none";}
+</script>
 </script>
 </body>
 </html>
