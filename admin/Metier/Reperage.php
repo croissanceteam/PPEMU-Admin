@@ -59,6 +59,15 @@ Class Reperage{
         return 0;
     }
 
+    public function getAnomalies_1($where) {
+        $query = $this->dbLink->query("SELECT `name_client`, `avenue`, `num_home`, `commune`, `ref_client`, `controller_name`, `lot`, `label` FROM t_reperage_import t LEFT JOIN (t_issue i) ON t.issue=i.valeur WHERE ".$where." AND issue !='0' ORDER BY name_client" );
+
+        if ($query->rowCount()>0)
+            return $query;
+
+        return 0;
+    }
+
     public function deleteDoublon($ref, $id) {
         $query = $this->dbLink->query("DELETE FROM t_reperage_import WHERE ref_client=? and id!=? and issue!=?", [$ref, $id, 0] );
 

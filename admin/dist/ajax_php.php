@@ -114,7 +114,7 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                         'total_noObs_doublon' => 0,
                     ]);
 
-                    if($req)
+                    if($compt>0)
                     {
                         echo '<div class="alert alert-success alert-dismissible" role="alert">
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -224,7 +224,7 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                         'total_noObs_doublon' => 0,
                     ]);
 
-                    if($req)
+                    if($compt>0)
                     {
                         echo '<div class="alert alert-success alert-dismissible" role="alert">
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -265,13 +265,13 @@ else if(@isset($_GET['journalAnomalie']) )
     $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
     $anomalie=htmlentities($_GET['anomalie'], ENT_QUOTES);
     
-    $where=" 1=1 ";
+    $where=" 1 ";
     
     if(trim($typeDonnee)=="Reperage") {
         if(trim($lot)!="") $where=$where." AND lot='$lot' ";
         if(trim($anomalie)!="") $where=$where." AND issue='$anomalie' ";
         
-        $resData=$reperage->getAnomalies($where);
+        $resData=$reperage->getAnomalies_1($where);
         
         if($resData){
             foreach ($resData as $cus)
@@ -285,7 +285,7 @@ else if(@isset($_GET['journalAnomalie']) )
         if(trim($lot)!="") $where=$where." AND lot='$lot' ";
         if(trim($anomalie)!="") $where=$where." AND issue='$anomalie' ";
         
-        $resData=$realisation->getAnomalies($where);
+        $resData=$realisation->getAnomalies_1($where);
         
         if($resData){
             foreach ($resData as $cus)

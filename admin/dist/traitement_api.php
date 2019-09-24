@@ -86,7 +86,10 @@ if(isset($_GET['traitement_api'])){
                 }
             }
             
-            $json[] =array($lot, $nbrligne, date('d/m/Y', strtotime($parsed_json[0]['_submission_time'])), $typeDonnee, $jsonKobo);
+            if($lastDate==0)$lastDatAffichE = date('d/m/Y', strtotime($parsed_json[0]['_submission_time']));
+            else $lastDatAffichE =date('d/m/Y', $lastDate);
+            
+            $json[] =array($lot, $nbrligne, $lastDatAffichE, $typeDonnee, $jsonKobo);
             //throw new Exception(" contains the word name");
             echo json_encode($json);
             
@@ -110,9 +113,9 @@ if(isset($_GET['traitement_api'])){
                 'total_noObs_doublon' => 0,
             ]);
         } catch (Exception $e) {
+            //echo json_encode(array($lot, "Error", $typeDonnee, "Echec Synchronisation!" ));
             echo json_encode(array($lot, "Error", $typeDonnee, $e->getMessage() ));
         }
-        
         
     }
     

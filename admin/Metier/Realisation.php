@@ -59,6 +59,15 @@ Class Realisation{
         return 0;
     }
 
+    public function getAnomalies_1($where) {
+        $query = $this->dbLink->query("SELECT `commune`, `address`, `avenue`, `num_home`, `consultant`, `lot`, `ref_client`, `client`, `label` FROM t_realised_import t LEFT JOIN (t_issue i) ON t.issue=i.valeur WHERE ".$where." AND issue !='0' ORDER BY client" );
+
+        if ($query->rowCount()>0)
+            return $query;
+
+        return 0;
+    }
+
     public function deleteDoublon($ref, $id) {
         $query = $this->dbLink->query("DELETE FROM t_realised_import WHERE ref_client=? and id!=? and issue!=?", [$ref, $id, 0] );
 

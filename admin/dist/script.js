@@ -2,16 +2,13 @@
 $(document).ready(function (e){
     var jsonKobo= new Array(20);
     var incr=0;
+    var incrAll= new Array(20);
     
     $(document).on('click', '.grize', function(e){
         $('.grize').attr('disabled', 'on');
         $(this).removeAttr('disabled');
     });
     
-    //$('#example').DataTable();
-//    $('#tablePage').DataTable({
-//        "paginType":"full_numbers"
-//    });
     $(document).on('click', '.grize', function(e){
         $('.grize').attr('disabled', 'on');
         $(this).removeAttr('disabled');
@@ -87,6 +84,7 @@ $(document).ready(function (e){
                     ligne.find('.lot_detail').text(json[3]);
                 }
                 else {
+                    var nbrEnreg=0;
                     $.each(json, function(index, value){
                         if(value[3]=='Reperage'){
                             ligne.find('.lot_date').text(value[2]);
@@ -103,33 +101,37 @@ $(document).ready(function (e){
                         
                         jsonKobo[value[0]-1]=value[4];
                         
+                        //if(value[1]==0)ligne.find('.api_TelechargeLot').remove();
+                        nbrEnreg=value[1];
+                        
                     });
                     ligne.find('.ldTD').hide();    
-                    ligne.find('.okTD').show();    
-                    ligne.find('.btn_display').show();    
+                    ligne.find('.okTD').show();  
+                    
+                    if(nbrEnreg>0) ligne.find('.btn_display').show();    
                 }
                 $('.grize').removeAttr('disabled');
         }});
     });
     
     
-    
     //TODO:: Envoi + Reponse ACTUALISATION API QTE LIGNE POUR TOUT REPERAGE ET REALISATION
     $(document).on('click', '#api_actualise', function(e){
+        incr=0;
         var lot=0;
         var typeD='Reperage';
         var lign_class='.lign_1';
         
         $("#loadingImport02").hide();
         $(".btn_display").hide();
-        $(".reper_BtnAll").hide();
-        $(".real_BtnAll").hide();
+//        $(".reper_BtnAll").hide();
+//        $(".real_BtnAll").hide();
         $('.tableau_affichage #lotApi_affichage').empty();
         $('.tableau_affichage').hide();
         
         for (var i = 1; i < 21; i++) {
             lot++;
-            //if(lot==4) {
+            //if(lot==3) {
             if(lot==11) {
                 lot=1;
                 typeD='Realisation';
@@ -152,6 +154,8 @@ $(document).ready(function (e){
             }})
             
             .done(function(data) {
+                incr++;
+                
                 var ligne1;
                 if(data[1]=="Error"){
                     if(data[2]=='Reperage') ligne1=$('.lign_1'+data[0]);
@@ -163,48 +167,85 @@ $(document).ready(function (e){
                     ligne1.find('.lot_detail').text(data[3]);
                 }
                 else {
+                    var nbrEnreg=0;
                     $.each(data, function(index, value){
                         if(value[3]=='Reperage'){
                             ligne1=$('.lign_1'+value[0]);
                             ligne1.find('.lot_date').text(value[2]);
                             ligne1.find('.lot_detail').text("Enregistrement(s) : "+value[1]);
 
-                            $(".reper_BtnAll").show();
+                            //$(".reper_BtnAll").show();
                         }
                         else if(value[3]=='Realisation'){
                             ligne1=$('.lign_2'+value[0]);
                             ligne1.find('.lot_date').text(value[2]);
                             ligne1.find('.lot_detail').text("Enregistrement(s) : "+value[1]);
 
-                            $(".real_BtnAll").show();
+                            //$(".real_BtnAll").show();
                         }
                         
                         jsonKobo[value[0]-1]=value[4];
+                        
+                        nbrEnreg=value[1];
+                        
                     });
                     
                     ligne1.find('.ldTD').hide();
+                    ligne1.find('.failTD').hide();
                     ligne1.find('.okTD').show();
-                    ligne1.find('.btn_display').show();
-                    ligne1.find('.grize').removeAttr('disabled');
+                    if(nbrEnreg>0) ligne1.find('.btn_display').show(); //ligne1.find('.btn_display').show();
+                    //ligne1.find('.grize').removeAttr('disabled');
                 }
-                //$('.grize').removeAttr('disabled');
+                if(incr==20){
+                    $('.grize').removeAttr('disabled');
+                    $('#api_downAll').removeAttr('disabled');
+                } 
             })
             .fail(function(data) {
+                incr++;
                 var ligne1;
+                if(incr<11) ligne1=$('.lign_1'+incr);
+                else ligne1=$('.lign_2'+(incr-10));
+                
                 if(data[2]=='Reperage') ligne1=$('.lign_1'+data[0]);
                 else if(data[2]=='Realisation') ligne1=$('.lign_2'+data[0]);
-
-                ligne1.find('.btn_display').hide();
-                ligne1.find('.ldTD').hide();
-                ligne1.find('.failTD').show();
-                $('.grize').removeAttr('disabled');
+//                console.log(data);
+//                alert(JSON.stringify(data));
+                if(ligne1!==undefined){
+                    ligne1.find('.btn_display').hide();
+                    ligne1.find('.okTD').hide();
+                    ligne1.find('.ldTD').hide();
+                    ligne1.find('.failTD').show();
+                    ligne1.find('.lot_detail').html("<span style='color:red'>Echec Synchronisation !</span>");
+                    //ligne1.find('.grize').removeAttr('disabled');
+                    
+                }else if(incr==20) {
+                    $( ".ldTD" ).each(function() {
+                        if ($(this).is(':visible') === true){
+                            var ligne0=$(this).parent('td').parent('tr');;
+                            $(this).hide();
+                            ligne0.find('.failTD').show();
+                            ligne0.find('.okTD').hide();
+                            ligne0.find('.lot_detail').html("<span style='color:red'>Echec Synchronisation !</span>");
+                            ligne0.find('.grize').removeAttr('disabled');
+                            $('.grize').removeAttr('disabled');
+                            $('#api_downAll').removeAttr('disabled');
+                        }
+                    });
+                    
+                }
+                
+               // $('.grize').removeAttr('disabled');
+//                if(incr==20){
+//                }
             });
             
-            //if(i==6) break;
+            //if(i==2) break;
         }
         
     });
     
+    //alert(";kl");
     
     //TODO:: Envoi + Reponse IMPORTATION TELECHARGEMENT DIRECT API QTE LIGNE PAR LOT (DE TOUS)
     $(document).on('click', '#api_downAll', function(e){
@@ -212,11 +253,134 @@ $(document).ready(function (e){
         var typeD='Reperage';
         var lign_class='.lign_1';
         
-//        $("#loadingImport02").hide();
-//        $(".reper_BtnAll").hide();
-//        $(".real_BtnAll").hide();
-//        $('.tableau_affichage #lotApi_affichage').empty();
-//        $('.tableau_affichage').hide();
+        $("#loadingImport02").hide();
+        //$(".reper_BtnAll").hide();
+        //$(".real_BtnAll").hide();
+        $('.tableau_affichage #lotApi_affichage').empty();
+        $('.tableau_affichage').hide();
+        
+        for (var i = 1; i < 21; i++) {
+            lot++;
+            incrAll[lot-1]=0;
+            //if(lot==3) {
+            if(lot==11) {
+                lot=1;
+                typeD='Realisation';
+                lign_class='.lign_2';
+            }
+            
+            var ligne=$(lign_class+lot);
+
+            ligne.find('.okTD').hide();
+            ligne.find('.failTD').hide();
+            ligne.find('.ldTD').show();
+            
+            if(jsonKobo[lot-1].length>0){
+
+            $.each(jsonKobo[lot-1], function(index, value){
+
+                var finTour=0;
+                if(jsonKobo[lot-1].length==incrAll[lot-1]) finTour=jsonKobo[lot-1].length;
+
+                $.ajax({
+                    type:'get',
+                    url:'dist/traitement_api.php',
+                    data:'traitement_api' + '&btn=' + 'api_TelechargeLot' + '&lot=' + lot + '&typeDonnee=' + typeD+ '&row='+JSON.stringify(value)+'&finTour='+finTour,
+                    dataType:'json',
+                    success: function(json){
+//                        if(json[1]=="Error"){
+//                            ligne.find('.ldTD').hide();
+//                            ligne.find('.okTD').hide();
+//                            ligne.find('.failTD').show();
+//                            ligne.find('.lot_detail').text(json[3]);
+//                        }
+//                        else {
+//                            $.each(json, function(index, value){
+//                                //alert('Fin Téléchargement \n OPERATION : '+typeD+' \n LOT : '+lot+' \n Nombres de Lignes Téléchargé : '+i+' \n Date Exportation : '+value[1]);
+//                            });
+//
+//                            ligne.find('.ldTD').hide();
+//                            ligne.find('.okTD').show();
+//                        }
+                        //$('.grize').removeAttr('disabled');
+                    }})
+                    .done(function(data) {
+                        var ligne1;
+                        if(data[1]=="Error"){
+                            ligne.find('.ldTD').hide();
+                            ligne.find('.okTD').hide();
+                            ligne.find('.failTD').show();
+                            ligne.find('.btn_display').hide();
+                            ligne.find('.lot_detail').text(data[3]);
+                            $('.grize').removeAttr('disabled');
+                        }
+                        else {
+                            
+                            $.each(data, function(index, value){
+                                incrAll[value[0]-1]++;
+                                //alert(incrAll[value[0]-1]);
+                                if(value[2]=='Reperage'){
+                                    ligne1=$('.lign_1'+value[0]);
+                                    //ligne1.find('.lot_date').text(value[2]);
+                                    ligne1.find('.lot_detail').text("Récuperation : "+incrAll[value[0]-1]+ "/"+ jsonKobo[value[0]-1].length);
+                                    
+                                    if(incrAll[value[0]-1]==jsonKobo[value[0]-1].length){
+                                        ligne1.find('.ldTD').hide();
+                                        ligne1.find('.api_TelechargeLot').hide();
+                                        ligne1.find('.okTD').show();
+                                    }
+                                }
+                                else if(value[2]=='Realisation'){
+                                    ligne1=$('.lign_2'+value[0]);
+                                    //ligne1.find('.lot_date').text(value[2]);
+                                    ligne1.find('.lot_detail').text("Récuperation : "+incrAll[value[0]-1]+ "/"+ jsonKobo[value[0]-1].length);
+                                    
+                                    if(incrAll[value[0]-1]==jsonKobo[value[0]-1].length){
+                                        ligne1.find('.ldTD').hide();
+                                        ligne1.find('.api_TelechargeLot').hide();
+                                        ligne1.find('.okTD').show();
+                                    }
+
+                                }
+                                
+//                                ligne.find('.lot_detail').text("Récuperation : "+incrAll[value[0]-1]+ "/"+ jsonKobo[value[0]-1].length);
+
+                                //jsonKobo[value[0]-1]=value[4];
+                            });
+                            $('.grize').removeAttr('disabled');
+    //                        ligne1.find('.ldTD').hide();
+    //                        ligne1.find('.okTD').show();
+    //                        ligne1.find('.btn_display').show();
+    //                        ligne1.find('.grize').removeAttr('disabled');
+                        }
+                        //$('.grize').removeAttr('disabled');
+                    })
+                    .fail(function(data) {
+                    
+                    
+                        /*$( ".ldTD" ).each(function() {
+                            if ($(this).is(':visible') === true){
+                                var ligne0=$(this).parent('td').parent('tr');;
+                                $(this).hide();
+                                ligne0.find('.failTD').show();
+                                ligne0.find('.lot_detail').html("<span style='color:red'>Echec Récuperation</span>");
+                                ligne0.find('.grize').removeAttr('disabled');
+                            }
+                        });*/
+                    
+//                        ligne.find('.ldTD').hide();
+//                        ligne.find('.okTD').hide();
+//                        ligne.find('.failTD').show();
+//                        ligne.find('.btn_display').hide();
+//                        ligne.find('.lot_detail').text(data[3]);
+                        $('.grize').removeAttr('disabled');
+                    });
+            });
+            
+            }
+            
+            //if(i==2) break;
+        }
         
 //        for (var i = 1; i < 21; i++) {
 //            lot++;
@@ -310,7 +474,7 @@ $(document).ready(function (e){
                 else var nomClient=value.Nom_Client;
 
                 if(value.Avenue_Quartier === undefined ) var avenue=value.AvenueQuartier;
-                else var nomClient=value.Avenue_Quartier;
+                else var avenue=value.Avenue_Quartier;
 
                 if(value.Ref_Client === undefined ) var refClient=value.numsite;
                 else var refClient=value.Ref_Client;
@@ -361,6 +525,7 @@ $(document).ready(function (e){
     //TODO:: Envoi + Reponse TELECHARGEMENT DONNE API PAR LOT
     $(document).on('click', '.api_TelechargeLot', function(e){
         incr=0;
+        var btnTelecharge=$(this);
         var lot =$(this).attr('name');
         var typeD =$(this).attr('dir');
         var ligne=$(this).parent('td').parent('tr');
@@ -384,12 +549,8 @@ $(document).ready(function (e){
             $.ajax({
                 type:'get',
                 url:'dist/traitement_api.php',
-                //async: false,
                 data:'traitement_api' + '&btn=' + 'api_TelechargeLot' + '&lot=' + lot + '&typeDonnee=' + typeD+ '&row='+JSON.stringify(value)+'&finTour='+finTour,
                 dataType:'json',
-//                complete: function(data){
-//                    ligne.find('.lot_detail').text("Récuperation : "+i+"/"+jsonKobo[lot-1].length);
-//                },
                 success: function(json){
                     if(json[1]=="Error"){
                         ligne.find('.ldTD').hide();
@@ -403,6 +564,7 @@ $(document).ready(function (e){
                         });
 
                         ligne.find('.ldTD').hide();
+                        ligne.find('.api_TelechargeLot').hide();
                         ligne.find('.okTD').show();
                     }
                     //$('.grize').removeAttr('disabled');
@@ -424,13 +586,9 @@ $(document).ready(function (e){
 
                             //jsonKobo[value[0]-1]=value[4];
                         });
+                        
                         $('.grize').removeAttr('disabled');
-//                        ligne1.find('.ldTD').hide();
-//                        ligne1.find('.okTD').show();
-//                        ligne1.find('.btn_display').show();
-//                        ligne1.find('.grize').removeAttr('disabled');
                     }
-                    //$('.grize').removeAttr('disabled');
                 })
                 .fail(function(data) {
                     ligne.find('.ldTD').hide();
@@ -440,7 +598,6 @@ $(document).ready(function (e){
                     ligne.find('.lot_detail').text(data[3]);
                     $('.grize').removeAttr('disabled');
                 });
-            ;
         });
         
     });
@@ -578,7 +735,7 @@ $(document).ready(function (e){
                             else if(v.operation=='Cleaning Branchement') var typ= "Branchement";
                             
                             $("#listTraitementClean").append("<tr><td>"+(i+1)+"</td><td>"+typ+"</td><td>Lot "+v.lot+"</td>"
-                                    +"<td>"+v.total_reperImport_after+"</td>"
+                                    +"<td>"+v.total_reperImport_before+"</td>"
                                     +"<td>"+v.total_reper_after+ "</td>"
                                     +"<td>Traité : "+ v.total_cleaned_afected+ "</td>"
                                     +"<td>Affecté : "+v.total_match_afected+"</td>"
@@ -648,7 +805,7 @@ $(document).ready(function (e){
                                 $("#listDataAnomalies").append("<tr><td>"+(i+1)+"</td><td>Lot "+v.lot+"</td>"
                                     +"<td>"+v.client+"</td><td><b>"+v.ref_client+"</b> </td>" 
                                     +"<td>"+v.num_home+", "+v.avenue+", <br/>"+v.address+", "+v.commune+"</td>"
-                                    +"<td>"+v.entreprise+"</td><td>"+v.label+"</td></tr>");
+                                    +"<td>"+v.consultant+"</td><td>"+v.label+"</td></tr>");
                             }
                         });
 

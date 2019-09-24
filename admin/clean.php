@@ -266,7 +266,8 @@
                             <td>
                                 <?php 
                                     //echo "Avant : ".$cus->total_reperImport_before." </br>"; 
-                                    echo $cus->total_reperImport_after; 
+                                    echo $cus->total_reperImport_before; 
+                                    //echo $cus->total_reperImport_after; 
                                 ?>
                             </td>
                             <td>
