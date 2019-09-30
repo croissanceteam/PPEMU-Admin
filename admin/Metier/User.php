@@ -177,7 +177,7 @@ Class User {
             $content = "<p><strong>CEP-O PEMU</strong> Portail</p>
                         <p>Votre compte a été créé avec succès. </p>
                         <p>Votre nom d'utilisateur c'est $username et votre mot de passe c'est $pass</p>
-                        <p>Une fois retourné sur la page d'où vous étiez, tapez ce code afin de procéder à la récupération de votre compte pour ainsi définir un nouveau mot de passe.</p>
+                        <p>Utilisez cet identifiant pour vous connecter. Une fois connecté au portail, veuillez changer ce mot de passe.</p>
                         ";
             $altContent = $content;
             

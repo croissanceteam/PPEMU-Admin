@@ -185,8 +185,8 @@ if(isset($_GET['traitement_api'])){
             $geopoint= $v['Emplacement_du_branchement_r_alis'];
 
             list($lat_2, $lng_2, $altitude, $precision)=explode(' ', $geopoint);
-            
-            $req = $realisation->tempSave([
+            try {
+                $req = $realisation->tempSave([
                     'commune'       =>  @htmlentities($v['Commune'], ENT_QUOTES),
                     'address'       =>  @htmlentities($v['Quartier'], ENT_QUOTES),
                     'avenue'        =>  @htmlentities($v['Avenue'], ENT_QUOTES),
@@ -208,6 +208,10 @@ if(isset($_GET['traitement_api'])){
                 'client'            =>  @htmlentities($v['Nom_du_Client'], ENT_QUOTES),
                 'lot'               =>  $lot, 
             ]);
+            } catch (\Throwable $th) {
+                echo json_encode($th->getMessage());
+            }
+            
         }
 
         $json[] =array($lot, date('d/m/Y'), $typeDonnee);

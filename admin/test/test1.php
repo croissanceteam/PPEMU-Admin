@@ -13,10 +13,12 @@ $context = stream_context_create($opts);
 $data = file_get_contents($link, false, $context);
 
 $parsed_json = json_decode($data,true);
-
-foreach ($parsed_json as $v) {
-    echo $v['Nom_du_Contr_leur'].'<br>';
- }
+echo sizeof($parsed_json).'<br>';
+echo $parsed_json[1233]['_submission_time'].'<br>';
+echo date('d/m/Y',strtotime($parsed_json[0]['_submission_time'])).'<br>';
+// foreach ($parsed_json as $v) {
+//     echo $v['Nom_du_Contr_leur'].'<br>';
+//  }
 
 
 //$jsonIterator = new RecursiveIteratorIterator(

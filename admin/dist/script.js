@@ -552,6 +552,8 @@ $(document).ready(function (e){
                 data:'traitement_api' + '&btn=' + 'api_TelechargeLot' + '&lot=' + lot + '&typeDonnee=' + typeD+ '&row='+JSON.stringify(value)+'&finTour='+finTour,
                 dataType:'json',
                 success: function(json){
+                    console.log('SUCCESS : ',json);
+                    
                     if(json[1]=="Error"){
                         ligne.find('.ldTD').hide();
                         ligne.find('.okTD').hide();
@@ -570,6 +572,7 @@ $(document).ready(function (e){
                     //$('.grize').removeAttr('disabled');
                 }})
                 .done(function(data) {
+                    console.log('DONE : ',data);
                     var ligne1;
                     if(data[1]=="Error"){
                         ligne.find('.ldTD').hide();
@@ -591,6 +594,8 @@ $(document).ready(function (e){
                     }
                 })
                 .fail(function(data) {
+                    console.log('FAIL :', data);
+                    
                     ligne.find('.ldTD').hide();
                     ligne.find('.okTD').hide();
                     ligne.find('.failTD').show();
@@ -604,14 +609,14 @@ $(document).ready(function (e){
     
     
     
-    
-    
     // Cleaning Data Reperage Process par lot
     $(document).on('click', '.cleanDataReper', function(e){
         e.preventDefault();
+        console.log('.cleanDataReper clicked');
         
         var lot = $(this).attr('dir');
         var ligne=$(this).parent('td').parent('tr');
+        var totalData = ligne.find('.lot_detail').text().split(':')[1];
         
         ligne.find('.okTD').hide();
         ligne.find('.loading').show();
@@ -621,7 +626,7 @@ $(document).ready(function (e){
         $.ajax({
             type:'get',
             url:'dist/cleaning_proccess.php',
-            data:'cleanDataReper' + '&lot=' + lot,
+            data:'cleanDataReper' + '&lot=' + lot + '&total_data=' + totalData,
             dataType:'Text',
             success: function(json){
                 
@@ -636,7 +641,7 @@ $(document).ready(function (e){
                         $("#rapportCleaningReper").append(json);
                         
                         ligne.find('.lot_detail').text("Nombre de Ligne : 0");
-                        
+                        ligne.find('.grize').hide();
                         ligne.find('.loading').hide();
                         ligne.find('.okTD').show();
                         $('.grize').removeAttr('disabled');
@@ -655,6 +660,7 @@ $(document).ready(function (e){
         
         var lot = $(this).attr('dir');
         var ligne=$(this).parent('td').parent('tr');
+        var totalData = ligne.find('.lot_detail').text().split(':')[1];
         
         ligne.find('.okTD').hide();
         ligne.find('.loading').show();
@@ -664,7 +670,7 @@ $(document).ready(function (e){
         $.ajax({
             type:'get',
             url:'dist/cleaning_proccess.php',
-            data:'cleanDataReal' + '&lot=' + lot,
+            data:'cleanDataReal' + '&lot=' + lot + '&total_data=' + totalData,
             dataType:'Text',
             success: function(json){
                 
@@ -679,7 +685,7 @@ $(document).ready(function (e){
                         $("#rapportCleaningReal").append(json);
                         
                         ligne.find('.lot_detail').text("Nombre de Ligne : 0");
-                        
+                        ligne.find('.grize').hide();
                         ligne.find('.loading').hide();
                         ligne.find('.okTD').show();
                         $('.grize').removeAttr('disabled');

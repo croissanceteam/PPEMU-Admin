@@ -12,7 +12,7 @@ try {
     $mail->Host       = 'mail42.lwspanel.com;mail42.lwspanel.com';  // Specify main and backup SMTP se$
     $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
     $mail->Username   = 'no-reply@obspemu.org';                     // SMTP username
-    $mail->Password   = 'uK9$f_rpuC';                               // SMTP password
+    $mail->Password   =  'yC3*!fes7k'; //'uK9$f_rpuC';                               // SMTP password
     $mail->SMTPSecure = 'tls';                                  // Enable TLS encryption, `ssl` also a$
     $mail->Port       = 587;                                    // TCP port to connect to
     

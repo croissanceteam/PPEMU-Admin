@@ -237,10 +237,10 @@
                             <th>#</th>
                             <th>Type Données</th>
                             <th width="5%">Lot</th>
-                            <th>Données Brutes</th>
-                            <th>Données traitées</th>
-                            <th>Cleaned</th>
-                            <th>Matching</th>
+                            <th>Total de données</th>
+                            <th>Données propres</th>
+                            <!-- <th>Cleaned</th> -->
+                            <th>Attribution secteur</th>
                             <th>Anomalies trouvées</th>
                             <th>Date</th>
                         </tr>
@@ -276,17 +276,14 @@
                                     echo $cus->total_reper_after; 
                                 ?>
                             </td>
-                            <td>
+                            <!-- <td>
                                 <?php 
                                     //echo "Trouvé : ".$cus->total_cleaned_found." </br>"; 
-                                    echo "Traité : ".$cus->total_cleaned_afected; 
+                                    // echo "Traité : ".$cus->total_cleaned_afected; 
                                 ?>
-                            </td>
+                            </td> -->
                             <td>
-                                <?php 
-                                    //echo "Trouvé : ".$cus->total_match_found." </br>"; 
-                                    echo "Affecté : ".$cus->total_match_afected; 
-                                ?>
+                                <?= ($cus->operation=='Cleaning Referencement') ? "Affecté : ".$cus->total_match_afected : "Non applicable"; ?>
                             </td>
                             <td>
                                 <?php 

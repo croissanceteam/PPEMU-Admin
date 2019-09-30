@@ -170,6 +170,7 @@
                 <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
               </div>
             </div>
+            
             <!-- /.box-header -->
             <div class="box-body">
               <div class="row">
@@ -186,7 +187,7 @@
                         <?php
                             $reperage = new Reperage();
 
-                            $resData=$reperage->getNoCleanByLot();
+                            $resData=$reperage->getNotCleanedData();
 
                             if ($resData) {
 
@@ -271,6 +272,7 @@
                 <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
               </div>
             </div>
+            
             <!-- /.box-header -->
             <div class="box-body">
               <div class="row">
@@ -287,7 +289,7 @@
                         <?php
                             $realisation = new Realisation();
 
-                            $resData=$realisation->getNoCleanByLot();
+                            $resData=$realisation->getNotCleanedData();
 
                             if ($resData) {
 
