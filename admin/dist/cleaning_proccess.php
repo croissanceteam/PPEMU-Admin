@@ -96,7 +96,7 @@ if(isset($_GET['cleanDataReper'])){
             }
         }
         
-        $txt= '{"updated":"'.date('d F Y, H:i:s').'"}';
+        $txt= '{"updated":"'.$helper->ngonga('d F Y, H:i:s').'"}';
 //        $txt= '{"updated":"27 Juillet 2019, 12:00:30"}';
         $filen="../../mobile/date.json";
         $fp = fopen($filen, 'w');
@@ -305,7 +305,7 @@ else if(isset($_GET['cleanDataReal'])){
             }
         }
         
-        $txt= '{"updated":"'.date('d F Y, H:i:s').'"}';
+        $txt= '{"updated":"'.$helper->ngonga('d F Y, H:i:s').'"}';
 //        $txt= '{"updated":"27 Juillet 2019, 12:00:30"}';
         $filen="../../mobile/date.json";
         $fp = fopen($filen, 'w');

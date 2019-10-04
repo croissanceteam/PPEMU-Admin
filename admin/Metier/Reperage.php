@@ -19,7 +19,7 @@ Class Reperage{
 
 
     public function tempSaveImportCSV($params){
-        $query = "UPDATE `t_reperage_import` SET `name_client`=:name_client, `avenue`=:avenue, `num_home`=:num_home, `commune`=:commune, `phone`=:phone, `category`=:category, `ref_client`=:ref_client, `pt_vente`=:pt_vente, `geopoint`=:geopoint, `lat`=:lat, `lng`=:lng, `altitude`=:altitude, `precision`=:precision, `controller_name`=:controller_name, `submission_time`=:submission_time, `town`=:town, `issue`='0' WHERE lot=:lot and id=:id";
+        $query = "UPDATE `t_reperage_import` SET `name_client`=:name_client, `avenue`=:avenue, `num_home`=:num_home, `commune`=:commune, `phone`=:phone, `category`=:category, `ref_client`=:ref_client, `pt_vente`=:pt_vente, `geopoint`=:geopoint, `lat`=:lat, `lng`=:lng, `altitude`=:altitude, `precision`=:precision, `controller_name`=:controller_name, `submission_time`=:submission_time, `town`=:town, `issue`='0', `clean`=null WHERE lot=:lot and id=:id";
         return $this->dbLink->query($query, $params);
     }
 

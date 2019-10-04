@@ -5,15 +5,10 @@ $(document).ready(function (e){
     var incrAll= new Array(20);
     
     $(document).on('click', '.grize', function(e){
+        incr=0;
         $('.grize').attr('disabled', 'on');
         $(this).removeAttr('disabled');
     });
-    
-    $(document).on('click', '.grize', function(e){
-        $('.grize').attr('disabled', 'on');
-        $(this).removeAttr('disabled');
-    });
-    
     
 
     //TODO:: SELECT TYPE DONNES IMPORTATION CSV XLS
@@ -26,6 +21,7 @@ $(document).ready(function (e){
     });
     //TODO:: Envoi du FOrmulaire + Reponse IMPORTATION CSV XLS
     $("#formImport01").on('submit',(function(e){
+        incr=0;
         e.preventDefault();
         
         var typeD = $("#typeDonnee").val();
@@ -53,7 +49,7 @@ $(document).ready(function (e){
     
     //TODO:: Envoi + Reponse ACTUALISATION API QTE LIGNE PAR LOT
     $(document).on('click', '.api_actualiseLot', function(e){
-        
+        incr=0;
         var lot =$(this).attr('name');
         var typeD =$(this).attr('dir');
         var ligne=$(this).parent('td').parent('tr');
@@ -243,6 +239,7 @@ $(document).ready(function (e){
     
     //TODO:: Envoi + Reponse IMPORTATION TELECHARGEMENT DIRECT API QTE LIGNE PAR LOT (DE TOUS)
     $(document).on('click', '#api_downAll', function(e){
+        incr=0;
         var lot=0;
         var typeD='Reperage';
         var lign_class='.lign_1';
@@ -339,6 +336,7 @@ $(document).ready(function (e){
     
     //TODO:: Envoi + Reponse AFFICHAGE DONNE API PAR LOT
     $(document).on('click', '.api_affichLot', function(e){
+        incr=0;
         var lot =$(this).attr('name');
         var typeD =$(this).attr('dir');
         var ligne=$(this).parent('td').parent('tr');
@@ -350,7 +348,11 @@ $(document).ready(function (e){
         $('.tableau_affichage #lotApi_affichage').empty();
         
         $('.tableau_affichage').show();
-        $('.tableau_affichage h2').text("Liste de "+typeD+" par Lot");
+        
+        if(typeD== 'Reperage' ) var textTypeD='Repérages';
+        else var textTypeD='Réalisations';
+        
+        $('.tableau_affichage h2').text("Liste de "+textTypeD+" par Lot");
         
         var i=0;
         $.each(jsonKobo[lot-1], function(index, value){
@@ -378,12 +380,12 @@ $(document).ready(function (e){
                 else if(value.consultant !== undefined ) var controller=value.consultant;
                 else var controller="";
 
+//                        +"<td>"+etPVente+"</td>"
                 $("#lotApi_affichage").append("<tr><td>"+i+"</td>"
                         +"<td>Lot "+lot+"</td>"
                         +"<td>"+nomClient+"<br/>Réf.:"+refClient+"</td>"
                         +"<td>"+numParcel+", "+avenue+",<br/>"+value.Commune+"</td>"
                         +"<td>"+catClient+"</td>"
-                        +"<td>"+etPVente+"</td>"
                         +"<td>"+controller+"</td>"
                         +"<td>"+value._submission_time+"</td>"
                                                 );
@@ -394,10 +396,10 @@ $(document).ready(function (e){
                         +"<td>"+value.Nom_du_Client+"<br/>Réf.:"+value.num_site+"</td>"
                         +"<td>"+value.Num_ro+", "+value.Avenue +", "+value.Quartier +",<br/>"+value.Commune+"</td>"
                         +"<td>"+value.Branchement_Social_ou_Appropri+"</td>"
-                        +"<td></td>" 
                         +"<td>"+value.Consultant_qui_a_suivi_l_ex_cution_KIN+"</td>"
                         +"<td>"+value.Date+"</td>"
                                             );
+//                        +"<td></td>" 
             }
             ligne.find('.lot_detail').text("Affichage : "+i+"/"+jsonKobo[lot-1].length);
         });
@@ -471,6 +473,7 @@ $(document).ready(function (e){
                             ligne.find('.lot_detail').text("Récuperation : "+incr+"/"+jsonKobo[value[0]-1].length);
 
                             //jsonKobo[value[0]-1]=value[4];
+                            if(incr==jsonKobo[value[0]-1].length)incr=0;
                         });
                         
                         $('.grize').removeAttr('disabled');
@@ -483,6 +486,7 @@ $(document).ready(function (e){
                     ligne.find('.btn_display').hide();
                     ligne.find('.lot_detail').text(data[3]);
                     $('.grize').removeAttr('disabled');
+                    incr=0;
                 });
         });
         
@@ -716,6 +720,7 @@ $(document).ready(function (e){
     // EXPORTATION JOURNAL ANOMALIE
     $(document).on('click', '#btn_export', function(e){
         e.preventDefault();
+        incr=0;
         
         var typeD = $("#typeDonnee").val();
         var lot = $("#lot").val();

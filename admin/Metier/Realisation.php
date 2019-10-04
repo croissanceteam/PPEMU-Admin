@@ -19,7 +19,7 @@ Class Realisation{
 
 
     public function tempSaveImportCSV($params){
-        $query = "UPDATE `t_realised_import` SET `commune`=:commune, `address`=:address, `avenue`=:avenue, `num_home`=:num_home, `phone`=:phone, `town`=:town, `type_branch`=:type_branch, `water_given`=:water_given, `entreprise`=:entreprise, `consultant`=:consultant, `geopoint`=:geopoint, `lat`=:lat, `lng`=:lng, `altitude`=:altitude, `precision`=:precision, `submission_time`=:submission_time, `ref_client`=:ref_client, `client`=:client, `issue`='0' WHERE lot=:lot and id=:id";
+        $query = "UPDATE `t_realised_import` SET `commune`=:commune, `address`=:address, `avenue`=:avenue, `num_home`=:num_home, `phone`=:phone, `town`=:town, `type_branch`=:type_branch, `water_given`=:water_given, `entreprise`=:entreprise, `consultant`=:consultant, `geopoint`=:geopoint, `lat`=:lat, `lng`=:lng, `altitude`=:altitude, `precision`=:precision, `submission_time`=:submission_time, `ref_client`=:ref_client, `client`=:client, `issue`='0', `clean`=null WHERE lot=:lot and id=:id";
         return $this->dbLink->query($query, $params);
     }
 

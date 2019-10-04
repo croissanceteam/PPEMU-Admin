@@ -277,7 +277,7 @@
                 <br><br>
 
                 <div class="col-md-12 tableau_affichage" style="display:none">
-                    <h2>Liste détaillée</h2>
+                    <h4>Liste détaillée</h4>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-bordered table-striped table-hover">
                         <tr>
@@ -287,7 +287,7 @@
                           <th>Adresse</th>
 <!--                          <th>Géolocalisation</th>-->
                           <th>Catégorie</th>
-                          <th>Etat Pt</th>
+<!--                          <th>Etat Pt</th>-->
                           <th>Agent Contrôleur</th>
                           <th>Date</th>
                         </tr>
