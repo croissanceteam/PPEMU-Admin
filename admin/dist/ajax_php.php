@@ -7,10 +7,11 @@
 include_once '../Metier/Autoloader.php';
 Autoloader::register();
 
+$helper = new Helper();
+
 $reperage = new Reperage();
 $realisation = new Realisation();
 $rapport = new RapportOperation();
-
 
 //TRAITEMENT IMPORTATION CSV OU EXCEL XLS
 if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
@@ -19,7 +20,7 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
     
    if($_FILES['csv']['type']=="application/vnd.ms-excel" || $_FILES['csv']['type']=="text/comma-separated-values" || $_FILES['csv']['type']=="text/csv")
       { 
-        $target_path = "../../uploads/";
+        $target_path = "../partials/";
         $target_path = $target_path . basename( $_FILES['csv']['name']); 
         if(move_uploaded_file($_FILES['csv']['tmp_name'], $target_path)) 
         {
@@ -112,7 +113,14 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                         'total_noObs' => 0,
                         'total_doublon' => 0,
                         'total_noObs_doublon' => 0,
+                        'dateOperation' => $helper->ngonga(),
                     ]);
+                    
+                    $txt= '{"updated":"'.$helper->ngonga('d F Y, H:i:s').'"}';
+                    $filen="../partials/date.json";
+                    $fp = fopen($filen, 'w');
+                    fwrite($fp, $txt);
+                    fclose($fp);
 
                     if($compt>0)
                     {
@@ -122,6 +130,7 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
 
                                     <h4> '.$compt.' Données Corrigé(s) </h4>
                                 </div> ';
+                        @unlink($target_path);
                     }
                     else
                     {
@@ -129,6 +138,7 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                     <h3><strong>ECHEC !!</strong> FICHIER non Importés... Re-essayer plus tard. </h3>
                                 </div> ';
+                        @unlink($target_path);
                     }
 
                 }
@@ -222,6 +232,7 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                         'total_noObs' => 0,
                         'total_doublon' => 0,
                         'total_noObs_doublon' => 0,
+                        'dateOperation' => $helper->ngonga(),
                     ]);
 
                     if($compt>0)
@@ -232,6 +243,7 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
 
                                     <h4> '.$compt.' Données Corrigé(s) </h4>
                                 </div> ';
+                        @unlink($target_path);
                     }
                     else
                     {
@@ -239,6 +251,7 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                     <h3><strong>ECHEC !!</strong> FICHIER non Importés... Re-essayer plus tard. </h3>
                                 </div> ';
+                        @unlink($target_path);
                     }
 
                 }
@@ -249,7 +262,7 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
           echo '<div class="block margin-bottom">
             <h3 class="block-title red-gradient glossy">ECHEC</h3>
             <div class="with-padding">
-                <h3>TYPE DE FICHIER INCORECT... RE-ESSAYER en changeant de fichier</h3>
+                <h3>TYPE DE FICHIER INCORECT... RE-ESSAYER avec un autre format.</h3>
             </div>
         </div>';
       }
@@ -306,19 +319,6 @@ else if(@isset($_GET['rapportClean']) )
     $json= array();
     $lot=htmlentities($_GET['lot'], ENT_QUOTES);
     $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
-    $date_1=htmlentities($_GET['date_1'], ENT_QUOTES);
-    $date_2=htmlentities($_GET['date_2'], ENT_QUOTES);
-    //die($date_1);
-//    if(trim($date_1)=='') $date_1=0;
-//    else{
-//        list($y, $m, $d)=explode('-',  $date_1);
-//        $date_1=mktime(0,0,0,$m,$d,$y);
-//    }
-//    if(trim($date_2)=='') $date_2="(select MAX(dateCompt) from comptabilite)";
-//    else{
-//        list($y, $m, $d)=explode('-',  $date_2);
-//        $date_2=mktime(0,0,0,$m,$d,$y);
-//    }
     
     $where=" 1=1 ";
     

@@ -213,7 +213,7 @@
                         <?php
                                 }
                             }
-                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune donnée à Nétoyer</h3></td></tr>"
+                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune données Disponibles</h3></td></tr>"
                         ?>
                       </table>
                     </div>

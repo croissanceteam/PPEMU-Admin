@@ -12,7 +12,7 @@ Class Realisation{
      * @return bool
      */
     public function tempSave($params){
-        $query = "INSERT INTO `t_realised_import` (`id`, `commune`, `address`, `avenue`, `num_home`, `phone`, `town`, `type_branch`, `water_given`, `entreprise`, `consultant`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `comments`, `submission_time`, `lot`, `date_export`, `ref_client`, `client`, `issue`) VALUES (NULL, :commune, :address, :avenue, :num_home, :phone, :town, :type_branch, :water_given, :entreprise, :consultant, :geopoint, :lat, :lng, :altitude, :precision, :comments, :submission_time, :lot, sysdate(), :ref_client, :client, '0')";
+        $query = "INSERT INTO `t_realised_import` (`id`, `commune`, `address`, `avenue`, `num_home`, `phone`, `town`, `type_branch`, `water_given`, `entreprise`, `consultant`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `comments`, `submission_time`, `lot`, `date_export`, `ref_client`, `client`, `issue`) VALUES (NULL, :commune, :address, :avenue, :num_home, :phone, :town, :type_branch, :water_given, :entreprise, :consultant, :geopoint, :lat, :lng, :altitude, :precision, :comments, :submission_time, :lot, :date_export, :ref_client, :client, '0')";
         return $this->dbLink->query($query, $params);
     }
 

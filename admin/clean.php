@@ -186,18 +186,6 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                          <label for="albumDate">Traitement du  </label>
-                           <input type="date" id="date_1" class="form-control selectTraitement" placeholder="jj/mm/yyyy" disabled > 
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                          <label for="albumDate">au </label>
-                          <input type="date" id="date_2" class="form-control selectTraitement" placeholder="jj/mm/yyyy" disabled>
-                        </div>
-                    </div>
                 </div>
                 
               </div>

@@ -4,6 +4,8 @@ include_once '../Metier/Autoloader.php';
 Autoloader::register();
 session_start();
 
+$helper = new Helper();
+
 $reperage = new Reperage();
 $realisation = new Realisation();
 $rapportOperation = new RapportOperation();
@@ -16,7 +18,8 @@ if(isset($_GET['cleanDataReper'])){
 
     print("<u><b>CLEANING DES REFERENCEMENTS DU LOT $lot </b></u><br/>");
     
-    $date_exportClean=date('Y-m-d H:i:s');
+    $date_exportClean=$helper->ngonga();
+    //$date_exportClean=date('Y-m-d H:i:s');
 
     $total_reperage_before = $reperage->getReperageByLot($lot)->rowCount();
 //    print("total_reperage_before : $total_reperage_before <br/>");
@@ -96,6 +99,14 @@ if(isset($_GET['cleanDataReper'])){
         $txt= '{"updated":"'.date('d F Y, H:i:s').'"}';
 //        $txt= '{"updated":"27 Juillet 2019, 12:00:30"}';
         $filen="../../mobile/date.json";
+        $fp = fopen($filen, 'w');
+        fwrite($fp, $txt);
+        fclose($fp);
+        
+        $txt= '{"updated":"'.$helper->ngonga('d F Y, H:i:s').'"}';
+        //$txt= '{"updated":"'.date('d F Y, H:i:s').'"}';
+//        $txt= '{"updated":"27 Juillet 2019, 12:00:30"}';
+        $filen="../partials/date.json";
         $fp = fopen($filen, 'w');
         fwrite($fp, $txt);
         fclose($fp);
@@ -201,6 +212,7 @@ if(isset($_GET['cleanDataReper'])){
             'total_noObs' => 0,
             'total_doublon' => 0,
             'total_noObs_doublon' => 0,
+            'dateOperation' => $helper->ngonga(),
         ]);
 
     } catch (PDOException $ex) {
@@ -219,7 +231,8 @@ else if(isset($_GET['cleanDataReal'])){
 
     print("<u><b>CLEANING DES BRANCHEMENTS REALISES DU LOT $lot </b></u><br/>");
     
-    $date_exportClean=date('Y-m-d H:i:s');
+    $date_exportClean=$helper->ngonga();
+    //$date_exportClean=date('Y-m-d H:i:s');
 
     $total_realisation_before = $realisation->getRealisationByLot($lot)->rowCount();
 //    print("total_realisation_before : $total_realisation_before <br/>");
@@ -297,6 +310,14 @@ else if(isset($_GET['cleanDataReal'])){
         $fp = fopen($filen, 'w');
         fwrite($fp, $txt);
         fclose($fp);
+        
+        $txt= '{"updated":"'.$helper->ngonga('d F Y, H:i:s').'"}';
+        //$txt= '{"updated":"'.date('d F Y, H:i:s').'"}';
+//        $txt= '{"updated":"27 Juillet 2019, 12:00:30"}';
+        $filen="../partials/date.json";
+        $fp = fopen($filen, 'w');
+        fwrite($fp, $txt);
+        fclose($fp);
 
 
         $total_realisation_after = $realisation->getRealisationByLot($lot)->rowCount();
@@ -335,6 +356,7 @@ else if(isset($_GET['cleanDataReal'])){
             'total_noObs' => 0,
             'total_doublon' => 0,
             'total_noObs_doublon' => 0,
+            'dateOperation' => $helper->ngonga(),
         ]);
 
     } catch (PDOException $ex) {

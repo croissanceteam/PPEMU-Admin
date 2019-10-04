@@ -29,6 +29,8 @@ $link_realisation = array(
                      "a753uDACAv9fFi6UVYhwVw",
 );
 
+$helper = new Helper();
+
 $reperage = new Reperage();
 $realisation = new Realisation();
 $rapportOp = new RapportOperation();
@@ -111,6 +113,7 @@ if(isset($_GET['traitement_api'])){
                 'total_noObs' => 0,
                 'total_doublon' => 0,
                 'total_noObs_doublon' => 0,
+                'dateOperation' => $helper->ngonga(),
             ]);
         } catch (Exception $e) {
             //echo json_encode(array($lot, "Error", $typeDonnee, "Echec Synchronisation!" ));
@@ -173,6 +176,7 @@ if(isset($_GET['traitement_api'])){
                 'comments'          =>  @htmlentities($v['Commentaires'], ENT_QUOTES),
                 'submission_time'   =>  @htmlentities($v['_submission_time'], ENT_QUOTES),
                 'town'              =>  '', 
+                'date_export'       =>  $helper->ngonga(),
                 'lot'               =>  $lot, 
             ]);
         }
@@ -206,6 +210,7 @@ if(isset($_GET['traitement_api'])){
                 'submission_time'   =>  @htmlentities($v['_submission_time'], ENT_QUOTES),
                 'ref_client'        =>  @htmlentities($v['num_site'], ENT_QUOTES),
                 'client'            =>  @htmlentities($v['Nom_du_Client'], ENT_QUOTES),
+                'date_export'       =>  $helper->ngonga(),
                 'lot'               =>  $lot, 
             ]);
             } catch (\Throwable $th) {
@@ -241,6 +246,7 @@ if(isset($_GET['traitement_api'])){
                 'total_noObs' => 0,
                 'total_doublon' => 0,
                 'total_noObs_doublon' => 0,
+                'dateOperation' => $helper->ngonga(),
             ]);
         }
         

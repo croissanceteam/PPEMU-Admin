@@ -350,7 +350,7 @@ $(document).ready(function (e){
         $('.tableau_affichage #lotApi_affichage').empty();
         
         $('.tableau_affichage').show();
-        $('.tableau_affichage h2').text("Affichage Liste "+typeD+" par Lot");
+        $('.tableau_affichage h2').text("Liste de "+typeD+" par Lot");
         
         var i=0;
         $.each(jsonKobo[lot-1], function(index, value){
@@ -393,9 +393,9 @@ $(document).ready(function (e){
                         +"<td>Lot "+lot+"</td>"
                         +"<td>"+value.Nom_du_Client+"<br/>Réf.:"+value.num_site+"</td>"
                         +"<td>"+value.Num_ro+", "+value.Avenue +", "+value.Quartier +",<br/>"+value.Commune+"</td>"
-                        +"<td>"+value.Emplacement_du_branchement_r_alis+"</td>"
-                        +"<td></td>"
                         +"<td>"+value.Branchement_Social_ou_Appropri+"</td>"
+                        +"<td></td>" 
+                        +"<td>"+value.Consultant_qui_a_suivi_l_ex_cution_KIN+"</td>"
                         +"<td>"+value.Date+"</td>"
                                             );
             }
@@ -588,13 +588,9 @@ $(document).ready(function (e){
         
         //if(typeD!=""){
             var lot = $("#lot").val();
-            var date_1=$("#date_1").val();
-            var date_2=$("#date_2").val();
             
             $('#typeDonnee').attr('disabled', 'on');
             $('#lot').attr('disabled', 'on');
-            $('#date_1').attr('disabled', 'on');
-            $('#date_2').attr('disabled', 'on');
             
             $(this).removeAttr('disabled');
         
@@ -603,7 +599,7 @@ $(document).ready(function (e){
             $.ajax({
                 type:'get',
                 url:'dist/ajax_php.php',
-                data:'rapportClean'+'&typeDonnee='+typeD+'&lot='+lot+'&date_1=' + date_1 + '&date_2=' + date_2,
+                data:'rapportClean'+'&typeDonnee='+typeD+'&lot='+lot,
                 dataType:'json',
                 success: function(json){
                     
@@ -613,20 +609,23 @@ $(document).ready(function (e){
                         $('.loading').hide();
                         $("#typeDonnee").removeAttr('disabled');
                         $("#lot").removeAttr('disabled');
-                        $("#date_1").removeAttr('disabled');
-                        $("#date_2").removeAttr('disabled');
                     }
                     else{
                     
                         $.each(json, function(i, v){
-                            if(v.operation=='Cleaning Referencement') var typ= "Référencement"; 
-                            else if(v.operation=='Cleaning Branchement') var typ= "Branchement";
+                            if(v.operation=='Cleaning Referencement'){
+                                var typ= "Référencement"; 
+                                var match="Affecté : "+v.total_match_afected;
+                            } 
+                            else if(v.operation=='Cleaning Branchement'){
+                                var typ= "Branchement";
+                                var match=" Non applicable ";
+                            } 
                             
                             $("#listTraitementClean").append("<tr><td>"+(i+1)+"</td><td>"+typ+"</td><td>Lot "+v.lot+"</td>"
                                     +"<td>"+v.total_reperImport_before+"</td>"
                                     +"<td>"+v.total_reper_after+ "</td>"
-                                    +"<td>Traité : "+ v.total_cleaned_afected+ "</td>"
-                                    +"<td>Affecté : "+v.total_match_afected+"</td>"
+                                    +"<td>Affecté : "+match+"</td>"
                                     +"<td> No Obs : "+ v.total_noObs+"</br> Doublon : "+ v.total_doublon+"</td>"
                                     +"<td>"+v.dateOperation+"</td>"
                                                             );
@@ -635,8 +634,6 @@ $(document).ready(function (e){
                         $('.loading').hide();
                         $("#typeDonnee").removeAttr('disabled');
                         $("#lot").removeAttr('disabled');
-                        $("#date_1").removeAttr('disabled');
-                        $("#date_2").removeAttr('disabled');
                     }
             }});
 //        }
