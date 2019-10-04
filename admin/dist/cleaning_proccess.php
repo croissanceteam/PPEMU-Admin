@@ -121,8 +121,9 @@ if(isset($_GET['cleanDataReper'])){
         // print("<u><b>RAPPORT DE TRANSFERT</b></u><br>");
         print ("<b>" . $total_inserted . "</b><br/>");
         
+        $durty_data = $total_data - $total_clean_data;  
         print("<br/><u><b>STATISTIQUES APRES LE CLEANING</b></u><br/>");
-        print ("Total des données propres : <b>$total_reperage_after</b><br/>Total des données sales : <b>$total_import_after </b><br/>");
+        print ("Total des données propres : <b>$total_clean_data</b><br/>Total des données sales : <b>$durty_data </b><br/>");
         
         $uninserted_data = $total_clean_data - $total_inserted;
         if ($uninserted_data > 0)
@@ -248,7 +249,7 @@ else if(isset($_GET['cleanDataReal'])){
      */
     print("<br/><u>Nombre de lignes à traiter : <b>$total_data</b></u>");
 
-    print("<br/><u>Données propres trouvées dans cet export : </u>");
+    print("<br/><u>Données propres trouvées : </u>");
 
 
     $resCleanData = $realisation->findCleanDataByLot($lot);
@@ -324,9 +325,9 @@ else if(isset($_GET['cleanDataReal'])){
         $total_import_after = $realisation->getNotCleanedRealisationImportByLot($lot)->rowCount();
 
         print ("<b>" . $total_inserted . "</b><br/>");
-        
+        $durty_data = $total_data - $total_clean_data;  
         print("<br/><u><b>STATISTIQUES APRES LE CLEANING</b></u><br/>");
-        print ("Total des données propres : <b>$total_realisation_after</b><br/>Total des données sales : <b>$total_import_after </b><br/>");
+        print ("Total des données propres : <b>$total_clean_data</b><br/>Total des données sales : <b>$durty_data </b><br/>");
 
         $uninserted_data = $total_clean_data - $total_inserted;
         if ($uninserted_data > 0)
@@ -422,7 +423,7 @@ else if(isset($_GET['cleanDataReper_suite'])){
     }
 
     print ("<br/><br/><b><u>RAPPORT SUR LES ANOMALIES </u></b><br/>");
-    print ("* <b><span style='color:red'>" . $total_anomalie . "</span></b> ligne(s) trouvée(s) avec anomalie. <br/>");
+    print ("* <b><span style='color:red'>" . ($total_noObs + $total_doublon) . "</span></b> ligne(s) trouvée(s) avec anomalie. <br/>");
 
     if ($total_anomalie > 0){
         print ("<br/><b>ANOMALIES : </u></b><br/>");
@@ -490,7 +491,7 @@ else if(isset($_GET['cleanDataReal_suite'])){
     }
 
     print ("<br/><br/><b><u>RAPPORT SUR LES ANOMALIES </u></b><br/>");
-    print ("* <b><span style='color:red'>" . $total_anomalie . "</span></b> ligne(s) trouvée(s) avec anomalie. <br/>");
+    print ("* <b><span style='color:red'>" . ($total_noObs + $total_doublon) . "</span></b> ligne(s) trouvée(s) avec anomalie. <br/>");
 
     if ($total_anomalie > 0){
         print ("<br/><b>ANOMALIES </u></b><br/>");

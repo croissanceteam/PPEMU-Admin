@@ -500,7 +500,7 @@ $(document).ready(function (e){
         var lot = $(this).attr('dir');
         var ligne=$(this).parent('td').parent('tr');
         var totalData = ligne.find('.lot_detail').text().split(':')[1];
-        
+        ligne.find('.grize').hide();
         ligne.find('.okTD').hide();
         ligne.find('.loading').show();
         
@@ -509,7 +509,7 @@ $(document).ready(function (e){
         $.ajax({
             type:'get',
             url:'dist/cleaning_proccess.php',
-            data:'cleanDataReper' + '&lot=' + lot,
+            data:'cleanDataReper' + '&lot=' + lot + '&total_data=' + totalData,
             dataType:'Text',
             success: function(json){
                 
@@ -543,7 +543,8 @@ $(document).ready(function (e){
         
         var lot = $(this).attr('dir');
         var ligne=$(this).parent('td').parent('tr');
-        
+        var totalData = ligne.find('.lot_detail').text().split(':')[1];
+        ligne.find('.grize').hide();
         ligne.find('.okTD').hide();
         ligne.find('.loading').show();
         
@@ -552,7 +553,7 @@ $(document).ready(function (e){
         $.ajax({
             type:'get',
             url:'dist/cleaning_proccess.php',
-            data:'cleanDataReal' + '&lot=' + lot,
+            data:'cleanDataReal' + '&lot=' + lot + '&total_data=' + totalData,
             dataType:'Text',
             success: function(json){
                 

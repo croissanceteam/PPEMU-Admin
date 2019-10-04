@@ -38,7 +38,7 @@ Class Realisation{
      * @return void
      */
     public function getNotCleanedData() {
-        $query = $this->dbLink->query("SELECT MAX(lot) as lot, max(date_export) as date_export, count(*) as ligne FROM t_realised_import t1 WHERE `issue`=0 AND (clean IS NULL OR clean = 0) GROUP BY lot" );
+        $query = $this->dbLink->query("SELECT MAX(lot) as lot, max(date_export) as date_export, count(*) as ligne FROM t_realised_import t1 WHERE `issue`=0 AND clean IS NULL GROUP BY lot");
 
         if ($query->rowCount()>0)
             return $query;
@@ -109,8 +109,11 @@ Class Realisation{
         $queryInsert = "INSERT INTO `t_realised` (`id`, `commune`, `address`, `avenue`, `num_home`, `phone`, `town`, `type_branch`, `water_given`, `entreprise`, `consultant`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `comments`, `submission_time`, `lot`, `date_export`, `ref_client`, `client`) VALUES(NULL, :commune, :address, :avenue, :num_home, :phone, :town, :type_branch, :water_given, :entreprise, :consultant, :geopoint, :lat, :lng, :altitude, :precision, :comments, :submission_time, :lot, :date_export, :ref_client, :client)";
         $this->dbLink->query($queryInsert,$params);
 
-        $queryDelete = "DELETE FROM t_realised_import WHERE ref_client = ?";
-        $this->dbLink->query($queryDelete,[$refclient]);
+        // $queryDelete = "DELETE FROM t_realised_import WHERE ref_client = ?";
+        // $this->dbLink->query($queryDelete,[$refclient]);
+
+        $queryUpdate = "UPDATE t_reperage_import SET issue=?, clean=? WHERE ref_client = ?";
+        $this->dbLink->query($queryUpdate,['',1,$refclient]);
 
         $this->dbLink->getLink()->commit();
 
@@ -133,7 +136,7 @@ Class Realisation{
 
     public function getDurtyData($lot)
     {
-      $req = "SELECT id, ref_client, (select id from t_realised_import t1 where t1.id=t.id and t1.ref_client NOT LIKE '%OBS') as noObs, (select id from t_realised_import t1 where t1.id=t.id and ref_client IN (SELECT ref_client FROM t_realised_import t1 GROUP BY t1.ref_client  HAVING COUNT(*) > 1) ) as doublon FROM t_realised_import t WHERE lot=? AND (clean IS NULL OR clean = 0)";
+      $req = "SELECT id, ref_client, (select id from t_realised_import t1 where t1.id=t.id and t1.ref_client NOT LIKE '%OBS') as noObs, (select id from t_realised_import t1 where t1.id=t.id and ref_client IN (SELECT ref_client FROM t_realised_import t1 GROUP BY t1.ref_client  HAVING COUNT(*) > 1) ) as doublon FROM t_realised_import t WHERE lot=? AND clean IS NULL";
       return $this->dbLink->query($req,[$lot]);
     }
 

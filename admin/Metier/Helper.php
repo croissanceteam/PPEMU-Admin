@@ -7,7 +7,7 @@ Class Helper{
         $tz = "Africa/Kinshasa";
         $date = new DateTime($tz);
         $date->setTimezone(new DateTimeZone($tz));
-        return $date->format($format);
+        return $date->format($format);  
     }
 
     public static function getURL($deepLoss = 0){

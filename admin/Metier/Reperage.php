@@ -120,7 +120,7 @@ Class Reperage{
         //$this->setIssue([4,$idclient]);
 
         $queryUpdate = "UPDATE t_reperage_import SET issue=?, clean=? WHERE ref_client = ?";
-        $this->dbLink->query($queryUpdate,["",1,$refclient]);
+        $this->dbLink->query($queryUpdate,['',1,$refclient]);
         
           
         $this->dbLink->getLink()->commit();
@@ -162,7 +162,7 @@ Class Reperage{
     
     public function getDurtyData($lot)
     {
-      $req = "SELECT id, ref_client, (select id from t_reperage_import t1 where t1.id=t.id and t1.ref_client NOT LIKE '%OBS') as noObs, (select id from t_reperage_import t1 where t1.id=t.id and ref_client IN (SELECT ref_client FROM t_reperage_import t1 GROUP BY t1.ref_client  HAVING COUNT(*) > 1) ) as doublon FROM t_reperage_import t WHERE lot=? AND (clean IS NULL OR clean = 0)";
+      $req = "SELECT id, ref_client, (select id from t_reperage_import t1 where t1.id=t.id and t1.ref_client NOT LIKE '%OBS') as noObs, (select id from t_reperage_import t1 where t1.id=t.id and ref_client IN (SELECT ref_client FROM t_reperage_import t1 GROUP BY t1.ref_client  HAVING COUNT(*) > 1) ) as doublon FROM t_reperage_import t WHERE lot=? AND clean IS NULL";
       return $this->dbLink->query($req,[$lot]);
     }
 
