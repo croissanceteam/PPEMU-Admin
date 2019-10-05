@@ -34,11 +34,8 @@ if(isset($_GET['cleanDataReper'])){
      *
      * Une données correcte "clean" est une données dont le numéro du client est unique et se termine par OBS
      */
-    print("<br/><u>Nombre de lignes à traiter : <b>$total_data</b></u>");
+    print("<br/><u>Nombre de lignes à traiter : <b>$total_data</b></u><br/>");
     
-    print("<br/><u>Données propres trouvées dans cet export : </u>");
-
-
     $resCleanData = $reperage->findCleanDataByLot($lot);
     $total_clean_data = $resCleanData->rowCount();
     $total_inserted=0;
@@ -48,7 +45,7 @@ if(isset($_GET['cleanDataReper'])){
     if ($total_clean_data > 0) {
         print ("<b>".$total_clean_data . "</b><br/><br/>");
 
-        print("<u>Nombre des données propres trensferées dans la table des référencements: </u>");
+        // print("<u>Nombre de données correctes transferées dans la table des référencements: </u>");
         // print("Début du transfert des données <br/>");
 
         /*
@@ -111,39 +108,18 @@ if(isset($_GET['cleanDataReper'])){
         fwrite($fp, $txt);
         fclose($fp);
 
-
         $total_reperage_after = $reperage->getReperageByLot($lot)->rowCount();//$link->query($reqTotalReperage)->fetch()->total;
         $total_import_after = $reperage->getNotCleanedReperageImportByLot($lot)->rowCount();//$link->query($reqTotalImport)->fetch()->total;
 
-        //$nouvelles_data = $total_reperage_before - $total_reperage_after;
-
-        // print("<b>Fin du transfert des données</b> <br/><br/>");
-        // print("<u><b>RAPPORT DE TRANSFERT</b></u><br>");
-        print ("<b>" . $total_inserted . "</b><br/>");
         
-        $durty_data = $total_data - $total_clean_data;  
-        print("<br/><u><b>STATISTIQUES APRES LE CLEANING</b></u><br/>");
-        print ("Total des données propres : <b>$total_clean_data</b><br/>Total des données sales : <b>$durty_data </b><br/>");
-        
-        $uninserted_data = $total_clean_data - $total_inserted;
-        if ($uninserted_data > 0)
-            print ($uninserted_data . " lignes n'ont pas pu être transferées");
-
-        /*
-         * Deleting copy of identical records
-         *  Means data with 100% of coherence
-         */
-
          /*
      * Matching data between reperage and root
      */
-    print("<br/><u><b>ATTRIBUTION DES SECTEURS EN CHERCHANT LA CORRESPONDANCE AVEC LES DONNÉES ROOT</b></u><br/>");
+    // print("<br/><u><b>ATTRIBUTION DES SECTEURS EN CHERCHANT LA CORRESPONDANCE AVEC LES DONNÉES ROOT</b></u><br/>");
     $resRootMatching = $reperage->findRootMatching($lot);
     $countRootMatching = $resRootMatching->rowCount();
-
-    // print ("<br/><b>Recheche des lignes dans root qui matchent avec les reperages...</b><br/>");
     
-        print ("De ces <b>$total_reperage_after</b> données propres, seules <b>" . $countRootMatching . "</b> correspondent.<br/>");
+        // print ("De ces <b>$total_reperage_after</b> données propres, seules <b>" . $countRootMatching . "</b> correspondent.<br/>");
 
         // print ("<br/>Début du processus d'attribution des secteurs aux données de reperage matchées... <br/>");
     $updated_rows = $rs = 0;
@@ -176,21 +152,15 @@ if(isset($_GET['cleanDataReper'])){
     $notupdated = $countRootMatching - $updated_rows;
     $totalNotMatchingReperage = $total_reperage_after - $countRootMatching; //$reperage->findNotMatchingReperage()->rowCount();
 
-
-    // print ("<br/><b><u>RAPPORT DE MATCHING</u></b><br/>");
-
-    if ($countRootMatching == $updated_rows)
-        print ("Toutes les $countRootMatching données ont été mises à jour.<br/>");
-    else
-        print ("Et de ces $countRootMatching données, seules " . $updated_rows . " ont été mises à jour;<br/>");
-
-    print ("<br/><b>Exception relevée :</b> <br/>&nbsp;&nbsp;<b>" . $totalNotMatchingReperage . "</b> données de référencement ne correspondent pas avec les données ROOT. Leur secteur n'est donc pas connu.");
-    if ($notupdated > 0)
-        print ("<br/>&nbsp;&nbsp;<b>" . $notupdated . "</b> ligne(s) n'ont pas pu être mises à jour.<br/>");
-    }else {
-        print ("<b>Aucune</b><br/>");
     }
 
+    $durty_data = $total_data - $total_clean_data;  
+    print("<br/><u><b>STATISTIQUES APRES LE CLEANING</b></u><br/>");
+    print ("Total des données correctes : <b>$total_clean_data</b><br/>Total des données incorrectes : <b>$durty_data </b><br/>");
+    
+    $uninserted_data = $total_clean_data - $total_inserted;
+    if ($uninserted_data > 0)
+        print ("<span style='color:red'>".$uninserted_data." données n'ont pas pu être enregistrées</span><br/>");
 
     /*
      * Enregistrement de l operation dans le journal des operations
@@ -247,10 +217,7 @@ else if(isset($_GET['cleanDataReal'])){
      *
      * Une données correcte "clean" est une données dont le numéro du client est unique et se termine par OBS est qui a une seule referencement
      */
-    print("<br/><u>Nombre de lignes à traiter : <b>$total_data</b></u>");
-
-    print("<br/><u>Données propres trouvées : </u>");
-
+    print("<br/><u>Nombre de lignes à traiter : <b>$total_data</b></u><br/>");
 
     $resCleanData = $realisation->findCleanDataByLot($lot);
     $total_clean_data = $resCleanData->rowCount();
@@ -259,9 +226,8 @@ else if(isset($_GET['cleanDataReal'])){
     $total_import_after=0;
     
     if ($total_clean_data > 0) {
-        print ("<b>".$total_clean_data . "</b><br/><br/>");
-        
-        print("<u>Nombre des données propres trensferées dans la table des référencements: </u>");
+        // print ("<b>".$total_clean_data . "</b><br/><br/>");
+       
         /*
          * Second step: transfer clean data into realisation table and delete them from reperage_import
          */
@@ -320,22 +286,19 @@ else if(isset($_GET['cleanDataReal'])){
         fwrite($fp, $txt);
         fclose($fp);
 
-
         $total_realisation_after = $realisation->getRealisationByLot($lot)->rowCount();
         $total_import_after = $realisation->getNotCleanedRealisationImportByLot($lot)->rowCount();
 
-        print ("<b>" . $total_inserted . "</b><br/>");
-        $durty_data = $total_data - $total_clean_data;  
-        print("<br/><u><b>STATISTIQUES APRES LE CLEANING</b></u><br/>");
-        print ("Total des données propres : <b>$total_clean_data</b><br/>Total des données sales : <b>$durty_data </b><br/>");
+    }
+    
+    $durty_data = $total_data - $total_clean_data;  
+        print("<br/><u><b>STATISTIQUES DU CLEANING</b></u><br/>");
+        print ("Total des données correctes : <b>$total_clean_data</b><br/>Total des données incorrectes : <b>$durty_data </b><br/>");
 
         $uninserted_data = $total_clean_data - $total_inserted;
         if ($uninserted_data > 0)
-            print ($uninserted_data . " lignes n'ont pas pu être transferées <br/>");
+            print ("<br/><span style='color:red'>".$uninserted_data ." données n'ont pas pu être enregistrées</span><br/>");
 
-    }else {
-        print ("<b>Aucune</b><br/>");
-    }
     /*
      * Enregistrement de l operation dans le journal des operations
      */
@@ -427,8 +390,8 @@ else if(isset($_GET['cleanDataReper_suite'])){
 
     if ($total_anomalie > 0){
         print ("<br/><b>ANOMALIES : </u></b><br/>");
-        print ("* Erreurs sur les Références &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b><span style='color:red'>" . $total_noObs . "</span></b> ligne(s) ;<br/>");
-        print ("* Références avec Doublons  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b><span style='color:red'>" . $total_doublon . "</span></b> ligne(s).<br/>");
+        print ("* Saisie sans OBS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b><span style='color:red'>" . $total_noObs . "</span></b> ligne(s) ;<br/>");
+        print ("* Doublons  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b><span style='color:red'>" . $total_doublon . "</span></b> ligne(s).<br/>");
         //print ("* Erreurs sur Référence et Doublons : <b>" . $total_noObs_doublon . " lignes</b>.<br/><br/>");
 
 
@@ -495,8 +458,8 @@ else if(isset($_GET['cleanDataReal_suite'])){
 
     if ($total_anomalie > 0){
         print ("<br/><b>ANOMALIES </u></b><br/>");
-        print ("* Erreurs sur les Références &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b><span style='color:red'>" . $total_noObs . "</span></b> ligne(s) ;<br/>");
-        print ("* Références avec Doublons  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b><span style='color:red'>" . $total_doublon . "</span></b> ligne(s).<br/>");
+        print ("* Saisie sans OBS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b><span style='color:red'>" . $total_noObs . "</span></b> ligne(s) ;<br/>");
+        print ("* Doublons  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <b><span style='color:red'>" . $total_doublon . "</span></b> ligne(s).<br/>");
         //print ("* Erreurs sur Référence et Doublons : <b>" . $total_noObs_doublon . " lignes</b>.<br/><br/>");
 
         print (" <b>FIN DU CLEANING DES BRANCHEMENTS DU LOT $lot.</b><br/>");
