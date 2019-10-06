@@ -113,7 +113,7 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                         'total_noObs' => 0,
                         'total_doublon' => 0,
                         'total_noObs_doublon' => 0,
-                        'dateOperation' => $helper->ngonga(),
+                        'dateOperation' => $helper->ngonga('d-m-Y, H:i:s'),
                     ]);
                     
 
@@ -125,17 +125,11 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                         fwrite($fp, $txt);
                         fclose($fp);
 
-                        $txt= '{"updated":"'.$helper->ngonga('d F Y, H:i:s').'"}';
-                        $filen="../partials/date.json";
-                        $fp = fopen($filen, 'w');
-                        fwrite($fp, $txt);
-                        fclose($fp);
-                        
                         echo '<div class="alert alert-success alert-dismissible" role="alert">
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                     <h3><strong>SUCCESS !!</strong> IMPORTATION REFERENCEMENT avec succès. </h3>
 
-                                    <h4> '.$compt.' Données Corrigé(s) </h4>
+                                    <h4> '.$compt.' Données Importée(s) </h4>
                                 </div> ';
                         @unlink($target_path);
                     }
@@ -239,7 +233,7 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                         'total_noObs' => 0,
                         'total_doublon' => 0,
                         'total_noObs_doublon' => 0,
-                        'dateOperation' => $helper->ngonga(),
+                        'dateOperation' => $helper->ngonga('d-m-Y, H:i:s'),
                     ]);
                     
 
@@ -250,18 +244,12 @@ if(@isset($_POST['pst']) && $_POST['pst']=="save_ImportCSV")
                         $fp = fopen($filen, 'w');
                         fwrite($fp, $txt);
                         fclose($fp);
-
-                        $txt= '{"updated":"'.$helper->ngonga('d F Y, H:i:s').'"}';
-                        $filen="../partials/date.json";
-                        $fp = fopen($filen, 'w');
-                        fwrite($fp, $txt);
-                        fclose($fp);
                         
                         echo '<div class="alert alert-success alert-dismissible" role="alert">
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                     <h3><strong>SUCCESS !!</strong> IMPORTATION BRANCHEMENTs avec succès. </h3>
 
-                                    <h4> '.$compt.' Données Corrigé(s) </h4>
+                                    <h4> '.$compt.' Données Importée(s) </h4>
                                 </div> ';
                         @unlink($target_path);
                     }

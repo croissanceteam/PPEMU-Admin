@@ -146,8 +146,8 @@
         Importation des Données
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
-        <li class="active">Tableau de bord</li>
+        <li><a href="dashboard.php"><i class="fa fa-dashboard"></i> Accueil</a></li>
+        <li class="active">Récupération automatique</li>
       </ol>
     </section>
 
@@ -180,7 +180,7 @@
                         <i class="fa fa-refresh"></i>
                         Synchroniser
                     </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <button type="button" class="btn btn-success grize btn_display" dir="" id="api_downAll" >
+                    <button type="button" class="btn btn-success grize btn_display" dir="" id="api_downAll_1" >
                         <i class="fa fa-cloud-download"></i>
                         Importer les données
                     </button><br>
@@ -193,7 +193,7 @@
 
 
                 <div class="col-md-6">
-                    <h2>Synchronisation des parcelles référencées par lot</h2>
+                    <h4>Synchronisation des parcelles référencées par lot</h4>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-bordered table-striped table-hover">
                         <tr>
@@ -234,7 +234,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <h2>Synchronisation des branchements réalisés par lot</h2>
+                    <h4>Synchronisation des branchements réalisés par lot</h4>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-bordered table-striped table-hover">
                         <tr>

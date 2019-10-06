@@ -113,7 +113,7 @@ if(isset($_GET['traitement_api'])){
                 'total_noObs' => 0,
                 'total_doublon' => 0,
                 'total_noObs_doublon' => 0,
-                'dateOperation' => $helper->ngonga(),
+                'dateOperation' => $helper->ngonga('d-m-Y, H:i:s'),
             ]);
         } catch (Exception $e) {
             //echo json_encode(array($lot, "Error", $typeDonnee, "Echec Synchronisation!" ));
@@ -142,12 +142,12 @@ if(isset($_GET['traitement_api'])){
             $name_client= isset($v['Nom_Client']) ? $v['Nom_Client'] : $v['NomClient'];
 
             $avenue= isset($v['Avenue_Quartier']) ? $v['Avenue_Quartier'] : $v['AvenueQuartier'];
+            $secteur= isset($v['secteur']) ? $v['secteur'] : "";
 
             $num_home= isset($v['Num_ro_parcelle']) ? $v['Num_ro_parcelle'] : $v['Numparcelle'];
             $phone= isset($v['Num_ro_t_l_phone']) ? $v['Num_ro_t_l_phone'] : $v['Numphone'];
             $category= isset($v['Cat_gorie_Client']) ? $v['Cat_gorie_Client'] : $v['CatgorieClient'];
             $pt_vente= isset($v['Etat_du_point_de_vente']) ? $v['Etat_du_point_de_vente'] : $v['Etatpvente'];
-            $secteur= $v['secteur'];
                     
             if(isset($v['Ref_Client'])) $ref_client=@htmlentities($v['Ref_Client'], ENT_QUOTES);
             else if(isset($v['Numero_site'])) $ref_client=@htmlentities($v['Numero_site'], ENT_QUOTES);
@@ -248,7 +248,7 @@ if(isset($_GET['traitement_api'])){
                 'total_noObs' => 0,
                 'total_doublon' => 0,
                 'total_noObs_doublon' => 0,
-                'dateOperation' => $helper->ngonga(),
+                'dateOperation' => $helper->ngonga('d-m-Y, H:i:s'),
             ]);
         }
         

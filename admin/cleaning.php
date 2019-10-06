@@ -146,8 +146,8 @@
         Cleaning DATA
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
-        <li class="active">Tableau de bord</li>
+        <li><a href="dashboard.php"><i class="fa fa-dashboard"></i> Accueil</a></li>
+        <li class="active">Cleaning Data</li>
       </ol>
     </section>
 

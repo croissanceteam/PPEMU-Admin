@@ -132,7 +132,7 @@
         Journal d'anomalies
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Acceuil</a></li>
+        <li><a href="dashboard.php"><i class="fa fa-dashboard"></i> Acceuil</a></li>
         <li class="active">Journal d'anomalies</li>
       </ol>
     </section>
@@ -191,7 +191,7 @@
                             <label for="anomalie">Type Anomalies</label>
                             <select id="anomalie" class="selectAnomalie form-control" disabled  >
                                 <option value="">Séléctionnez Anomalie</option>
-                                <option value="1">Brchnt réalisé saisi avec clé sans OBS</option>
+                                <option value="1">Saisie sans OBS</option>
                                 <option value="2">Doublon</option>
 <!--                                <option value="3">Le deux</option>-->
                             </select>

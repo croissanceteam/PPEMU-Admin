@@ -144,7 +144,6 @@ $(document).ready(function (e){
             data:'traitement_api' + '&btn=' + 'api_actualiseLot' + '&lot=' + lot + '&typeDonnee=' + typeD,
             dataType:'json',
             success: function(json){
-                //$("#api_downAll").show();
             }})
             
             .done(function(data) {
@@ -473,10 +472,13 @@ $(document).ready(function (e){
                             ligne.find('.lot_detail').text("Récuperation : "+incr+"/"+jsonKobo[value[0]-1].length);
 
                             //jsonKobo[value[0]-1]=value[4];
-                            if(incr==jsonKobo[value[0]-1].length)incr=0;
+                            if(incr==jsonKobo[value[0]-1].length)
+                            {
+                                incr=0;
+                                $('.grize').removeAttr('disabled');
+                            }
                         });
                         
-                        $('.grize').removeAttr('disabled');
                     }
                 })
                 .fail(function(data) {

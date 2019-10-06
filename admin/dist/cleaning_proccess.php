@@ -100,14 +100,6 @@ if(isset($_GET['cleanDataReper'])){
         fwrite($fp, $txt);
         fclose($fp);
         
-        $txt= '{"updated":"'.$helper->ngonga('d F Y, H:i:s').'"}';
-        //$txt= '{"updated":"'.date('d F Y, H:i:s').'"}';
-//        $txt= '{"updated":"27 Juillet 2019, 12:00:30"}';
-        $filen="../partials/date.json";
-        $fp = fopen($filen, 'w');
-        fwrite($fp, $txt);
-        fclose($fp);
-
         $total_reperage_after = $reperage->getReperageByLot($lot)->rowCount();//$link->query($reqTotalReperage)->fetch()->total;
         $total_import_after = $reperage->getNotCleanedReperageImportByLot($lot)->rowCount();//$link->query($reqTotalImport)->fetch()->total;
 
@@ -166,7 +158,7 @@ if(isset($_GET['cleanDataReper'])){
      * Enregistrement de l operation dans le journal des operations
      */
     try {
-        $detailOp="Operation de Cleaning par $_SESSION[nomsPsv], result : $total_inserted propres sur $total_import_before";
+        $detailOp="Operation de Cleaning par $_SESSION[nomsPsv], result : $total_inserted correctes sur $total_import_before";
         $rapportOperation->saveRapport([
             'user' => $_SESSION['nomsPsv'],
             'operation' => "Cleaning Referencement",
@@ -183,7 +175,7 @@ if(isset($_GET['cleanDataReper'])){
             'total_noObs' => 0,
             'total_doublon' => 0,
             'total_noObs_doublon' => 0,
-            'dateOperation' => $helper->ngonga(),
+            'dateOperation' => $helper->ngonga('d-m-Y, H:i:s'),
         ]);
 
     } catch (PDOException $ex) {
@@ -278,14 +270,6 @@ else if(isset($_GET['cleanDataReal'])){
         fwrite($fp, $txt);
         fclose($fp);
         
-        $txt= '{"updated":"'.$helper->ngonga('d F Y, H:i:s').'"}';
-        //$txt= '{"updated":"'.date('d F Y, H:i:s').'"}';
-//        $txt= '{"updated":"27 Juillet 2019, 12:00:30"}';
-        $filen="../partials/date.json";
-        $fp = fopen($filen, 'w');
-        fwrite($fp, $txt);
-        fclose($fp);
-
         $total_realisation_after = $realisation->getRealisationByLot($lot)->rowCount();
         $total_import_after = $realisation->getNotCleanedRealisationImportByLot($lot)->rowCount();
 
@@ -303,7 +287,7 @@ else if(isset($_GET['cleanDataReal'])){
      * Enregistrement de l operation dans le journal des operations
      */
     try {
-        $detailOp="Operation Cleaning par $_SESSION[nomsPsv], result : $total_inserted propres sur $total_import_before";
+        $detailOp="Operation Cleaning par $_SESSION[nomsPsv], result : $total_inserted correctes sur $total_import_before";
         $rapportOperation->saveRapport([
             'user' => $_SESSION['nomsPsv'],
             'operation' => "Cleaning Branchement",
@@ -320,7 +304,7 @@ else if(isset($_GET['cleanDataReal'])){
             'total_noObs' => 0,
             'total_doublon' => 0,
             'total_noObs_doublon' => 0,
-            'dateOperation' => $helper->ngonga(),
+            'dateOperation' => $helper->ngonga('d-m-Y, H:i:s'),
         ]);
 
     } catch (PDOException $ex) {

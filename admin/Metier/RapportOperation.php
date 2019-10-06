@@ -29,7 +29,7 @@ Class RapportOperation{
     }
 
     public function getJournaleByWhere($where) {
-        $query = $this->dbLink->query("SELECT * FROM t_journal_operations j WHERE ".$where." ORDER BY dateOperation DESC" );
+        $query = $this->dbLink->query("SELECT * FROM t_journal_operations j WHERE ".$where." ORDER BY dateOperation DESC Limit 250" );
 
         if ($query->rowCount()>0)
             return $query;
