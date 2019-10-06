@@ -102,20 +102,35 @@ Class Realisation{
       return $query;
     }
 
+    /**
+     * return the number of occurence that already exist in the reperage table
+     *
+     * @param [type] $params
+     * @param [type] $refclient
+     * @return int
+     */
     public function insert($params,$refclient){
+      
       try{
-        $this->dbLink->getLink()->beginTransaction();
+        /* checking the existence of the occurence in the reperage table */
+        $querySelect = "SELECT * FROM t_realised WHERE ref_client = ?";
+        $tuplet = $this->dbLink->query($querySelect,[$params['ref_client']])->rowCount();
 
-        $queryInsert = "INSERT INTO `t_realised` (`id`, `commune`, `address`, `avenue`, `num_home`, `phone`, `town`, `type_branch`, `water_given`, `entreprise`, `consultant`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `comments`, `submission_time`, `lot`, `date_export`, `ref_client`, `client`) VALUES(NULL, :commune, :address, :avenue, :num_home, :phone, :town, :type_branch, :water_given, :entreprise, :consultant, :geopoint, :lat, :lng, :altitude, :precision, :comments, :submission_time, :lot, :date_export, :ref_client, :client)";
-        $this->dbLink->query($queryInsert,$params);
+        if($tuplet == 0){
+            $this->dbLink->getLink()->beginTransaction();
 
-        // $queryDelete = "DELETE FROM t_realised_import WHERE ref_client = ?";
-        // $this->dbLink->query($queryDelete,[$refclient]);
-
-        $queryUpdate = "UPDATE t_reperage_import SET issue=?, clean=? WHERE ref_client = ?";
-        $this->dbLink->query($queryUpdate,['',1,$refclient]);
-
-        $this->dbLink->getLink()->commit();
+            $queryInsert = "INSERT INTO `t_realised` (`id`, `commune`, `address`, `avenue`, `num_home`, `phone`, `town`, `type_branch`, `water_given`, `entreprise`, `consultant`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `comments`, `submission_time`, `lot`, `date_export`, `ref_client`, `client`) VALUES(NULL, :commune, :address, :avenue, :num_home, :phone, :town, :type_branch, :water_given, :entreprise, :consultant, :geopoint, :lat, :lng, :altitude, :precision, :comments, :submission_time, :lot, :date_export, :ref_client, :client)";
+            $this->dbLink->query($queryInsert,$params);
+    
+            $queryUpdate = "UPDATE t_realised_import SET issue=?, clean=? WHERE ref_client = ?";
+            $this->dbLink->query($queryUpdate,['',1,$refclient]);
+    
+            $this->dbLink->getLink()->commit();
+            return 0;
+        }else{
+            return 1;
+        }
+        
 
       }catch (PDOException $ex) {
         $this->dbLink->getLink()->rollBack();

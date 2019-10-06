@@ -43,21 +43,17 @@ if(isset($_GET['cleanDataReper'])){
     $total_import_after=0;
     
     if ($total_clean_data > 0) {
-        print ("<b>".$total_clean_data . "</b><br/><br/>");
-
-        // print("<u>Nombre de données correctes transferées dans la table des référencements: </u>");
-        // print("Début du transfert des données <br/>");
-
+        
         /*
          * Second step: transfer clean data into reperage table and update them from reperage_import by changing the clean state
          */
 
-        $total_inserted = $uninserted_data = 0;
+        $total_inserted = $alreadyExist = 0;
 
         foreach ($resCleanData as $cus) {
             
             try {
-                $reperage->insert([
+                $response = $reperage->insert([
                     'name' => $cus->name_client,
                     'street' => $cus->avenue,
                     'home' => $cus->num_home,
@@ -83,7 +79,11 @@ if(isset($_GET['cleanDataReper'])){
                     'error_matching' => $cus->error_matching
                 ],$cus->ref_client);
 
-                $total_inserted += 1;
+                if ($response == 0)
+                    $total_inserted += 1;
+                else
+                    $alreadyExist ++;
+
             } catch (PDOException $ex) {
                 echo $ex->getMessage();
                 break;
@@ -150,9 +150,9 @@ if(isset($_GET['cleanDataReper'])){
     print("<br/><u><b>STATISTIQUES APRES LE CLEANING</b></u><br/>");
     print ("Total des données correctes : <b>$total_clean_data</b><br/>Total des données incorrectes : <b>$durty_data </b><br/>");
     
-    $uninserted_data = $total_clean_data - $total_inserted;
-    if ($uninserted_data > 0)
-        print ("<span style='color:red'>".$uninserted_data." données n'ont pas pu être enregistrées</span><br/>");
+    //$uninserted_data = $total_clean_data - $total_inserted;
+    if ($alreadyExist > 0)
+        print ("<br/><span style='color:red'>Exception relevée : <b>$alreadyExist</b> clés de référencement corrigées se retrouvent déjà dans les données correctes.</span><br/>");
 
     /*
      * Enregistrement de l operation dans le journal des operations
@@ -224,11 +224,11 @@ else if(isset($_GET['cleanDataReal'])){
          * Second step: transfer clean data into realisation table and delete them from reperage_import
          */
 
-        $total_inserted = $uninserted_data = 0;
+        $total_inserted = $alreadyExist = 0;
 
         foreach ($resCleanData as $cus) {
             try {
-                $realisation->insert([
+                $response = $realisation->insert([
                     'commune'       =>  $cus->commune,
                     'address'       =>  $cus->address,
                     'avenue'        =>  $cus->avenue,
@@ -253,7 +253,11 @@ else if(isset($_GET['cleanDataReal'])){
                     //'date_export' => '2019-07-22',
                 ],$cus->ref_client);
 
-                $total_inserted += 1;
+                if ($response == 0)
+                    $total_inserted += 1;
+                else
+                    $alreadyExist ++;
+                    
             } catch (PDOException $ex) {
                 echo $ex->getMessage();
                 break;
@@ -276,12 +280,11 @@ else if(isset($_GET['cleanDataReal'])){
     }
     
     $durty_data = $total_data - $total_clean_data;  
-        print("<br/><u><b>STATISTIQUES DU CLEANING</b></u><br/>");
-        print ("Total des données correctes : <b>$total_clean_data</b><br/>Total des données incorrectes : <b>$durty_data </b><br/>");
+    print("<br/><u><b>STATISTIQUES DU CLEANING</b></u><br/>");
+    print ("Total des données correctes : <b>$total_clean_data</b><br/>Total des données incorrectes : <b>$durty_data </b><br/>");
 
-        $uninserted_data = $total_clean_data - $total_inserted;
-        if ($uninserted_data > 0)
-            print ("<br/><span style='color:red'>".$uninserted_data ." données n'ont pas pu être enregistrées</span><br/>");
+    if ($alreadyExist > 0)
+        print ("<br/><span style='color:red'>Exception relevée : <b>$alreadyExist</b> clés de référencement corrigées se retrouvent déjà dans les données correctes.</span><br/>");
 
     /*
      * Enregistrement de l operation dans le journal des operations

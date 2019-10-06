@@ -106,24 +106,34 @@ Class Reperage{
       $query = $this->dbLink->query("SELECT * FROM t_reperage_import WHERE lot=? AND `issue`=? AND ref_client LIKE '%OBS' AND ref_client IN (SELECT ref_client FROM t_reperage_import GROUP BY ref_client  HAVING COUNT(*) = 1)",[$lot,0]);
       return $query;
     }
-
+    /**
+     * return the number of occurence that already exist in the reperage table
+     *
+     * @param [type] $params
+     * @param [type] $refclient
+     * @return int
+     */
     public function insert($params,$refclient){
       try{
-        $this->dbLink->getLink()->beginTransaction();
-
-        $queryInsert = "INSERT INTO `t_reperage` (`name_client`,`avenue`,`num_home`,`commune`,`phone`,`category`,`ref_client`,`pt_vente`,`geopoint`,`lat`,`lng`,`altitude`,`precision`,`controller_name`,`comments`,`submission_time`,`town`,`lot`,`date_export`,`secteur`,`matching`,`error_matching`) VALUES(:name,:street,:home,:commune,:phone,:cat,:ref_client,:pt_vente,:geo,:lat,:lng,:alt,:precision,:ctrl_name,:comments,:submission_time,:town,:lot,:date_export,:secteur,:matching,:error_matching)";
-        $this->dbLink->query($queryInsert,$params);
-
-        // $queryDelete = "DELETE FROM t_reperage_import WHERE ref_client = ?";
-        // $this->dbLink->query($queryDelete,[$refclient]);
-
-        //$this->setIssue([4,$idclient]);
-
-        $queryUpdate = "UPDATE t_reperage_import SET issue=?, clean=? WHERE ref_client = ?";
-        $this->dbLink->query($queryUpdate,['',1,$refclient]);
         
-          
-        $this->dbLink->getLink()->commit();
+        /* checking the existence of the occurence in the reperage table */
+        $querySelect = "SELECT * FROM t_reperage WHERE ref_client = ?";
+        $tuplet = $this->dbLink->query($querySelect,[$params['ref_client']])->rowCount();
+
+        if($tuplet == 0){
+            $this->dbLink->getLink()->beginTransaction();
+
+            $queryInsert = "INSERT INTO `t_reperage` (`name_client`,`avenue`,`num_home`,`commune`,`phone`,`category`,`ref_client`,`pt_vente`,`geopoint`,`lat`,`lng`,`altitude`,`precision`,`controller_name`,`comments`,`submission_time`,`town`,`lot`,`date_export`,`secteur`,`matching`,`error_matching`) VALUES(:name,:street,:home,:commune,:phone,:cat,:ref_client,:pt_vente,:geo,:lat,:lng,:alt,:precision,:ctrl_name,:comments,:submission_time,:town,:lot,:date_export,:secteur,:matching,:error_matching)";
+            $this->dbLink->query($queryInsert,$params);
+
+            $queryUpdate = "UPDATE t_reperage_import SET issue=?, clean=? WHERE ref_client = ?";
+            $this->dbLink->query($queryUpdate,['',1,$refclient]);
+
+            $this->dbLink->getLink()->commit();
+            return 0;
+        }else{
+          return 1;
+        }
 
       }catch (PDOException $ex) {
         $this->dbLink->getLink()->rollBack();
