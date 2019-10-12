@@ -94,13 +94,13 @@ if(isset($_GET['traitement_api'])){
             $json[] =array($lot, $nbrligne, $lastDatAffichE, $typeDonnee, $jsonKobo);
             //throw new Exception(" contains the word name");
             echo json_encode($json);
-            
+            $type = ($typeDonnee == 'Reperage') ? 'référencements' : 'branchements';
             $detailOp="Synchronisation API $typeDonnee par $_SESSION[nomsPsv], resultat : $nbrligne Importé(s)";
 
             $req = $rapportOp->saveRapport([ //ok
                 'user' => $_SESSION['nomsPsv'],
-                'operation' => "Synchronisation automatique API KOBO",
-                'detail_operation' => $detailOp,
+                'operation' => "Synchronisation des $type",
+                'detail_operation' => "$nbrligne ligne(s) à importer",
                 'lot' => $lot,
                 'total_reper_before' => 0,
                 'total_reperImport_before' => 0,
@@ -113,7 +113,7 @@ if(isset($_GET['traitement_api'])){
                 'total_noObs' => 0,
                 'total_doublon' => 0,
                 'total_noObs_doublon' => 0,
-                'dateOperation' => $helper->ngonga('d-m-Y, H:i:s'),
+                'dateOperation' => $helper->ngonga('d/m/Y à H:i:s'),
             ]);
         } catch (Exception $e) {
             //echo json_encode(array($lot, "Error", $typeDonnee, "Echec Synchronisation!" ));
@@ -231,11 +231,11 @@ if(isset($_GET['traitement_api'])){
          */
         if($finTour>0){
             $detailOp="Recuperation automatique $typeDonnee par $_SESSION[nomsPsv], resultat : $finTour Importé(s)";
-
+            $type = ($typeDonnee == 'Reperage') ? 'référencements' : 'branchements';
             $req = $rapportOp->saveRapport([
                 'user' => $_SESSION['nomsPsv'],
-                'operation' => "Recuperation automatique API KOBO",
-                'detail_operation' => $detailOp,
+                'operation' => "Recuperation des $type",
+                'detail_operation' => "$finTour ligne(s) importée(s)",
                 'lot' => $lot,
                 'total_reper_before' => 0,
                 'total_reperImport_before' => 0,
@@ -248,7 +248,7 @@ if(isset($_GET['traitement_api'])){
                 'total_noObs' => 0,
                 'total_doublon' => 0,
                 'total_noObs_doublon' => 0,
-                'dateOperation' => $helper->ngonga('d-m-Y, H:i:s'),
+                'dateOperation' => $helper->ngonga('d/m/Y à H:i:s'),
             ]);
         }
         

@@ -161,8 +161,8 @@ if(isset($_GET['cleanDataReper'])){
         $detailOp="Operation de Cleaning par $_SESSION[nomsPsv], result : $total_inserted correctes sur $total_import_before";
         $rapportOperation->saveRapport([
             'user' => $_SESSION['nomsPsv'],
-            'operation' => "Cleaning Referencement",
-            'detail_operation' => $detailOp,
+            'operation' => "Cleaning référencement",
+            'detail_operation' => "$total_inserted correctes sur $total_data",
             'lot' => $lot,
             'total_reper_before' => $total_reperage_before,
             'total_reperImport_before' => $total_import_before,
@@ -175,7 +175,7 @@ if(isset($_GET['cleanDataReper'])){
             'total_noObs' => 0,
             'total_doublon' => 0,
             'total_noObs_doublon' => 0,
-            'dateOperation' => $helper->ngonga('d-m-Y, H:i:s'),
+            'dateOperation' => $helper->ngonga('d/m/Y à H:i:s'),
         ]);
 
     } catch (PDOException $ex) {
@@ -293,8 +293,8 @@ else if(isset($_GET['cleanDataReal'])){
         $detailOp="Operation Cleaning par $_SESSION[nomsPsv], result : $total_inserted correctes sur $total_import_before";
         $rapportOperation->saveRapport([
             'user' => $_SESSION['nomsPsv'],
-            'operation' => "Cleaning Branchement",
-            'detail_operation' => $detailOp,
+            'operation' => "Cleaning branchements",
+            'detail_operation' => "$total_inserted correctes sur $total_data",
             'lot' => $lot,
             'total_reper_before' => $total_realisation_before,
             'total_reperImport_before' => $total_import_before,
@@ -307,7 +307,7 @@ else if(isset($_GET['cleanDataReal'])){
             'total_noObs' => 0,
             'total_doublon' => 0,
             'total_noObs_doublon' => 0,
-            'dateOperation' => $helper->ngonga('d-m-Y, H:i:s'),
+            'dateOperation' => $helper->ngonga('d/m/Y à H:i:s'),
         ]);
 
     } catch (PDOException $ex) {

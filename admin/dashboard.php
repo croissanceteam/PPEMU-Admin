@@ -215,7 +215,9 @@
                 <tr>
                           <th>#</th>
                           <th>Opérations</th>
+                          <th>Lot</th>
                           <th>Description</th>
+                          <th>Agent</th>
                           <th>Date</th>
                 </tr>
                 </thead>
@@ -231,7 +233,9 @@
                         <tr>
                             <td><?php echo $nb; ?></td>
                             <td><?php echo $cus->operation; ?></td>
+                            <td>Lot <?php echo $cus->lot; ?></td>
                             <td><?php echo $cus->detail_operation; ?></td>
+                            <td><?php echo $cus->user; ?></td>
                             <td>
                                 <?php 
                                     echo $cus->dateOperation;
