@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    $('[data-mask]').inputmask();
+    
     var dataTable = $('#users-table').DataTable({
         //"processing": true,
         //"serverSide": true,
@@ -165,4 +167,35 @@ $(document).ready(function(){
         }
         $('#updateUserModal').modal('show');
     });
+
+    $('#reset-pass').on('click',function(e){
+        var user = $('#username2').val(); 
+        document.getElementById('new-pass').innerHTML ='';
+        $.ajax({
+            type: 'POST',
+            url: 'dist/userTrait.php',
+            data: 'reset='+ user,
+            dataType: 'json',
+            success: function(result){
+                $('#updateUserModal').modal('hide');
+                console.log('RESULT : ',result);
+              if(result.number == 1 && result.response != null){
+                alertify.alert(result.response);
+              }else{
+                alertify.error(result.response);
+              }
+            },
+            error: function(result, statut, error){
+                $('#updateUserModal').modal('hide');
+              console.log('Resultat error :',result);
+              console.log('Erreur :',error);
+              console.log('Statut error : ',statut);
+              alertify.error("L'opération n'a pas abouti.");
+              document.querySelector('#cover-spin').style.display="none";
+            }
+          });
+        
+        
+    });
+    
 });

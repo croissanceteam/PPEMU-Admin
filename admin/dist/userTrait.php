@@ -121,8 +121,9 @@ if(isset($_POST['usr']) && isset($_POST['pwd'])){
      */
     try {
         $rs = $user->add($_POST);
-        if($rs == 1)
-            echo json_encode(['response'=>"Utilisateur créé",'number'=>$rs]);
+        //if(strstr($rs,'Initial') !==  FALSE)
+        if(preg_match("/Initial-/",$rs))
+            echo json_encode(['response'=>"Utilisateur créé avec comme mot de passe : <b>$rs</b>",'number'=>1]);
         else if($rs == 2)
             echo json_encode(['response'=>"Ce nom d'utilisateur n'est pas disponible",'number'=>$rs]);
         else if($rs == 3)
@@ -149,9 +150,31 @@ if(isset($_POST['usr']) && isset($_POST['pwd'])){
         $rs = $user->update($_POST);
         if($rs == 1)
             echo json_encode(['response'=>"Modifications enregistrées",'number'=>$rs]);
+        else if($rs == 6)
+            echo json_encode(['response'=>"L'administrateur ne peut pas être verouillé",'number'=>$rs]);
         else
             echo json_encode(['response'=>"Echec d'enregistrement",'number'=>$rs]);
     } catch (\Throwable $th) {
-        echo json_encode(['response'=>"L'enregistrement a échoué",'bug'=>$th->getMessage(),'number'=>0]);
+        echo json_encode(['response'=>"La modifications a échoué",'bug'=>$th->getMessage(),'number'=>0]);
+    }
+}else if(isset($_POST['ad'])){
+    try {
+        $rs = $user->getAdminContacts();
+        echo json_encode(['response'=>$rs,'number'=>1]);
+    } catch (\Throwable $th) {
+        echo json_encode(['response'=>"L'opération a échoué",'bug'=>$th->getMessage(),'number'=>0]);
+    }
+}
+else if(isset($_POST['reset'])){
+    try {
+        $rs = $user->resetPassword($_POST['reset']);
+        if($rs == 6)
+            echo json_encode(['response'=>"Cette action ne peut être réalisée sur cet utilisateur",'number'=>$rs]);
+        else if ($rs == NULL)
+            echo json_encode(['response'=>"L'opération n'a pas abouti",'number'=>0]);
+        else
+            echo json_encode(['response'=>"Mot de passe réinitialisé en <span style='font-weight:bold' > $rs </span> pour l'utilisateur <b>".$_POST['reset']."</b>",'number'=>1]);
+    } catch (\Throwable $th) {
+        echo json_encode(['response'=>"L'opération a échoué",'bug'=>$th->getMessage(),'number'=>0]);
     }
 }

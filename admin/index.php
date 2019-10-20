@@ -78,7 +78,8 @@
     <div class="" style="margin-top: 2em"></div>
     <!-- /.social-auth-links -->
 
-    <a href="pwdforgotten.php">J'ai oublié mon mot de passe</a><br>
+    <!-- <a href="pwdforgotten.php">J'ai oublié mon mot de passe</a><br> -->
+    <a href="#" data-toggle="modal" data-target="#pwdforgottenModal">J'ai oublié mon mot de passe</a><br>
 <!--    <a href="inscription.php" class="text-center">S'inscrire ...</a>-->
 <!--    <a href="../index.php" class="text-center pull-right" style="color:orange" >Accueil</a>-->
 
@@ -86,6 +87,22 @@
   <!-- /.login-box-body -->
 </div>
 <!-- /.login-box -->
+
+<div class="modal" id="pwdforgottenModal" tabindex="-1" role="dialog" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+          
+        </div>
+        <div class="modal-body">
+          <p>Veuillez contacter l'administrateur de l'application au <span style="font-weight:bold" id="admin-phone">(+243) 816 060 961</span> et lui addresser un mail sur <span style="font-weight:bold" id="admin-email">jpinshi@croissancehub.com</span></p>
+        </div>
+      </div>
+    </div>
+</div>
 
 <!-- jQuery 3 -->
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -103,7 +120,29 @@
 window.onload=function(){document.querySelector('#cover-spin').style.display="none";}
 
   $(document).ready(function(){
-    
+    $.ajax({
+        type: 'POST',
+        url: 'dist/userTrait.php',
+        data: 'ad=',
+        dataType: 'json',
+        success: function(result){
+          
+          if(result.number == 1){
+            document.getElementById('admin-phone').textContent = result.response.phone;
+            document.getElementById('admin-email').textContent = result.response.email;
+          }else{
+            console.log('RESULT : ',result);
+            
+          }
+        },
+        error: function(result, statut, error){
+          console.log('Resultat error :',result);
+          console.log('Erreur :',error);
+          console.log('Statut error : ',statut);
+        }
+      });
+
+
     $('#form-login').on('submit',function(e){
       e.preventDefault();
       var user = $('#username').val();

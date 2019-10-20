@@ -118,7 +118,7 @@ Class User {
 
     public function all()
     {
-        return $this->dbLink->query("SELECT * FROM t_user WHERE priority <> 'root' ORDER BY userID DESC ");
+        return $this->dbLink->query("SELECT * FROM t_user ORDER BY userID DESC ");
     }
 
     public function getList()
@@ -159,8 +159,8 @@ Class User {
         if($rs->fetch()->nbr == 1)
             return 3;
         try {
-            $this->dbLink->getLink()->beginTransaction();
-            $pass = "Initial".date('s@W')."$";
+            //$this->dbLink->getLink()->beginTransaction();
+            $pass = "Initial-".date('s-B');
             $req = "INSERT INTO t_user(username,password,fullname,phone,mailaddress,avatar,town,`status`) VALUES(:username,:password,:fullanme,:phone,:email,:avatar,:town,:status)";
             $this->dbLink->query($req,[
                 'username'  =>  $username,
@@ -172,6 +172,10 @@ Class User {
                 'town'  =>  $param['town'],
                 'status'  =>  (isset($param['status']))? 1:0
             ]);
+
+            return $pass;
+            /*
+            That is for sending mail 
 
             $subject = 'VOTRE COMPTE DU PORTAIL PEMU';
             $content = "<p><strong>CEP-O PEMU</strong> Portail</p>
@@ -185,6 +189,7 @@ Class User {
                 $this->dbLink->getLink()->commit();
                 return 1;
             }
+            */
                 
         } catch (\PDOException $e) {
             $this->dbLink->getLink()->rollBack();
@@ -203,6 +208,10 @@ Class User {
 
     public function update($user)
     {
+        if($this->isRoot($user['username']))
+            if($user['status'] != 'on')
+                return 6;
+
         $req = "UPDATE t_user SET fullname=:fullname,phone=:phone,mailaddress=:email,town=:town,`status`=:etat WHERE username=:username";
         $rs = $this->dbLink->query($req,[
                                             'fullname'  =>  $user['fullname'],
@@ -277,5 +286,36 @@ Class User {
             } catch (Exception $e) {
                 throw new Exception("Le message ne peut pas être envoyé. Exception Error: ".$e->getMessage(), 1);
             }
+    }
+
+    public function resetPassword($username)
+    {
+        if($this->isRoot($username))
+            return 6;
+
+        $pass = "Initial-".date('s-B');
+        $rs = $this->setPassword($pass,$username);
+        if($rs == 1)
+            return $pass;
+        else    
+            return NULL;
+    }
+
+    public function getAdminContacts()
+    {
+        $rs = $this->dbLink->query("SELECT phone,mailaddress AS email FROM t_user WHERE priority='root'");
+        $myadmin = $rs->fetch();
+        $tab = [];
+        $tab = [
+            'phone' => $myadmin->phone,
+            'email' => $myadmin->email
+        ];
+        return $tab;
+    }
+
+    public function isRoot($username)
+    {
+        $role = $this->dbLink->query("SELECT `priority` FROM t_user WHERE username =?",[$username])->fetch()->priority;
+        return strtolower($role) == 'root';
     }
 }
