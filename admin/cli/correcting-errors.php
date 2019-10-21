@@ -15,15 +15,16 @@ $link->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 
   $reqGetNumericRefFromRep = "SELECT id,ref_client FROM t_reperage_import WHERE issue = '1' AND ref_client NOT LIKE '%BS%' OR ref_client NOT LIKE '%BS'";
   $reqGetNumericRefFromRea = "SELECT id,ref_client FROM t_realised_import WHERE issue = '1' AND ref_client NOT LIKE '%BS%' OR ref_client NOT LIKE '%BS'";
-  $reqUpdateRef = "UPDATE t_reperage_import SET ref_client=:ref WHERE id=:id";
+  $reqUpdateRefRep = "UPDATE t_reperage_import SET ref_client=:ref WHERE id=:id";
+  $reqUpdateRefReal = "UPDATE t_realised_import SET ref_client=:ref WHERE id=:id";
   
   $i = $j = 0;
   try {
       $getNumericRefFromRep = $link->query($reqGetNumericRefFromRep);
       if($getNumericRefFromRep->rowCount() > 0){
-          $dataNumericRef = $getNumericRefFromRep->fetchAll();
+          $dataNumericRefRep = $getNumericRefFromRep->fetchAll();
 
-          foreach ($dataNumericRef as $key => $rep_imp) {
+          foreach ($dataNumericRefRep as $key => $rep_imp) {
               
               $new_ref = trim($rep_imp->ref_client)."OBS";
               
@@ -38,16 +39,16 @@ $link->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
       
       $getNumericRefFromRea = $link->query($reqGetNumericRefFromRea);
       if($getNumericRefFromRea->rowCount() > 0){
-          $dataNumericRef = $getNumericRefFromRea->fetchAll();
+          $dataNumericRefReal = $getNumericRefFromRea->fetchAll();
 
-          foreach ($dataNumericRef as $key => $rep_imp) {
+          foreach ($dataNumericRefReal as $key => $real_imp) {
               
-              $new_ref = trim($rep_imp->ref_client)."OBS";
+              $new_ref = trim($real_imp->ref_client)."OBS";
               
-              $stmt = $link->prepare($reqUpdateRef);
+              $stmt = $link->prepare($reqUpdateRefReal);
               $stmt->execute([
                   'ref'   =>  $new_ref,
-                  'id'   =>  $rep_imp->id
+                  'id'   =>  $real_imp->id
               ]);
               $j++;
           }

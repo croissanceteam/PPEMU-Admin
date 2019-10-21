@@ -3,3 +3,4 @@
 #sync/*.*
 admin/Metier/sync/
 admin/Metier/Database.php
+mobile/*.*
