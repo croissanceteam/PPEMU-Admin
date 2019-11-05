@@ -13,14 +13,14 @@ Class RapportOperation{
      * @return bool
      */
     public function saveRapport($params){
-        $query = "INSERT INTO `t_journal_operations` (`id`, `user`, `operation`, `detail_operation`, `lot`, `total_reper_before`, `total_reperImport_before`, `total_cleaned_found`, `total_cleaned_afected`, `total_reper_after`, `total_reperImport_after`, `total_match_found`, `total_match_afected`, `total_noObs`, `total_doublon`, `total_noObs_doublon`, `dateOperation`) "
+        $query = "INSERT INTO `t_journal_operations` (`id`, `user`, `operation`, `detail_operation`, `lot`, `total_reper_before`, `total_reperImport_before`, `total_cleaned_found`, `total_cleaned_afected`, `total_reper_after`, `total_reperImport_after`, `total_match_found`, `total_match_afected`, `total_noObs`, `total_doublon`, `total_noObs_doublon`, `total_noMatch`, `dateOperation`) "
 
-                    . "VALUES (NULL, :user, :operation, :detail_operation, :lot, :total_reper_before, :total_reperImport_before, :total_cleaned_found, :total_cleaned_afected, :total_reper_after, :total_reperImport_after, :total_match_found, :total_match_afected, :total_noObs, :total_doublon, :total_noObs_doublon, :dateOperation )";
+                    . "VALUES (NULL, :user, :operation, :detail_operation, :lot, :total_reper_before, :total_reperImport_before, :total_cleaned_found, :total_cleaned_afected, :total_reper_after, :total_reperImport_after, :total_match_found, :total_match_afected, :total_noObs, :total_doublon, :total_noObs_doublon,:total_noMatch, :dateOperation)";
         return $this->dbLink->query($query, $params);
     }
 
     public function getJournales() {
-        $query = $this->dbLink->query("SELECT * FROM t_journal_operations j ORDER BY dateOperation DESC" );
+        $query = $this->dbLink->query("SELECT * FROM t_journal_operations ORDER BY dateOperation DESC" );
 
         if ($query->rowCount()>0)
             return $query;
@@ -54,7 +54,7 @@ Class RapportOperation{
 
     public function setStatIssues($params)
     {
-        $req = "UPDATE t_journal_operations SET total_noObs=?, total_doublon=?, total_noObs_doublon=? WHERE id = ?";
+        $req = "UPDATE t_journal_operations SET total_noObs=?, total_doublon=?, total_noObs_doublon=?,total_noMatch=? WHERE id = ?";
         return $this->dbLink->query($req,$params);
     }
 

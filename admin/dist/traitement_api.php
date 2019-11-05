@@ -95,24 +95,25 @@ if(isset($_GET['traitement_api'])){
             //throw new Exception(" contains the word name");
             echo json_encode($json);
             $type = ($typeDonnee == 'Reperage') ? 'référencements' : 'branchements';
-            $detailOp="Synchronisation API $typeDonnee par $_SESSION[nomsPsv], resultat : $nbrligne Importé(s)";
+            //$detailOp="Synchronisation API $typeDonnee par $_SESSION[nomsPsv], resultat : $nbrligne Importé(s)";
 
             $req = $rapportOp->saveRapport([ //ok
                 'user' => $_SESSION['nomsPsv'],
                 'operation' => "Synchronisation des $type",
                 'detail_operation' => "$nbrligne ligne(s) à importer",
                 'lot' => $lot,
-                'total_reper_before' => 0,
-                'total_reperImport_before' => 0,
-                'total_cleaned_found' => 0,
-                'total_cleaned_afected' => 0,
-                'total_reper_after' =>0,
-                'total_reperImport_after' => 0,
-                'total_match_found' => 0,
-                'total_match_afected' => 0,
-                'total_noObs' => 0,
-                'total_doublon' => 0,
-                'total_noObs_doublon' => 0,
+                'total_reper_before' => NULL,
+                'total_reperImport_before' => NULL,
+                'total_cleaned_found' => NULL,
+                'total_cleaned_afected' => NULL,
+                'total_reper_after' =>NULL,
+                'total_reperImport_after' => NULL,
+                'total_match_found' => NULL,
+                'total_match_afected' => NULL,
+                'total_noObs' => NULL,
+                'total_doublon' => NULL,
+                'total_noObs_doublon' => NULL,
+                'total_noMatch' => NULL,
                 'dateOperation' => $helper->ngonga('d/m/Y à H:i:s'),
             ]);
         } catch (Exception $e) {
@@ -237,17 +238,18 @@ if(isset($_GET['traitement_api'])){
                 'operation' => "Recuperation des $type",
                 'detail_operation' => "$finTour ligne(s) importée(s)",
                 'lot' => $lot,
-                'total_reper_before' => 0,
-                'total_reperImport_before' => 0,
-                'total_cleaned_found' => 0,
-                'total_cleaned_afected' => 0,
-                'total_reper_after' =>0,
-                'total_reperImport_after' => 0,
-                'total_match_found' => 0,
-                'total_match_afected' => 0,
-                'total_noObs' => 0,
-                'total_doublon' => 0,
-                'total_noObs_doublon' => 0,
+                'total_reper_before' => NULL,
+                'total_reperImport_before' => NULL,
+                'total_cleaned_found' => NULL,
+                'total_cleaned_afected' => NULL,
+                'total_reper_after' =>NULL,
+                'total_reperImport_after' => NULL,
+                'total_match_found' => NULL,
+                'total_match_afected' => NULL,
+                'total_noObs' => NULL,
+                'total_doublon' => NULL,
+                'total_noObs_doublon' => NULL,
+                'total_noMatch' => NULL,
                 'dateOperation' => $helper->ngonga('d/m/Y à H:i:s'),
             ]);
         }

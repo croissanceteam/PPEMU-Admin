@@ -1,6 +1,6 @@
-$(document).ready(function(){
+$(document).ready(function () {
     $('[data-mask]').inputmask();
-    
+
     var dataTable = $('#users-table').DataTable({
         //"processing": true,
         //"serverSide": true,
@@ -11,8 +11,8 @@ $(document).ready(function(){
         },
         "responsive": 'true',
         "columns": [
-            {"data": "position"},        
-            {"data": "statusicon"}, 
+            {"data": "position"},
+            {"data": "statusicon"},
             {"data": "username"},
             {"data": "fullname"},
             {"data": "email"},
@@ -46,156 +46,153 @@ $(document).ready(function(){
 
     var elem = document.querySelector('.js-switch');
     var switcheryUpdate = document.querySelector('.js-switch-update');
-    var init = new Switchery(elem, { size: 'small' });
-    var init2 = new Switchery(switcheryUpdate, { size: 'small' });
+    var init = new Switchery(elem, {size: 'small'});
+    var init2 = new Switchery(switcheryUpdate, {size: 'small'});
     var statusLabel = document.getElementById('status-label');
     var statusLabel2 = document.getElementById('status-label2');
-    
-    console.log('Status checked : ',elem.checked);
-    elem.onchange = function() {
+
+    console.log('Status checked : ', elem.checked);
+    elem.onchange = function () {
         //alert(elem.checked);
-        if(elem.checked){
+        if (elem.checked) {
             statusLabel.textContent = "Actif";
-        }else{
+        } else {
             statusLabel.textContent = "Vérouillé";
         }
     };
-    switcheryUpdate.onchange = function() {
+    switcheryUpdate.onchange = function () {
         //alert(elem.checked);
-        if(switcheryUpdate.checked){
+        if (switcheryUpdate.checked) {
             statusLabel2.textContent = "Actif";
-        }else{
+        } else {
             statusLabel2.textContent = "Vérouillé";
         }
     };
-    function setTrue(checkbox,ref){
-        if(checkbox.checked == false){
+    function setTrue(checkbox, ref) {
+        if (checkbox.checked == false) {
             $(ref).click();
         }
     }
-    function setFalse(checkbox,ref){
-        if(checkbox.checked == true){
+    function setFalse(checkbox, ref) {
+        if (checkbox.checked == true) {
             $(ref).click();
         }
     }
-    
-    $('#new-user-form').on('submit',function(e){
+
+    $('#new-user-form').on('submit', function (e) {
         e.preventDefault();
         var mydata = $('#new-user-form').serialize();
-        document.querySelector('#cover-spin').style.display="block";
+        document.querySelector('#cover-spin').style.display = "block";
         $.ajax({
-            url : 'dist/userTrait.php',
-            type : 'POST',
-            data : mydata,
+            url: 'dist/userTrait.php',
+            type: 'POST',
+            data: mydata,
             dataType: 'json',
-            success : function(result, statut){
-               console.log('Resultat success :',result);
-               console.log('Statut success : ',statut);
-               
-               
-               if (result.number == 1){
-                document.querySelector('#cover-spin').style.display="none";
-                $('#newUserModal').modal('hide');
-                 alertify.alert(result.response);
-                 dataTable.ajax.reload();
-               }else{
-                    document.querySelector('#cover-spin').style.display="none";
+            success: function (result, statut) {
+                console.log('Resultat success :', result);
+                console.log('Statut success : ', statut);
+
+
+                if (result.number == 1) {
+                    document.querySelector('#cover-spin').style.display = "none";
+                    $('#newUserModal').modal('hide');
+                    alertify.alert(result.response);
+                    dataTable.ajax.reload();
+                } else {
+                    document.querySelector('#cover-spin').style.display = "none";
                     alertify.alert(result.response);
                 }
-             
+
             },
-            error : function(result, statut, error){
-                document.querySelector('#cover-spin').style.display="none";
-                console.log('Resultat error :',result);
-                console.log('Erreur :',error);
-                console.log('Statut error : ',statut);
+            error: function (result, statut, error) {
+                document.querySelector('#cover-spin').style.display = "none";
+                console.log('Resultat error :', result);
+                console.log('Erreur :', error);
+                console.log('Statut error : ', statut);
                 alertify.error("L'opération n'a pas abouti.");
             }
         });
     });
 
-    $('#update-user-form').on('submit',function(e){
+    $('#update-user-form').on('submit', function (e) {
         e.preventDefault();
         var mydata = $('#update-user-form').serialize();
-        document.querySelector('#cover-spin').style.display="block";
+        document.querySelector('#cover-spin').style.display = "block";
         $.ajax({
-            url : 'dist/userTrait.php',
-            type : 'POST',
-            data : mydata,
+            url: 'dist/userTrait.php',
+            type: 'POST',
+            data: mydata,
             dataType: 'json',
-            success : function(result, statut){
-               console.log('Resultat success :',result);
-               console.log('Statut success : ',statut);
+            success: function (result, statut) {
+                console.log('Resultat success :', result);
+                console.log('Statut success : ', statut);
 
-               if (result.number == 1){
-                    document.querySelector('#cover-spin').style.display="none";
+                if (result.number == 1) {
+                    document.querySelector('#cover-spin').style.display = "none";
                     $('#updateUserModal').modal('hide');
                     alertify.success(result.response);
                     dataTable.ajax.reload();
-                }else{
-                    document.querySelector('#cover-spin').style.display="none";
-                     alertify.alert(result.response);
+                } else {
+                    document.querySelector('#cover-spin').style.display = "none";
+                    alertify.alert(result.response);
                 }
-             
+
             },
-            error : function(result, statut, error){
-                document.querySelector('#cover-spin').style.display="none";
-              console.log('Resultat error :',result);
-              console.log('Erreur :',error);
-              console.log('Statut error : ',statut);
-              alertify.error("L'opération n'a pas abouti.");
+            error: function (result, statut, error) {
+                document.querySelector('#cover-spin').style.display = "none";
+                console.log('Resultat error :', result);
+                console.log('Erreur :', error);
+                console.log('Statut error : ', statut);
+                alertify.error("L'opération n'a pas abouti.");
             }
         });
     });
 
-    $('#users-table tbody').on('click','tr',function(e){
+    $('#users-table tbody').on('click', 'tr', function (e) {
         var data = dataTable.data();
-        console.log(data);
         var i = dataTable.row(this).index();
-        console.log(i);
         var user = data[i];
-        //alert(user.position);
         $('#username2').val(user.username);
         $('#fullname').val(user.fullname);
         $('#phone').val(user.phone);
         $('#email').val(user.email);
         $('#town').val(user.town);
-        if(user.status == 'Actif'){
-            setTrue(switcheryUpdate,'.js-switch-update');
-        }else{
-            setFalse(switcheryUpdate,'.js-switch-update');
+        if (user.status == 'Actif') {
+            setTrue(switcheryUpdate, '.js-switch-update');
+        } else {
+            setFalse(switcheryUpdate, '.js-switch-update');
         }
         $('#updateUserModal').modal('show');
     });
 
-    $('#reset-pass').on('click',function(e){
-        var user = $('#username2').val(); 
-        document.getElementById('new-pass').innerHTML ='';
+    $('#reset-pass').on('click', function (e) {
+        var user = $('#username2').val();
+        //document.getElementById('new-pass').innerHTML ='';
         $.ajax({
             type: 'POST',
             url: 'dist/userTrait.php',
-            data: 'reset='+ user,
+            data: 'reset=' + user,
             dataType: 'json',
-            success: function(result){
+            success: function (result) {
                 $('#updateUserModal').modal('hide');
-                console.log('RESULT : ',result);
-              if(result.number == 1 && result.response != null){
-                alertify.alert(result.response);
-              }else{
-                alertify.error(result.response);
-              }
+                console.log('RESULT : ', result);
+                if (result.number == 1 && result.response != null) {
+                    alertify.alert(result.response);
+                } else {
+                    alertify.error(result.response);
+                }
             },
-            error: function(result, statut, error){
+            error: function (result, statut, error) {
                 $('#updateUserModal').modal('hide');
-              console.log('Resultat error :',result);
-              console.log('Erreur :',error);
-              console.log('Statut error : ',statut);
-              alertify.error("L'opération n'a pas abouti.");
-              document.querySelector('#cover-spin').style.display="none";
+                console.log('Resultat error :', result);
+                console.log('Erreur :', error);
+                console.log('Statut error : ', statut);
+                alertify.error("L'opération n'a pas abouti.");
+                document.querySelector('#cover-spin').style.display = "none";
             }
-          });
-        
-        
+        });
+
+
     });
-    
+
 });

@@ -277,6 +277,7 @@
                                 <?php 
                                     echo "No Obs : ".$cus->total_noObs." </br>"; 
                                     echo "Doublon : ".$cus->total_doublon." </br>"; 
+                                    echo "Non retrouvé : ".$cus->total_noMatch." </br>";
                                 ?>
                             </td>
                             <td>
@@ -351,8 +352,7 @@
 <script src="bower_components/chart.js/Chart.js"></script>
 <!-- alertify -->
 <script src="vendor/alertify/lib/alertify.min.js"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="dist/js/pages/dashboard2.js"></script>
+
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
 <script src="dist/script.js"></script>

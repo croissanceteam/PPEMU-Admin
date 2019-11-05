@@ -193,6 +193,9 @@
                                 <option value="">Séléctionnez Anomalie</option>
                                 <option value="1">Saisie sans OBS</option>
                                 <option value="2">Doublon</option>
+                                <option value="4">Existe déjà dans les données propres</option>
+                                <option value="5">Client introuvable</option>
+                                
 <!--                                <option value="3">Le deux</option>-->
                             </select>
                         </div>
