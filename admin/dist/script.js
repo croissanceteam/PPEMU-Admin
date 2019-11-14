@@ -80,6 +80,7 @@ $(document).ready(function (e) {
                     ligne.find('.failTD').show();
                     ligne.find('.lot_detail').text(json[3]);
                 } else {
+//                    console.log('Retour json : ',json);
                     var nbrEnreg = 0;
                     $.each(json, function (index, value) {
                         if (value[3] == 'Reperage') {
@@ -106,6 +107,13 @@ $(document).ready(function (e) {
                     if (nbrEnreg > 0) ligne.find('.btn_display').show();
                 }
                 $('.grize').removeAttr('disabled');
+            },
+            error: function (result, statut, error) {
+                console.log('Resultat error :', result);
+                console.log('Erreur :', error);
+                console.log('Statut error : ', statut);
+                ligne.find('.ldTD').hide();
+                    ligne.find('.okTD').hide();
             }
         });
     });

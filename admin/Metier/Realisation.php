@@ -138,7 +138,7 @@ Class Realisation {
                 $res_insert = $this->dbLink->query($queryInsert, $params);
 
                 $queryUpdate = "UPDATE t_realised_import SET issue=?, clean=? WHERE ref_client = ?";
-                $res_update = $this->dbLink->query($queryUpdate, ['', 1, $refclient]);
+                $res_update = $this->dbLink->query($queryUpdate, ['', 1, $ref_from_kobo]);
 
                 if ($res_insert->rowCount() && $res_update->rowCount()) {
                     $this->dbLink->getLink()->commit();

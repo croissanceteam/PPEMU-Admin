@@ -1,6 +1,6 @@
 <?php
 define('DRIVER', 'mysql', true);
-define('SERVER', '31.207.34.223', true);
+define('SERVER', 'localhost', true);
 define('USERNAME', 'root', true);
-define('PASSWORD', 'ppemu', true);
-define('DB', 'db_portal_test', true);
+define('PASSWORD', 'root', true);
+define('DB', 'db_portal_test2', true);
