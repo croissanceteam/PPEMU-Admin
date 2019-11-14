@@ -138,7 +138,7 @@ Class Realisation {
                 $res_insert = $this->dbLink->query($queryInsert, $params);
 
                 $queryUpdate = "UPDATE t_realised_import SET issue=?, clean=? WHERE ref_client = ?";
-                $res_update = $this->dbLink->query($queryUpdate, ['', 1, $ref_from_kobo]);
+                $res_update = $this->dbLink->query($queryUpdate, [NULL, 1, $ref_from_kobo]);
 
                 if ($res_insert->rowCount() && $res_update->rowCount()) {
                     $this->dbLink->getLink()->commit();
@@ -169,7 +169,7 @@ Class Realisation {
     }
 
     public function getDurtyData($lot) {
-        $req = "SELECT id, ref_client, (select id from t_realised_import t1 where t1.id=t.id and t1.ref_client NOT LIKE '%OBS') as noObs, (select id from t_realised_import t1 where t1.id=t.id and ref_client IN (SELECT ref_client FROM t_realised_import t1 GROUP BY t1.ref_client  HAVING COUNT(*) > 1) ) as doublon, (SELECT name_client FROM t_reperage_import t1 WHERE t1.id=t.id AND t1.id NOT IN (SELECT t.id FROM t_reperage_import t, t_root r WHERE (TRIM(r.client) LIKE CONCAT(TRIM(t.name_client),'%') OR TRIM(t.name_client) LIKE CONCAT(TRIM(r.client),'%')) AND (TRIM(r.avenue) LIKE CONCAT(TRIM(t.avenue),'%') OR TRIM(t.avenue) LIKE CONCAT(TRIM(r.avenue),'%'))) LIMIT 1) AS noMatching FROM t_realised_import t WHERE lot=? AND clean IS NULL";
+        $req = "SELECT id, ref_client, (select id from t_realised_import t1 where t1.id=t.id and t1.ref_client NOT LIKE '%OBS') as noObs, (select id from t_realised_import t1 where t1.id=t.id and ref_client IN (SELECT ref_client FROM t_realised_import t1 GROUP BY t1.ref_client  HAVING COUNT(*) > 1) ) as doublon, (SELECT client FROM t_realised_import t1 WHERE t1.id=t.id AND t1.id NOT IN (SELECT t.id FROM t_realised_import t, t_root r WHERE (TRIM(r.client) LIKE CONCAT(TRIM(t.client),'%') OR TRIM(t.client) LIKE CONCAT(TRIM(r.client),'%')) AND (TRIM(r.avenue) LIKE CONCAT(TRIM(t.avenue),'%') OR TRIM(t.avenue) LIKE CONCAT(TRIM(r.avenue),'%'))) LIMIT 1) AS noMatching FROM t_realised_import t WHERE lot=? AND clean IS NULL";
         return $this->dbLink->query($req, [$lot]);
     }
 

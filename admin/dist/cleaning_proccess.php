@@ -214,7 +214,7 @@ if (isset($_GET['cleanDataReper'])) {
          */
 
         $total_inserted = $alreadyExist = 0;
-
+        
         foreach ($resCleanData as $cus) {
             try {
                 $response = $realisation->insert([
@@ -428,7 +428,7 @@ if (isset($_GET['cleanDataReper'])) {
                         $total_nomatch++;
                     }
 
-                    $reperage->setIssue([$issue, 0, $cus->id]);
+                    $realisation->setIssue([$issue, 0, $cus->id]);
                 } else {
                     $total_anomalie--;
                 }
