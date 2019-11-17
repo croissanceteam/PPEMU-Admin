@@ -631,19 +631,19 @@ $(document).ready(function (e) {
                 } else {
 
                     $.each(json, function (i, v) {
-                        if (v.operation == 'Cleaning Referencement') {
+                        if (v.operation == 'Cleaning référencement') {
                             var typ = "Référencement";
                             var match = "Affecté : " + v.total_match_afected;
-                        } else if (v.operation == 'Cleaning Branchement') {
+                        } else if (v.operation == 'Cleaning branchements') {
                             var typ = "Branchement";
                             var match = " Non applicable ";
                         }
-
+                        console.log('VOici le type : ',typ);
                         $("#listTraitementClean").append("<tr><td>" + (i + 1) + "</td><td>" + typ + "</td><td>Lot " + v.lot + "</td>"
                             + "<td>" + v.total_reperImport_before + "</td>"
                             + "<td>" + v.total_reper_after + "</td>"
                             + "<td>Affecté : " + match + "</td>"
-                            + "<td> No Obs : " + v.total_noObs + "</br> Doublon : " + v.total_doublon + "</td>"
+                            + "<td> No Obs : " + v.total_noObs + "</br> Doublon : " + v.total_doublon + "</br> Non retrouvé : " + v.total_noMatch + "</td>"
                             + "<td>" + v.dateOperation + "</td>"
                         );
                     });

@@ -235,7 +235,7 @@
                        </thead>
                         <tbody id="listTraitementClean">
                         <?php
-                            $resData=$rapport->getJournaleByWhere(" operation='Cleaning Branchement' OR operation='Cleaning Referencement' "); 
+                            $resData=$rapport->getJournaleByWhere(" operation LIKE 'Cleaning branchements' OR operation LIKE 'Cleaning référencement' "); 
     
                             if ($resData) {
                                 $nb=0;
@@ -246,8 +246,8 @@
                             <td><?php echo $nb; ?></td>
                             <td>
                                 <?php 
-                                    if($cus->operation=='Cleaning Referencement') echo "Référencement"; 
-                                    else if($cus->operation=='Cleaning Branchement') echo "Branchement"; 
+                                    if($cus->operation=='Cleaning référencement') echo "Référencement"; 
+                                    else if($cus->operation=='Cleaning branchements') echo "Branchement"; 
                                 ?>
                             </td>
                             <td><?php echo "Lot ".$cus->lot; ?></td>
@@ -271,7 +271,7 @@
                                 ?>
                             </td> -->
                             <td>
-                                <?= ($cus->operation=='Cleaning Referencement') ? "Affecté : ".$cus->total_match_afected : "Non applicable"; ?>
+                                <?= ($cus->operation=='Cleaning référencement') ? "Affecté : ".$cus->total_match_afected : "Non applicable"; ?>
                             </td>
                             <td>
                                 <?php 

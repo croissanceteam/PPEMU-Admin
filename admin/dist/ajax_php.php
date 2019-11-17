@@ -333,8 +333,8 @@ else if(@isset($_GET['rapportClean']) )
     $where=" 1=1 ";
     
     if(trim($typeDonnee)=="Reperage") {
-        if(trim($lot)!="") $where=$where." AND lot='$lot' AND operation='Cleaning Referencement' ";
-        else $where=$where." AND operation='Cleaning Referencement' ";
+        if(trim($lot)!="") $where=$where." AND lot='$lot' AND operation='Cleaning référencement' ";
+        else $where=$where." AND operation='Cleaning référencement' ";
         
         $resData=$rapport->getJournaleByWhere($where);
         if($resData){
@@ -346,8 +346,8 @@ else if(@isset($_GET['rapportClean']) )
         else echo "0";
     }
     else if(trim($typeDonnee)=="Realisation") {
-        if(trim($lot)!="") $where=$where." AND lot='$lot' AND operation='Cleaning Branchement' ";
-        else $where=$where." AND operation='Cleaning Branchement' ";
+        if(trim($lot)!="") $where=$where." AND lot='$lot' AND operation='Cleaning branchements' ";
+        else $where=$where." AND operation='Cleaning branchements' ";
         
         $resData=$rapport->getJournaleByWhere($where);
         if($resData){
@@ -359,8 +359,8 @@ else if(@isset($_GET['rapportClean']) )
         else echo "0";
     }
     else {
-        if(trim($lot)!="") $where=$where." AND lot='$lot' AND (operation='Cleaning Branchement' OR operation='Cleaning Referencement') ";
-        else $where=$where." AND (operation='Cleaning Branchement' OR operation='Cleaning Referencement') ";
+        if(trim($lot)!="") $where=$where." AND lot='$lot' AND (operation LIKE 'Cleaning branchements' OR operation LIKE 'Cleaning référencement') ";
+        else $where=$where." AND (operation LIKE 'Cleaning branchements' OR operation LIKE 'Cleaning référencement') ";
         
         $resData=$rapport->getJournaleByWhere($where);
         if($resData){

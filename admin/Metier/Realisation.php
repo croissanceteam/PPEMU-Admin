@@ -14,6 +14,27 @@ Class Realisation {
      * @param [type] $params
      * @return bool
      */
+    
+    /**
+     * 
+     * Check whether the customer have a correspondance on root
+     * If so, update its ref_client
+     *
+     * @return void
+     */
+    public function runLikelihoodControl() {
+        $queryCorresp = "SELECT t.id,r.refclient,t.ref_client FROM t_realised_import t, t_root r WHERE (TRIM(r.client) LIKE CONCAT(TRIM(t.client),'%') OR TRIM(t.client) LIKE CONCAT(TRIM(r.client),'%')) AND (TRIM(r.avenue) LIKE CONCAT(TRIM(t.avenue),'%') OR TRIM(t.avenue) LIKE CONCAT(TRIM(r.avenue),'%')) AND t.ref_client NOT LIKE r.refclient";
+        $corresp_stmt = $this->dbLink->query($queryCorresp);
+
+        if ($corresp_stmt->rowCount()) {
+            foreach ($corresp_stmt as $data) {
+                $queryUpdateCus = "UPDATE t_realised_import SET ref_client=? WHERE id=?";
+                if($data->refclient != $data->ref_client)
+                    $this->dbLink->query($queryUpdateCus, [$data->refclient,$data->id]);
+            }
+        }
+    }
+   
     public function tempSave($params) {
         $query = "INSERT INTO `t_realised_import` (`id`, `commune`, `address`, `avenue`, `num_home`, `phone`, `town`, `type_branch`, `water_given`, `entreprise`, `consultant`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `comments`, `submission_time`, `lot`, `date_export`, `ref_client`, `client`, `issue`) VALUES (NULL, :commune, :address, :avenue, :num_home, :phone, :town, :type_branch, :water_given, :entreprise, :consultant, :geopoint, :lat, :lng, :altitude, :precision, :comments, :submission_time, :lot, :date_export, :ref_client, :client, '0')";
         return $this->dbLink->query($query, $params);
@@ -118,7 +139,7 @@ Class Realisation {
              * If so, update it in reperage and leave it in import as so
              */
             $ref_from_kobo = $params['ref_client'];
-            $queryCorresp = "SELECT r.refclient FROM t_realised_import t, t_root r WHERE t.ref_client LIKE ? AND (TRIM(r.client) LIKE CONCAT(TRIM(t.client),'%') OR TRIM(t.client) LIKE CONCAT(TRIM(r.client),'%')) AND (TRIM(r.avenue) LIKE CONCAT(TRIM(t.avenue),'%') OR TRIM(t.avenue) LIKE CONCAT(TRIM(r.avenue),'%')) AND t.ref_client NOT LIKE r.refclient;";
+            $queryCorresp = "SELECT r.refclient,r.secteur FROM t_realised_import t, t_root r WHERE t.ref_client LIKE ? AND (TRIM(r.client) LIKE CONCAT(TRIM(t.client),'%') OR TRIM(t.client) LIKE CONCAT(TRIM(r.client),'%')) AND (TRIM(r.avenue) LIKE CONCAT(TRIM(t.avenue),'%') OR TRIM(t.avenue) LIKE CONCAT(TRIM(r.avenue),'%')) AND t.ref_client NOT LIKE r.refclient;";
             $corresp_stmt = $this->dbLink->query($queryCorresp, [$ref_from_kobo]);
 
             if ($corresp_stmt->rowCount()) {

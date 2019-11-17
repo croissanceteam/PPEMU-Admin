@@ -40,6 +40,8 @@ if (isset($_GET['cleanDataReper'])) {
     
     $total_clean_data = 0;
     try {
+        $reperage->runLikelihoodControl();
+        
         $resCleanData = $reperage->findCleanDataByLot($lot);
         $total_clean_data = $resCleanData->rowCount();
     } catch (PDOException $ex) {
@@ -101,13 +103,11 @@ if (isset($_GET['cleanDataReper'])) {
                 echo $ex->getMessage();
                 $_SESSION['leaveProcess'] = TRUE;
                 break;
-                die();
             } catch (Exception $ex) {
                 echo "<br><i>Un problème est survenu lors de l'exécution de la commande</i><br>";
                 echo $ex->getMessage();
                 $_SESSION['leaveProcess'] = TRUE;
                 break;
-                die();
             }
         }
 
@@ -192,6 +192,8 @@ if (isset($_GET['cleanDataReper'])) {
     
     $total_clean_data = 0;
     try {
+        $realisation->runLikelihoodControl();
+        
         $resCleanData = $realisation->findCleanDataByLot($lot);
         $total_clean_data = $resCleanData->rowCount();
     } catch (PDOException $ex) {

@@ -9,6 +9,26 @@ Class Reperage {
     }
 
     /**
+     * 
+     * Check whether the customer have a correspondance on root
+     * If so, update its ref_client
+     *
+     * @return void
+     */
+    public function runLikelihoodControl() {
+        $queryCorresp = "SELECT t.id,r.refclient,t.ref_client FROM t_reperage_import t, t_root r WHERE (TRIM(r.client) LIKE CONCAT(TRIM(t.name_client),'%') OR TRIM(t.name_client) LIKE CONCAT(TRIM(r.client),'%')) AND (TRIM(r.avenue) LIKE CONCAT(TRIM(t.avenue),'%') OR TRIM(t.avenue) LIKE CONCAT(TRIM(r.avenue),'%')) AND t.ref_client NOT LIKE r.refclient";
+        $corresp_stmt = $this->dbLink->query($queryCorresp);
+
+        if ($corresp_stmt->rowCount()) {
+            foreach ($corresp_stmt as $data) {
+                $queryUpdateCus = "UPDATE t_reperage_import SET ref_client=?, matching=? WHERE id=?";
+                if($data->refclient != $data->ref_client)
+                    $this->dbLink->query($queryUpdateCus, [$data->refclient, 1,$data->id]);
+            }
+        }
+    }
+
+    /**
      * this function save reperage from kobo into t_reperage_import table
      *
      * @param [type] $params
@@ -119,55 +139,55 @@ Class Reperage {
     public function insert($params) {
         try {
             //$this->dbLink->getLink()->setAttribute(PDO::ATTR_AUTOCOMMIT,0);
-            
+
             /*
              * Check whether the cus have ref different from his correspondance onto root
              * If so, update it in reperage and leave it in import as so
              */
             $ref_from_kobo = $params['ref_client'];
-            $queryCorresp = "SELECT r.refclient FROM t_reperage_import t, t_root r WHERE t.ref_client LIKE ? AND (TRIM(r.client) LIKE CONCAT(TRIM(t.name_client),'%') OR TRIM(t.name_client) LIKE CONCAT(TRIM(r.client),'%')) AND (TRIM(r.avenue) LIKE CONCAT(TRIM(t.avenue),'%') OR TRIM(t.avenue) LIKE CONCAT(TRIM(r.avenue),'%')) AND t.ref_client NOT LIKE r.refclient;";
+            $queryCorresp = "SELECT r.refclient,r.secteur FROM t_reperage_import t, t_root r WHERE t.ref_client LIKE ? AND (TRIM(r.client) LIKE CONCAT(TRIM(t.name_client),'%') OR TRIM(t.name_client) LIKE CONCAT(TRIM(r.client),'%')) AND (TRIM(r.avenue) LIKE CONCAT(TRIM(t.avenue),'%') OR TRIM(t.avenue) LIKE CONCAT(TRIM(r.avenue),'%')) AND t.ref_client NOT LIKE r.refclient;";
             $corresp_stmt = $this->dbLink->query($queryCorresp, [$ref_from_kobo]);
-            
+
             if ($corresp_stmt->rowCount()) {
                 $data = $corresp_stmt->fetch();
                 $params['ref_client'] = $data->refclient;
-                if(trim($params['secteur']) === '') $params['secteur'] = $data->secteur;
+                if (trim($params['secteur']) === '')
+                    $params['secteur'] = $data->secteur;
             }
 
             /* checking the existence of the occurence in the reperage table */
-            $querySelect = "SELECT id FROM t_reperage WHERE ref_client LIKE ?";
+            $querySelect = "SELECT id FROM t_reperage WHERE ref_client = ?";
             $tuplet = $this->dbLink->query($querySelect, [$params['ref_client']])->rowCount();
             
             if ($tuplet == 0) {
-                if(!$this->dbLink->getLink()->inTransaction())
+                if (!$this->dbLink->getLink()->inTransaction())
                     $this->dbLink->getLink()->beginTransaction();
-                
+
                 $queryInsert = "INSERT INTO `t_reperage` (`name_client`,`avenue`,`num_home`,`commune`,`phone`,`category`,`ref_client`,`pt_vente`,`geopoint`,`lat`,`lng`,`altitude`,`precision`,`controller_name`,`comments`,`submission_time`,`town`,`lot`,`date_export`,`secteur`,`matching`,`error_matching`) VALUES(:name,:street,:home,:commune,:phone,:cat,:ref_client,:pt_vente,:geo,:lat,:lng,:alt,:precision,:ctrl_name,:comments,:submission_time,:town,:lot,:date_export,:secteur,:matching,:error_matching)";
                 $res_insert = $this->dbLink->query($queryInsert, $params);
 
                 $queryUpdate = "UPDATE t_reperage_import SET issue=?, clean=? WHERE ref_client = ?";
                 $res_update = $this->dbLink->query($queryUpdate, [NULL, 1, $ref_from_kobo]);
-                
-                if($res_insert->rowCount() && $res_update->rowCount()){
+
+                if ($res_insert->rowCount() && $res_update->rowCount()) {
                     $this->dbLink->getLink()->commit();
                     return 0;
-                }else
+                } else
                     $this->dbLink->getLink()->rollBack();
-                    
             } else {
                 /* The customer's key already exists in the reperage table  */
                 $res_update = $queryUpdate = "UPDATE t_reperage_import SET issue=?, clean=? WHERE ref_client = ?";
                 $this->dbLink->query($queryUpdate, [4, 0, $ref_from_kobo]);
                 return 1;
             }
-            
+
             //$this->dbLink->getLink()->setAttribute(PDO::ATTR_AUTOCOMMIT,1);
         } catch (PDOException $ex) {
             $this->dbLink->getLink()->rollBack();
-            throw new PDOException($ex->getTraceAsString().' ||| '.$ex->getMessage());
+            throw new PDOException($ex->getTraceAsString() . ' ||| ' . $ex->getMessage());
         } catch (Exception $ex) {
             $this->dbLink->getLink()->rollBack();
-            throw new Exception($ex->getTraceAsString().' ||| '.$ex->getMessage());
+            throw new Exception($ex->getTraceAsString() . ' ||| ' . $ex->getMessage());
         }
     }
 
