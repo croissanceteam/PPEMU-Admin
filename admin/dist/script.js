@@ -451,9 +451,9 @@ $(document).ready(function (e) {
                         ligne.find('.failTD').show();
                         ligne.find('.lot_detail').text(json[3]);
                     } else {
-                        $.each(json, function (index, value) {
+                        //$.each(json, function (index, value) {
                             //alert('Fin Téléchargement \n OPERATION : '+typeD+' \n LOT : '+lot+' \n Nombres de Lignes Téléchargé : '+i+' \n Date Exportation : '+value[1]);
-                        });
+                        //});
 
                         ligne.find('.ldTD').hide();
                         ligne.find('.api_TelechargeLot').hide();

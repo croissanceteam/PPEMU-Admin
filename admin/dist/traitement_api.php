@@ -54,7 +54,7 @@ if(isset($_GET['traitement_api'])){
                 else 
                     throw new Exception("Lot $lot Non trouvé! ");
                 
-                $lastDate=$reperage->getLastDateTIMESTAMP($lot);
+                $lastDate=$reperage->getLastSubmissionTime($lot);
             }
             else if($typeDonnee=='Realisation'){
                 if(array_key_exists($lot, $link_realisation))
@@ -62,9 +62,10 @@ if(isset($_GET['traitement_api'])){
                 else 
                     throw new Exception("Lot $lot Non trouvé! ");
                 
-                $lastDate=$realisation->getLastDateTIMESTAMP($lot);;
+                $lastDate=$realisation->getLastSubmissionTime($lot);;
             }
-
+            
+            $lastTIMESTAMP = strtotime($lastDate);
             $link='https://kf.kobotoolbox.org/assets/'.$link_sub.'/submissions/?format=json';
             $opts = ["http" => ["header" => "Authorization: Token 1d99e5378a5924e824d30a09d08ab26bdeb4dfe1 "]];
             $context = stream_context_create($opts);
@@ -79,17 +80,17 @@ if(isset($_GET['traitement_api'])){
             
             $nbrligne=0;
             $jsonKobo= array();
+            // FILTRING DATA FOR ELIMINATING THOSE ONE WAS PREVIOUSLY STORED
             foreach ($parsed_json as $v) {
                 $submission_time=@htmlentities($v['_submission_time'], ENT_QUOTES);
-                if($lastDate < strtotime($submission_time)){
+                if(strtotime($lastDate) < strtotime($submission_time)){
                     $jsonKobo[]=$v;
                     //$jsonKobo[]=$v;
                     $nbrligne++; //echo $v['_submission_time'];
                 }
             }
             
-            if($lastDate==0)$lastDatAffichE = date('d/m/Y', strtotime($parsed_json[0]['_submission_time']));
-            else $lastDatAffichE =date('d/m/Y', $lastDate);
+            $lastDatAffichE = ($lastDate == 0) ? date('d/m/Y', strtotime($parsed_json[0]['_submission_time'])) : date('d/m/Y', $lastTIMESTAMP);
             
             $json[] =array($lot, $nbrligne, $lastDatAffichE, $typeDonnee, $jsonKobo);
             //throw new Exception(" contains the word name");
@@ -149,7 +150,8 @@ if(isset($_GET['traitement_api'])){
             $phone= isset($v['Num_ro_t_l_phone']) ? $v['Num_ro_t_l_phone'] : $v['Numphone'];
             $category= isset($v['Cat_gorie_Client']) ? $v['Cat_gorie_Client'] : $v['CatgorieClient'];
             $pt_vente= isset($v['Etat_du_point_de_vente']) ? $v['Etat_du_point_de_vente'] : $v['Etatpvente'];
-                    
+            $idkobo = isset($v['_id']) ? $v['_id'] : NULL;
+
             if(isset($v['Ref_Client'])) $ref_client=@htmlentities($v['Ref_Client'], ENT_QUOTES);
             else if(isset($v['Numero_site'])) $ref_client=@htmlentities($v['Numero_site'], ENT_QUOTES);
             else $ref_client=@htmlentities($v['numsite'], ENT_QUOTES);
@@ -180,7 +182,8 @@ if(isset($_GET['traitement_api'])){
                 'town'              =>  '', 
                 'date_export'       =>  $helper->ngonga(),
                 'secteur'               =>  $secteur,
-                'lot'               =>  $lot                 
+                'lot'               =>  $lot,
+                'idkobo'            =>  $idkobo               
             ]);
         }
             
@@ -190,6 +193,7 @@ if(isset($_GET['traitement_api'])){
             $v = json_decode($_GET['row'],true);
                     
             $geopoint= $v['Emplacement_du_branchement_r_alis'];
+            $idkobo = isset($v['_id']) ? $v['_id'] : NULL;
 
             list($lat_2, $lng_2, $altitude, $precision)=explode(' ', $geopoint);
             try {
@@ -214,7 +218,8 @@ if(isset($_GET['traitement_api'])){
                 'ref_client'        =>  @htmlentities($v['num_site'], ENT_QUOTES),
                 'client'            =>  @htmlentities($v['Nom_du_Client'], ENT_QUOTES),
                 'date_export'       =>  $helper->ngonga(),
-                'lot'               =>  $lot, 
+                'lot'               =>  $lot,
+                'idkobo'            =>  $idkobo 
             ]);
             } catch (\Throwable $th) {
                 echo json_encode($th->getMessage());

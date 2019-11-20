@@ -1,11 +1,23 @@
 <?php
 
-include_once '../Metier/Database.php';
+$new = strtotime('2019-11-19T05:48:35');
+$lastDate = strtotime('2019-11-19T05:48:39');
+//echo $new;
+// 1574142515 => $new
+// 1574138919
+// 1574142519 => $lastDate
+//echo var_dump('1574138919' < $new);
+echo "UNIX :".date('d/m/Y H:i:s','1574138919');
+echo "<br> PHP : ".date('d/m/Y H:i:s',$lastDate);
+//echo var_dump($lastDate < $new);
+/*
+    include_once '../Metier/Database.php';
 
     $db = new Database();
 
     $res = $db->query("INSERT INTO t_test VALUES('rat','23')");
     echo $res->rowCount();
+*/
 /*
     $var = 3;
     

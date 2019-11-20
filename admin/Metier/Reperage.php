@@ -8,6 +8,14 @@ Class Reperage {
         $this->dbLink = new Database();
     }
 
+    public function getLastSubmissionTime($lot) {
+        $stmt = $this->dbLink->query("SELECT MAX(submission_time) as last_date FROM t_reperage_import WHERE lot=?", [$lot]);
+        if ($stmt->rowCount() > 0)
+            return $stmt->fetch()->last_date;
+
+        return 0;
+    }
+
     /**
      * 
      * Check whether the customer have a correspondance on root
@@ -35,7 +43,7 @@ Class Reperage {
      * @return bool
      */
     public function tempSave($params) {
-        $query = "INSERT INTO `t_reperage_import` (`id`, `name_client`, `avenue`, `num_home`, `commune`, `phone`, `category`, `ref_client`, `pt_vente`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `controller_name`, `comments`, `submission_time`, `town`, `lot`, `date_export`, `secteur`, `issue`) VALUES (NULL, :name_client, :avenue, :num_home, :commune, :phone, :category, :ref_client, :pt_vente, :geopoint, :lat, :lng, :altitude, :precision, :controller_name, :comments, :submission_time, :town, :lot, :date_export, :secteur, 0)";
+        $query = "INSERT INTO `t_reperage_import` (`id`, `name_client`, `avenue`, `num_home`, `commune`, `phone`, `category`, `ref_client`, `pt_vente`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `controller_name`, `comments`, `submission_time`, `town`, `lot`, `date_export`, `secteur`, `issue`, `_id`) VALUES (NULL, :name_client, :avenue, :num_home, :commune, :phone, :category, :ref_client, :pt_vente, :geopoint, :lat, :lng, :altitude, :precision, :controller_name, :comments, :submission_time, :town, :lot, :date_export, :secteur, 0,:idkobo)";
         return $this->dbLink->query($query, $params);
     }
 
@@ -52,6 +60,7 @@ Class Reperage {
         }
         return 0;
     }
+    
 
     /**
      * Return the number of not yet cleaned data grouped by lot

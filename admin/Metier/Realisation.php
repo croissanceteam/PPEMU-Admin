@@ -36,7 +36,7 @@ Class Realisation {
     }
    
     public function tempSave($params) {
-        $query = "INSERT INTO `t_realised_import` (`id`, `commune`, `address`, `avenue`, `num_home`, `phone`, `town`, `type_branch`, `water_given`, `entreprise`, `consultant`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `comments`, `submission_time`, `lot`, `date_export`, `ref_client`, `client`, `issue`) VALUES (NULL, :commune, :address, :avenue, :num_home, :phone, :town, :type_branch, :water_given, :entreprise, :consultant, :geopoint, :lat, :lng, :altitude, :precision, :comments, :submission_time, :lot, :date_export, :ref_client, :client, '0')";
+        $query = "INSERT INTO `t_realised_import` (`id`, `commune`, `address`, `avenue`, `num_home`, `phone`, `town`, `type_branch`, `water_given`, `entreprise`, `consultant`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `comments`, `submission_time`, `lot`, `date_export`, `ref_client`, `client`, `issue`,`_id`) VALUES (NULL, :commune, :address, :avenue, :num_home, :phone, :town, :type_branch, :water_given, :entreprise, :consultant, :geopoint, :lat, :lng, :altitude, :precision, :comments, :submission_time, :lot, :date_export, :ref_client, :client, '0',:idkobo)";
         return $this->dbLink->query($query, $params);
     }
 
@@ -51,6 +51,14 @@ Class Realisation {
             $mylastD = $dateQ->fetch();
             return $mylastD->lastDate;
         }
+        return 0;
+    }
+
+    public function getLastSubmissionTime($lot) {
+        $stmt = $this->dbLink->query("SELECT MAX(submission_time) as last_date FROM t_realised_import WHERE lot=?", [$lot]);
+        if ($stmt->rowCount() > 0)
+            return $stmt->fetch()->last_date;
+
         return 0;
     }
 
