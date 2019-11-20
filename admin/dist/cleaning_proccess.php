@@ -91,7 +91,8 @@ if (isset($_GET['cleanDataReper'])) {
                     //'date_export' => date('Y-m-d'),
                     'secteur' => $cus->secteur,
                     'matching' => $cus->matching,
-                    'error_matching' => $cus->error_matching
+                    'error_matching' => $cus->error_matching,
+                    'idkobo' => $cus->_id
                 ]);
 
                 if ($response == 0)
@@ -241,6 +242,7 @@ if (isset($_GET['cleanDataReper'])) {
                     'client' => $cus->client,
                     'lot' => $cus->lot,
                     'date_export' => $date_exportClean,
+                    'idkobo' => $cus->_id
                         //'date_export' => '2019-07-22',
                 ]);
 
