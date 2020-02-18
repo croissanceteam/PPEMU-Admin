@@ -290,21 +290,7 @@ else if(@isset($_GET['journalAnomalie']) )
     
     $where=" 1 ";
     
-    if(trim($typeDonnee)=="Reperage") {
-        if(trim($lot)!="") $where=$where." AND lot='$lot' ";
-        if(trim($anomalie)!="") $where=$where." AND issue='$anomalie' ";
-        
-        $resData=$reperage->getAnomalies_1($where);
-        
-        if($resData){
-            foreach ($resData as $cus)
-                $json[]=$cus;
-            
-            echo json_encode($json);
-        }
-        else echo "0";
-    }
-    else if(trim($typeDonnee)=="Realisation") {
+    if(trim($typeDonnee)=="Realisation") {
         if(trim($lot)!="") $where=$where." AND lot='$lot' ";
         if(trim($anomalie)!="") $where=$where." AND issue='$anomalie' ";
         
@@ -379,7 +365,8 @@ else if(@isset($_GET['rapportClean']) )
 else if(@isset($_GET['exporter']) )
 {
     $lot=htmlentities($_GET['lot'], ENT_QUOTES);
-    $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
+    // $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
+    $typeDonnee="Realisation";
     $anomalie=htmlentities($_GET['anomalie'], ENT_QUOTES);
     
     $fname="";

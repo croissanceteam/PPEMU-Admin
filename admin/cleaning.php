@@ -13,7 +13,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>PPEMU | Cleaning DATA</title>
+  <title>PPEMU | Cleaning Data</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -143,7 +143,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Cleaning DATA
+        Cleaning Data
       </h1>
       <ol class="breadcrumb">
         <li><a href="dashboard.php"><i class="fa fa-dashboard"></i> Accueil</a></li>
@@ -156,108 +156,6 @@
       <!-- Info boxes -->
 
       <!-- /.row -->
-
-      <div class="row">
-
-        <div class="col-md-6">
-          <div class="box">
-            <div class="box-header with-border">
-              <h3 class="box-title">Parcelles géo-référencées</h3>
-
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
-            
-            <!-- /.box-header -->
-            <div class="box-body">
-              <div class="row">
-                <div class="col-md-12">
-                    <div class="box-body table-responsive no-padding">
-                      <table class="table table table-bordered table-striped table-hover">
-                        <tr>
-                          <th>#</th>
-                          <th>Lot</th>
-                          <th>Date d'export</th>
-                          <th>Description</th>
-                          <th width="80"></th>
-                        </tr>
-                        <?php
-                            $reperage = new Reperage();
-
-                            $resData=$reperage->getNotCleanedData();
-
-                            if ($resData) {
-
-                                foreach ($resData as $cus) {
-                        ?>
-                        <tr>
-                            <td>
-                                <img src="./dist/img/ajax-loader.gif" align="center" class="loading" style="display:none">
-                                <i class="okTD fa fa-check" ></i>
-                                <i class="failTD fa fa-remove" ></i>
-                            </td>
-                            <td><?php echo 'Lot '.$cus->lot; ?></td>
-                            <td><?php echo date('d/m/Y', strtotime($cus->date_export)); ?></td>
-                            <td class="lot_detail">
-                                <?php
-                                    echo 'Nombre de Ligne : '.$cus->ligne;
-                                ?>
-                            </td>
-                            <td>
-                                <a class="btn btn-warning cleanDataReper grize" dir="<?php echo $cus->lot; ?>" >Clean</a>
-                            </td>
-                        </tr>
-                        <?php
-                                }
-                            }
-                            else echo "<tr><td colspan='5'><h3 style='color:#d44d06'>Aucune données Disponibles</h3></td></tr>"
-                        ?>
-                      </table>
-                    </div>
-                </div>
-                <!-- /.col -->
-              </div>
-              <!-- /.row -->
-            </div>
-            <!-- ./box-body -->
-          </div>
-          <!-- /.box -->
-        </div>
-
-        <div class="col-md-6">
-          <div class="box">
-            <div class="box-header with-border">
-              <h3 class="box-title">Rapport d'exécution</h3>
-
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body">
-              <div class="row">
-                <div class="col-md-12">
-                    <div class="box-body table-responsive no-padding" id="rapportCleaningReper">
-
-                    </div>
-                </div>
-                <!-- /.col -->
-              </div>
-              <!-- /.row -->
-            </div>
-            <!-- ./box-body -->
-          </div>
-          <!-- /.box -->
-        </div>
-
-
-        <!-- /.col -->
-      </div>
 
       <div class="row">
 

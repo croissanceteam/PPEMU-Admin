@@ -13,9 +13,9 @@ Class RapportOperation{
      * @return bool
      */
     public function saveRapport($params){
-        $query = "INSERT INTO `t_journal_operations` (`id`, `user`, `operation`, `detail_operation`, `lot`, `total_reper_before`, `total_reperImport_before`, `total_cleaned_found`, `total_cleaned_afected`, `total_reper_after`, `total_reperImport_after`, `total_match_found`, `total_match_afected`, `total_noObs`, `total_doublon`, `total_noObs_doublon`, `total_noMatch`, `dateOperation`) "
+        $query = "INSERT INTO `t_journal_operations` (`id`, `user`, `operation`, `detail_operation`, `lot`, total_data_cleaned,`total_doubl_rela`, total_doubl_absol, `total_doublon`, `dateOperation`) "
 
-                    . "VALUES (NULL, :user, :operation, :detail_operation, :lot, :total_reper_before, :total_reperImport_before, :total_cleaned_found, :total_cleaned_afected, :total_reper_after, :total_reperImport_after, :total_match_found, :total_match_afected, :total_noObs, :total_doublon, :total_noObs_doublon,:total_noMatch, :dateOperation)";
+                    . "VALUES (NULL, :user, :operation, :detail_operation, :lot,:total_data_cleaned,:total_doubl_rela,:total_doubl_absol, :total_doublon, :dateOperation)";
         return $this->dbLink->query($query, $params);
     }
 

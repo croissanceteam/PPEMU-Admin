@@ -158,7 +158,7 @@
                 
               <div class="box-body">
                 <div class="row">
-                    <div class="col-md-3">
+                    <!-- <div class="col-md-3">
                         <div class="form-group">
                             <label for="typeDonnee">Type des données</label>
                             <select id="typeDonnee" class="form-control selectTraitement">
@@ -167,11 +167,11 @@
                                 <option value="Realisation">Branchements réalisés</option>
                             </select>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="lot">Lot</label>
-                            <select id="lot" class="form-control selectTraitement" disabled>
+                            <select id="lot" class="form-control selectTraitement">
                                 <option value="">Séléctionnez Lot</option>
                                 <option value="1">Lot 1</option>
                                 <option value="2">Lot 2</option>
@@ -223,12 +223,10 @@
                        <thead>
                         <tr>
                             <th>#</th>
-                            <th>Type Données</th>
                             <th width="5%">Lot</th>
-                            <th>Total de données</th>
-                            <th>Données propres</th>
+                            <th>Total données traitées</th>
+                            <th>Types d'opération</th>
                             <!-- <th>Cleaned</th> -->
-                            <th>Attribution secteur</th>
                             <th>Anomalies trouvées</th>
                             <th>Date</th>
                         </tr>
@@ -244,40 +242,25 @@
                         ?>
                         <tr>
                             <td><?php echo $nb; ?></td>
-                            <td>
-                                <?php 
-                                    if($cus->operation=='Cleaning référencement') echo "Référencement"; 
-                                    else if($cus->operation=='Cleaning branchements') echo "Branchement"; 
-                                ?>
-                            </td>
+                            
                             <td><?php echo "Lot ".$cus->lot; ?></td>
                             <td>
                                 <?php 
                                     //echo "Avant : ".$cus->total_reperImport_before." </br>"; 
-                                    echo $cus->total_reperImport_before; 
+                                    echo $cus->total_data_cleaned; 
                                     //echo $cus->total_reperImport_after; 
                                 ?>
                             </td>
                             <td>
                                 <?php 
                                     //echo "Avant : ".$cus->total_reper_before." </br>"; 
-                                    echo $cus->total_reper_after; 
+                                    echo $cus->detail_operation; 
                                 ?>
                             </td>
-                            <!-- <td>
-                                <?php 
-                                    //echo "Trouvé : ".$cus->total_cleaned_found." </br>"; 
-                                    // echo "Traité : ".$cus->total_cleaned_afected; 
-                                ?>
-                            </td> -->
-                            <td>
-                                <?= ($cus->operation=='Cleaning référencement') ? "Affecté : ".$cus->total_match_afected : "Non applicable"; ?>
-                            </td>
+                            
                             <td>
                                 <?php 
-                                    echo "No Obs : ".$cus->total_noObs." </br>"; 
                                     echo "Doublon : ".$cus->total_doublon." </br>"; 
-                                    echo "Non retrouvé : ".$cus->total_noMatch." </br>";
                                 ?>
                             </td>
                             <td>

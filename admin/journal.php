@@ -160,19 +160,9 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="typeDonnee">Type des données</label>
-                            <select id="typeDonnee" class="selectAnomalie form-control" >
-                                <option value="">Séléctionnez</option>
-                                <option value="Reperage">Parcelles géo-référencées</option>
-                                <option value="Realisation">Branchements réalisés</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
                             <label for="lot">Lot</label>
-                            <select id="lot" class="selectAnomalie form-control"  disabled>
-                                <option value="">Séléctionnez Lot</option>
+                            <select id="lot" class="selectAnomalie form-control">
+                                <option value="">Séléctionnez lot</option>
                                     <option value="1">Lot 1</option>
                                     <option value="2">Lot 2</option>
                                     <option value="3">Lot 3</option>
@@ -188,13 +178,11 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="anomalie">Type Anomalies</label>
+                            <label for="anomalie">Type d'anomalie</label>
                             <select id="anomalie" class="selectAnomalie form-control" disabled  >
-                                <option value="">Séléctionnez Anomalie</option>
-                                <option value="1">Saisie sans OBS</option>
-                                <option value="2">Doublon</option>
-                                <option value="4">Existe déjà dans les données propres</option>
-                                <option value="5">Client introuvable</option>
+                                <option value="">Séléctionnez anomalie</option>
+                                <option value="2">Doublon absolu</option>
+                                <option value="4">Doublon relatif</option>
                                 
 <!--                                <option value="3">Le deux</option>-->
                             </select>

@@ -191,49 +191,7 @@
                     </div>
                 </div>
 
-
-                <div class="col-md-6">
-                    <h4>Synchronisation des parcelles référencées par lot</h4>
-                    <div class="box-body table-responsive no-padding">
-                      <table class="table table-bordered table-striped table-hover">
-                        <tr>
-                          <th>#</th>
-                          <th>Lot</th>
-                          <th>Dernière date</th>
-                          <th width="33%">Détail</th>
-                          <th></th>
-                        </tr>
-                        <tbody id="lotApi_reperage">
-                            <?php for($i=1;$i<=10; $i++){ ?>
-                            <tr class="lign_1<?php echo $i; ?>">
-                                <td>
-                                    <img src='./dist/img/ajax-loader.gif' class='ldTD' style='display:none'>
-                                    <i class="okTD fa fa-check" ></i>
-                                    <i class="failTD fa fa-remove" ></i>
-                                </td>
-                                <td>Lot <?php echo $i; ?></td>
-                                <td class="lot_date"></td>
-                                <td class="lot_detail"> </td>
-                                <td>
-                                    <button name='<?php echo $i; ?>' class='btn btn-warning api_actualiseLot grize' dir='Reperage' title='Actualise' >
-                                        <i class="fa fa-refresh"></i>
-                                    </button>
-                                    <button name='<?php echo $i; ?>' class='btn btn-info api_affichLot grize btn_display' dir='Reperage' title="Affichage" >
-                                        <i class="fa fa-eye"></i>
-                                    </button>
-                                    <button name='<?php echo $i; ?>' class='btn btn-success api_TelechargeLot grize btn_display' dir='Reperage' title="Télécharge" >
-                                        <i class="fa fa-cloud-download"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <?php } ?>
-                        </tbody>
-                      </table>
-                       <br>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <h4>Synchronisation des branchements réalisés par lot</h4>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-bordered table-striped table-hover">

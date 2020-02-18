@@ -8,12 +8,7 @@ Class Realisation {
         $this->dbLink = new Database();
     }
 
-    /**
-     * this function save realisation from kobo into t_realised_import table
-     *
-     * @param [type] $params
-     * @return bool
-     */
+    
     
     /**
      * 
@@ -22,19 +17,79 @@ Class Realisation {
      *
      * @return void
      */
-    public function runLikelihoodControl() {
-        $queryCorresp = "SELECT t.id,r.refclient,t.ref_client FROM t_realised_import t, t_root r WHERE (TRIM(r.client) LIKE CONCAT(TRIM(t.client),'%') OR TRIM(t.client) LIKE CONCAT(TRIM(r.client),'%')) AND (TRIM(r.avenue) LIKE CONCAT(TRIM(t.avenue),'%') OR TRIM(t.avenue) LIKE CONCAT(TRIM(r.avenue),'%')) AND t.ref_client NOT LIKE r.refclient";
-        $corresp_stmt = $this->dbLink->query($queryCorresp);
+    // public function runLikelihoodControl() {
+    //     $queryCorresp = "SELECT t.id,r.refclient,t.ref_client FROM t_realised_import t, t_root r WHERE (TRIM(r.client) LIKE CONCAT(TRIM(t.client),'%') OR TRIM(t.client) LIKE CONCAT(TRIM(r.client),'%')) AND (TRIM(r.avenue) LIKE CONCAT(TRIM(t.avenue),'%') OR TRIM(t.avenue) LIKE CONCAT(TRIM(r.avenue),'%')) AND t.ref_client NOT LIKE r.refclient";
+    //     $corresp_stmt = $this->dbLink->query($queryCorresp);
 
-        if ($corresp_stmt->rowCount()) {
-            foreach ($corresp_stmt as $data) {
-                $queryUpdateCus = "UPDATE t_realised_import SET ref_client=? WHERE id=?";
-                if($data->refclient != $data->ref_client)
-                    $this->dbLink->query($queryUpdateCus, [$data->refclient,$data->id]);
-            }
-        }
+    //     if ($corresp_stmt->rowCount()) {
+    //         foreach ($corresp_stmt as $data) {
+    //             $queryUpdateCus = "UPDATE t_realised_import SET ref_client=? WHERE id=?";
+    //             if($data->refclient != $data->ref_client)
+    //                 $this->dbLink->query($queryUpdateCus, [$data->refclient,$data->id]);
+    //         }
+    //     }
+    // }
+
+    public function getCleanData($lot)
+    {
+        $query = "SELECT id FROM t_realised_import WHERE issue=0 AND lot=:lot AND id NOT IN (SELECT id FROM t_realised_import t1
+                        WHERE EXISTS(
+                                    SELECT * FROM t_realised_import t2
+                                    WHERE t1.id <> t2.id AND t1.avenue = t2.avenue AND	t1.num_home = t2.num_home AND t1.client = t2.client 
+                                    AND t1.phone = t2.phone AND t1.ref_client = t2.ref_client AND t2.lot=:lot))";
+        return $this->dbLink->query($query, ['lot' => $lot]);
+    }
+
+    public function markCleanData($lot)
+    {
+        $queryUpdate = "UPDATE t_realised_import SET issue=:issue_value, clean=:clean_state WHERE issue=0 AND lot=:lot AND id NOT IN (SELECT id FROM t_realised_import t1
+                        WHERE EXISTS(
+                                    SELECT * FROM t_realised_import t2
+                                    WHERE t1.id <> t2.id AND t1.avenue = t2.avenue AND	t1.num_home = t2.num_home AND t1.client = t2.client 
+                                    AND t1.phone = t2.phone AND t1.ref_client = t2.ref_client AND t2.lot=:lot) AND t1.issue=0 AND t1.submission_time <> '')";
+        return $this->dbLink->query($queryUpdate, ['issue_value' => NULL, 'clean_state' => 1, 'lot' => $lot]);
+    }
+
+    public function markDuplicate($id,$issue)
+    {
+        $this->dbLink->query("UPDATE t_realised_import SET issue=?,clean=? WHERE id = ?",[$issue,0,$id]);
+    }
+
+    public function getAbsoluteDuplicates($lot)
+    {
+        return $this->dbLink->query("SELECT DISTINCT * FROM t_realised_import t1
+                WHERE EXISTS(
+                            SELECT * FROM t_realised_import t2
+                            WHERE t1.id <> t2.id AND t1.geopoint = t2.geopoint AND t1.ref_client = t2.ref_client AND t1.client = t2.client AND t2.lot=?)  AND t1.issue=0 ORDER BY t1.client",[$lot]);
+    }
+
+    public function getRelativeDuplicates($lot)
+    {
+        return $this->dbLink->query("SELECT DISTINCT * FROM t_realised_import t1
+                WHERE EXISTS(
+                            SELECT * FROM t_realised_import t2
+                            WHERE t1.id <> t2.id AND t1.avenue = t2.avenue AND	t1.num_home = t2.num_home AND t1.client = t2.client 
+                            AND t1.phone = t2.phone AND t1.ref_client = t2.ref_client AND t1.geopoint <> t2.geopoint AND t2.lot=?)  AND t1.issue=0 ORDER BY t1.client",[$lot]);
+    }
+
+    public function getControlersWhereTypeIsEmpty($lot)
+    {
+        return $this->dbLink->query("SELECT consultant,lot, type_branch FROM t_realised_import WHERE type_branch='' AND lot=? AND `issue`=0 AND clean IS NULL GROUP BY consultant",[$lot]);
+        
+    }
+
+    public function countByType($lot)
+    {
+        $query = "SELECT COUNT(*) AS nombre ,type_branch FROM t_realised_import WHERE lot=? AND issue=? GROUP BY type_branch ORDER BY type_branch";
+        return $this->dbLink->query($query,[$lot, 0]);
     }
    
+    /**
+     * this function save realisation from kobo into t_realised_import table
+     *
+     * @param [type] $params
+     * @return bool
+     */
     public function tempSave($params) {
         $query = "INSERT INTO `t_realised_import` (`id`, `commune`, `address`, `avenue`, `num_home`, `phone`, `town`, `type_branch`, `water_given`, `entreprise`, `consultant`, `geopoint`, `lat`, `lng`, `altitude`, `precision`, `comments`, `submission_time`, `lot`, `date_export`, `ref_client`, `client`, `issue`,`_id`) VALUES (NULL, :commune, :address, :avenue, :num_home, :phone, :town, :type_branch, :water_given, :entreprise, :consultant, :geopoint, :lat, :lng, :altitude, :precision, :comments, :submission_time, :lot, :date_export, :ref_client, :client, '0',:idkobo)";
         return $this->dbLink->query($query, $params);
@@ -68,7 +123,8 @@ Class Realisation {
      * @return void
      */
     public function getNotCleanedData() {
-        $query = $this->dbLink->query("SELECT MAX(lot) as lot, max(date_export) as date_export, count(*) as ligne FROM t_realised_import t1 WHERE `issue`=0 AND clean IS NULL GROUP BY lot");
+        //$query = $this->dbLink->query("SELECT MAX(lot) as lot, max(date_export) as date_export, count(*) as ligne FROM t_realised_import t1 WHERE `issue`=0 AND clean IS NULL GROUP BY lot");
+        $query = $this->dbLink->query("SELECT lot, max(date_export) as date_export, count(*) as ligne FROM t_realised_import WHERE `issue`=0 AND clean IS NULL GROUP BY lot");
 
         if ($query->rowCount() > 0)
             return $query;
@@ -95,7 +151,7 @@ Class Realisation {
     }
 
     public function getAnomalies_1($where) {
-        $query = $this->dbLink->query("SELECT `commune`, `address`, `avenue`, `num_home`, `consultant`, `lot`, `ref_client`, `client`, `label` FROM t_realised_import t LEFT JOIN (t_issue i) ON t.issue=i.valeur WHERE " . $where . " AND issue !='0' ORDER BY client");
+        $query = $this->dbLink->query("SELECT `commune`, `address`, `avenue`, `num_home`, `consultant`, `lot`, `ref_client`, `client`, `label`, `phone` FROM t_realised_import t LEFT JOIN t_issue i ON t.issue=i.valeur WHERE " . $where . " AND issue !='0' ORDER BY client");
 
         if ($query->rowCount() > 0)
             return $query;

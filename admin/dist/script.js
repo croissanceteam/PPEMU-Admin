@@ -443,27 +443,11 @@ $(document).ready(function (e) {
                 type: 'get',
                 url: 'dist/traitement_api.php',
                 data: 'traitement_api' + '&btn=' + 'api_TelechargeLot' + '&lot=' + lot + '&typeDonnee=' + typeD + '&row=' + JSON.stringify(value) + '&finTour=' + finTour,
-                dataType: 'json',
-                success: function (json) {
-                    if (json[1] == "Error") {
-                        ligne.find('.ldTD').hide();
-                        ligne.find('.okTD').hide();
-                        ligne.find('.failTD').show();
-                        ligne.find('.lot_detail').text(json[3]);
-                    } else {
-                        //$.each(json, function (index, value) {
-                            //alert('Fin Téléchargement \n OPERATION : '+typeD+' \n LOT : '+lot+' \n Nombres de Lignes Téléchargé : '+i+' \n Date Exportation : '+value[1]);
-                        //});
-
-                        ligne.find('.ldTD').hide();
-                        ligne.find('.api_TelechargeLot').hide();
-                        ligne.find('.okTD').show();
-                    }
-                    //$('.grize').removeAttr('disabled');
-                }
+                dataType: 'json'
             })
                 .done(function (data) {
                     var ligne1;
+                    
                     if (data[1] == "Error") {
                         ligne.find('.ldTD').hide();
                         ligne.find('.okTD').hide();
@@ -480,6 +464,8 @@ $(document).ready(function (e) {
                             if (incr == jsonKobo[value[0] - 1].length) {
                                 incr = 0;
                                 $('.grize').removeAttr('disabled');
+                                ligne.find('.ldTD').hide();
+                                ligne.find('.okTD').show();
                             }
                         });
 
@@ -497,62 +483,6 @@ $(document).ready(function (e) {
         });
 
     });
-
-
-    // Cleaning Data Reperage Process par lot
-    $(document).on('click', '.cleanDataReper', function (e) {
-        e.preventDefault();
-        console.log('.cleanDataReper clicked');
-
-        var lot = $(this).attr('dir');
-        var ligne = $(this).parent('td').parent('tr');
-        var totalData = ligne.find('.lot_detail').text().split(':')[1];
-        ligne.find('.grize').hide();
-        ligne.find('.okTD').hide();
-        ligne.find('.loading').show();
-
-        $("#rapportCleaningReper").empty();
-
-        $.ajax({
-            type: 'get',
-            url: 'dist/cleaning_proccess.php',
-            data: 'cleanDataReper' + '&lot=' + lot + '&total_data=' + totalData,
-            dataType: 'Text',
-            success: function (json) {
-
-                $("#rapportCleaningReper").append(json);
-
-                $.ajax({
-                    type: 'get',
-                    url: 'dist/cleaning_proccess.php',
-                    data: 'cleanDataReper_suite' + '&lot=' + lot,
-                    dataType: 'Text',
-                    success: function (json) {
-                        $("#rapportCleaningReper").append(json);
-
-                        ligne.find('.lot_detail').text("Nombre de Ligne : 0");
-
-                        ligne.find('.loading').hide();
-                        ligne.find('.okTD').show();
-                        $('.grize').removeAttr('disabled');
-
-                    },
-                    error: function (error) {
-                        console.log('Error :', error);
-
-                    }
-                });
-
-
-            },
-            error: function (error) {
-                console.log('Error :', error);
-
-            }
-        });
-
-    });
-
 
     // Cleaning Data Realisation Process par lot
     $(document).on('click', '.cleanDataReal', function (e) {
@@ -574,24 +504,32 @@ $(document).ready(function (e) {
             dataType: 'Text',
             success: function (json) {
 
+                console.log(json);
+
                 $("#rapportCleaningReal").append(json);
 
-                $.ajax({
-                    type: 'get',
-                    url: 'dist/cleaning_proccess.php',
-                    data: 'cleanDataReal_suite' + '&lot=' + lot,
-                    dataType: 'Text',
-                    success: function (json) {
-                        $("#rapportCleaningReal").append(json);
+                ligne.find('.lot_detail').text("Nombre de Ligne : 0");
 
-                        ligne.find('.lot_detail').text("Nombre de Ligne : 0");
+                ligne.find('.loading').hide();
+                ligne.find('.okTD').show();
+                $('.grize').removeAttr('disabled');
 
-                        ligne.find('.loading').hide();
-                        ligne.find('.okTD').show();
-                        $('.grize').removeAttr('disabled');
+                // $.ajax({
+                //     type: 'get',
+                //     url: 'dist/cleaning_proccess.php',
+                //     data: 'cleanDataReal_suite' + '&lot=' + lot,
+                //     dataType: 'Text',
+                //     success: function (json) {
+                //         $("#rapportCleaningReal").append(json);
 
-                    }
-                });
+                //         ligne.find('.lot_detail').text("Nombre de Ligne : 0");
+
+                //         ligne.find('.loading').hide();
+                //         ligne.find('.okTD').show();
+                //         $('.grize').removeAttr('disabled');
+
+                //     }
+                // });
 
             }
         });
@@ -603,13 +541,14 @@ $(document).ready(function (e) {
     $(document).on('change', '.selectTraitement', function (e) {
         e.preventDefault();
 
-        var typeD = $("#typeDonnee").val();
+        // var typeD = $("#typeDonnee").val();
+        var typeD = "Realisation";
 
         //if(typeD!=""){
         var lot = $("#lot").val();
 
-        $('#typeDonnee').attr('disabled', 'on');
-        $('#lot').attr('disabled', 'on');
+        // $('#typeDonnee').attr('disabled', 'on');
+        // $('#lot').attr('disabled', 'on');
 
         $(this).removeAttr('disabled');
 
@@ -623,7 +562,7 @@ $(document).ready(function (e) {
             success: function (json) {
 
                 if (json == "0") {
-                    $("#listTraitementClean").append("<tr><td colspan='8'><h3 style='color:#d44d06'>Aucune information trouvée dans le Résumé</h3></td></tr>");
+                    $("#listTraitementClean").append("<tr><td colspan='8'><h3 style='color:#d44d06'>Aucune information trouvée dans le résumé</h3></td></tr>");
 
                     $('.loading').hide();
                     $("#typeDonnee").removeAttr('disabled');
@@ -638,12 +577,11 @@ $(document).ready(function (e) {
                             var typ = "Branchement";
                             var match = " Non applicable ";
                         }
-                        console.log('VOici le type : ',typ);
-                        $("#listTraitementClean").append("<tr><td>" + (i + 1) + "</td><td>" + typ + "</td><td>Lot " + v.lot + "</td>"
-                            + "<td>" + v.total_reperImport_before + "</td>"
-                            + "<td>" + v.total_reper_after + "</td>"
-                            + "<td>Affecté : " + match + "</td>"
-                            + "<td> No Obs : " + v.total_noObs + "</br> Doublon : " + v.total_doublon + "</br> Non retrouvé : " + v.total_noMatch + "</td>"
+                        console.log('Voici le type : ',typ);
+                        $("#listTraitementClean").append("<tr><td>" + (i + 1) + "</td><td>Lot " + v.lot + "</td>"
+                            + "<td>" + v.total_data_cleaned + "</td>"
+                            + "<td>" + v.detail_operation + "</td>"
+                            + "<td> Doublons : " + v.total_doublon + "</td>"
                             + "<td>" + v.dateOperation + "</td>"
                         );
                     });
@@ -664,15 +602,16 @@ $(document).ready(function (e) {
     $(document).on('change', '.selectAnomalie', function (e) {
         e.preventDefault();
 
-        var typeD = $("#typeDonnee").val();
+        // var typeD = $("#typeDonnee").val();
+        var typeD = "Realisation";
 
         if (typeD != "") {
             var lot = $("#lot").val();
             var anomalie = $("#anomalie").val();
 
-            $('#typeDonnee').attr('disabled', 'on');
-            $('#lot').attr('disabled', 'on');
-            $('#anomalie').attr('disabled', 'on');
+            // $('#typeDonnee').attr('disabled', 'on');
+            // $('#lot').attr('disabled', 'on');
+            // $('#anomalie').attr('disabled', 'on');
 
             $(this).removeAttr('disabled');
 
@@ -697,17 +636,12 @@ $(document).ready(function (e) {
                         $("#anomalie").removeAttr('disabled');
                     } else {
                         $.each(json, function (i, v) {
-                            if (typeD == 'Reperage') {
-                                $("#listDataAnomalies").append("<tr><td>" + (i + 1) + "</td><td>Lot " + v.lot + "</td>"
-                                    + "<td>" + v.name_client + "</td><td><b>" + v.ref_client + "</b> </td>"
-                                    + "<td>" + v.num_home + ", " + v.avenue + ", <br/>" + v.commune + "</td>"
-                                    + "<td>" + v.controller_name + "</td><td>" + v.label + "</td></tr>");
-                            } else if (typeD == 'Realisation') {
-                                $("#listDataAnomalies").append("<tr><td>" + (i + 1) + "</td><td>Lot " + v.lot + "</td>"
-                                    + "<td>" + v.client + "</td><td><b>" + v.ref_client + "</b> </td>"
-                                    + "<td>" + v.num_home + ", " + v.avenue + ", <br/>" + v.address + ", " + v.commune + "</td>"
-                                    + "<td>" + v.consultant + "</td><td>" + v.label + "</td></tr>");
-                            }
+                            
+                            $("#listDataAnomalies").append("<tr><td>" + (i + 1) + "</td><td>Lot " + v.lot + "</td>"
+                                + "<td>" + v.client + "</td><td><b>" + v.ref_client + "</b> </td>"
+                                + "<td>" + v.num_home + ", " + v.avenue + ", <br/>" + v.address + ", " + v.commune + "</td>"
+                                + "<td>" + v.consultant + "</td><td>" + v.label + "</td></tr>");
+                            
                         });
 
                         $('.loading').hide();
