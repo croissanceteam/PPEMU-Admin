@@ -42,11 +42,12 @@ Class Realisation {
 
     public function markCleanData($lot)
     {
-        $queryUpdate = "UPDATE t_realised_import SET issue=:issue_value, clean=:clean_state WHERE issue=0 AND lot=:lot AND id NOT IN (SELECT id FROM t_realised_import t1
-                        WHERE EXISTS(
-                                    SELECT * FROM t_realised_import t2
-                                    WHERE t1.id <> t2.id AND t1.avenue = t2.avenue AND	t1.num_home = t2.num_home AND t1.client = t2.client 
-                                    AND t1.phone = t2.phone AND t1.ref_client = t2.ref_client AND t2.lot=:lot) AND t1.issue=0 AND t1.submission_time <> '')";
+        // $queryUpdate = "UPDATE t_realised_import SET issue=:issue_value, clean=:clean_state WHERE issue=0 AND lot=:lot AND id NOT IN (SELECT id FROM t_realised_import t1
+        //                 WHERE EXISTS(
+        //                             SELECT * FROM t_realised_import t2
+        //                             WHERE t1.id <> t2.id AND t1.avenue = t2.avenue AND	t1.num_home = t2.num_home AND t1.client = t2.client 
+        //                             AND t1.phone = t2.phone AND t1.ref_client = t2.ref_client AND t2.lot=:lot) AND t1.issue=0 AND t1.submission_time <> '')";
+        $queryUpdate = "UPDATE t_realised_import SET issue=:issue_value, clean=:clean_state WHERE issue=0 AND lot=:lot";
         return $this->dbLink->query($queryUpdate, ['issue_value' => NULL, 'clean_state' => 1, 'lot' => $lot]);
     }
 
