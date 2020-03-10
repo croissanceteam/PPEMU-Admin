@@ -260,7 +260,7 @@
           </div>
         </div>
 
-        <div class="col-md-12" id="Correction">
+        <div class="col-md-12" id="Correction" style="display:none">
           <div class="box">
             <div class="box-header with-border">
               <h3 class="box-title">Importer un fichier CSV / EXCEL. &nbsp;&nbsp; :: &nbsp;&nbsp;  <!--Correction des données erronées--></h3>
