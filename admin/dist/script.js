@@ -150,9 +150,7 @@ $(document).ready(function (e) {
                 type: 'get',
                 url: 'dist/traitement_api.php',
                 data: 'traitement_api' + '&btn=' + 'api_actualiseLot' + '&lot=' + lot + '&typeDonnee=' + typeD,
-                dataType: 'json',
-                success: function (json) {
-                }
+                dataType: 'json'
             })
 
                 .done(function (data) {
@@ -282,9 +280,7 @@ $(document).ready(function (e) {
                         type: 'get',
                         url: 'dist/traitement_api.php',
                         data: 'traitement_api' + '&btn=' + 'api_TelechargeLot' + '&lot=' + lot + '&typeDonnee=' + typeD + '&row=' + JSON.stringify(value) + '&finTour=' + finTour,
-                        dataType: 'json',
-                        success: function (json) {
-                        }
+                        dataType: 'json'
                     })
                         .done(function (data) {
                             var ligne1;
@@ -468,7 +464,13 @@ $(document).ready(function (e) {
                                 ligne.find('.okTD').show();
                             }
                         });
-
+                        console.log(data.length);
+                        
+                        if(data.length == 4){
+                            console.log(data);
+                        }
+                        
+                        
                     }
                 })
                 .fail(function (data) {

@@ -126,58 +126,58 @@ if(isset($_GET['traitement_api'])){
         $typeDonnee=htmlentities($_GET['typeDonnee'], ENT_QUOTES);
         $finTour=htmlentities($_GET['finTour'], ENT_QUOTES); //Pour savoir la fin du tour de telechargement
             
-        if($typeDonnee=='Reperage'){
+        // if($typeDonnee=='Reperage'){
 
-            $nbrligne=0;
-            $v = json_decode($_GET['row'],true);
+        //     $nbrligne=0;
+        //     $v = json_decode($_GET['row'],true);
                     
-            $geopoint= isset($v['G_olocalisation']) ? $v['G_olocalisation'] : $v['Golocalisation'];
+        //     $geopoint= isset($v['G_olocalisation']) ? $v['G_olocalisation'] : $v['Golocalisation'];
 
-            $name_client= isset($v['Nom_Client']) ? $v['Nom_Client'] : $v['NomClient'];
+        //     $name_client= isset($v['Nom_Client']) ? $v['Nom_Client'] : $v['NomClient'];
 
-            $avenue= isset($v['Avenue_Quartier']) ? $v['Avenue_Quartier'] : $v['AvenueQuartier'];
-            $secteur= isset($v['secteur']) ? $v['secteur'] : "";
+        //     $avenue= isset($v['Avenue_Quartier']) ? $v['Avenue_Quartier'] : $v['AvenueQuartier'];
+        //     $secteur= isset($v['secteur']) ? $v['secteur'] : "";
 
-            $num_home= isset($v['Num_ro_parcelle']) ? $v['Num_ro_parcelle'] : $v['Numparcelle'];
-            $phone= isset($v['Num_ro_t_l_phone']) ? $v['Num_ro_t_l_phone'] : $v['Numphone'];
-            $category= isset($v['Cat_gorie_Client']) ? $v['Cat_gorie_Client'] : $v['CatgorieClient'];
-            $pt_vente= isset($v['Etat_du_point_de_vente']) ? $v['Etat_du_point_de_vente'] : $v['Etatpvente'];
-            $idkobo = isset($v['_id']) ? $v['_id'] : NULL;
+        //     $num_home= isset($v['Num_ro_parcelle']) ? $v['Num_ro_parcelle'] : $v['Numparcelle'];
+        //     $phone= isset($v['Num_ro_t_l_phone']) ? $v['Num_ro_t_l_phone'] : $v['Numphone'];
+        //     $category= isset($v['Cat_gorie_Client']) ? $v['Cat_gorie_Client'] : $v['CatgorieClient'];
+        //     $pt_vente= isset($v['Etat_du_point_de_vente']) ? $v['Etat_du_point_de_vente'] : $v['Etatpvente'];
+        //     $idkobo = isset($v['_id']) ? $v['_id'] : NULL;
 
-            if(isset($v['Ref_Client'])) $ref_client=@htmlentities($v['Ref_Client'], ENT_QUOTES);
-            else if(isset($v['Numero_site'])) $ref_client=@htmlentities($v['Numero_site'], ENT_QUOTES);
-            else $ref_client=@htmlentities($v['numsite'], ENT_QUOTES);
+        //     if(isset($v['Ref_Client'])) $ref_client=@htmlentities($v['Ref_Client'], ENT_QUOTES);
+        //     else if(isset($v['Numero_site'])) $ref_client=@htmlentities($v['Numero_site'], ENT_QUOTES);
+        //     else $ref_client=@htmlentities($v['numsite'], ENT_QUOTES);
 
-            if(isset($v['Nom_du_Contr_leur'])) $controller_name=@htmlentities($v['Nom_du_Contr_leur'], ENT_QUOTES);
-            else if(isset($v['consultant'])) $controller_name=@htmlentities($v['consultant'], ENT_QUOTES);
-            else $controller_name="";
+        //     if(isset($v['Nom_du_Contr_leur'])) $controller_name=@htmlentities($v['Nom_du_Contr_leur'], ENT_QUOTES);
+        //     else if(isset($v['consultant'])) $controller_name=@htmlentities($v['consultant'], ENT_QUOTES);
+        //     else $controller_name="";
 
-            list($lat_2, $lng_2, $altitude, $precision)=explode(' ', $geopoint);
+        //     list($lat_2, $lng_2, $altitude, $precision)=explode(' ', $geopoint);
 
-            $req = $reperage->tempSave([
-                    'name_client'   =>  $name_client,
-                    'avenue'        =>  $avenue,
-                    'num_home'      =>  $num_home,
-                    'commune'       =>  @htmlentities($v['Commune'], ENT_QUOTES),
-                    'phone'         =>  $phone,
-                    'category'      =>  $category,
-                    'ref_client'    =>  $ref_client,
-                    'pt_vente'      =>  $pt_vente,
-                    'geopoint'      =>  $geopoint,
-                    'lat'           =>  $lat_2,
-                    'lng'           =>  $lng_2,
-                    'altitude'      =>  $altitude, 
-                    'precision'     =>  $precision,
-                'controller_name'   =>  $controller_name,
-                'comments'          =>  @htmlentities($v['Commentaires'], ENT_QUOTES),
-                'submission_time'   =>  @htmlentities($v['_submission_time'], ENT_QUOTES),
-                'town'              =>  '', 
-                'date_export'       =>  $helper->ngonga(),
-                'secteur'               =>  $secteur,
-                'lot'               =>  $lot,
-                'idkobo'            =>  $idkobo               
-            ]);
-        }
+        //     $req = $reperage->tempSave([
+        //             'name_client'   =>  $name_client,
+        //             'avenue'        =>  $avenue,
+        //             'num_home'      =>  $num_home,
+        //             'commune'       =>  @htmlentities($v['Commune'], ENT_QUOTES),
+        //             'phone'         =>  $phone,
+        //             'category'      =>  $category,
+        //             'ref_client'    =>  $ref_client,
+        //             'pt_vente'      =>  $pt_vente,
+        //             'geopoint'      =>  $geopoint,
+        //             'lat'           =>  $lat_2,
+        //             'lng'           =>  $lng_2,
+        //             'altitude'      =>  $altitude, 
+        //             'precision'     =>  $precision,
+        //         'controller_name'   =>  $controller_name,
+        //         'comments'          =>  @htmlentities($v['Commentaires'], ENT_QUOTES),
+        //         'submission_time'   =>  @htmlentities($v['_submission_time'], ENT_QUOTES),
+        //         'town'              =>  '', 
+        //         'date_export'       =>  $helper->ngonga(),
+        //         'secteur'               =>  $secteur,
+        //         'lot'               =>  $lot,
+        //         'idkobo'            =>  $idkobo               
+        //     ]);
+        // }
             
         if($typeDonnee=='Realisation'){
 
@@ -186,40 +186,46 @@ if(isset($_GET['traitement_api'])){
                     
             $geopoint= $v['Emplacement_du_branchement_r_alis'];
             $idkobo = isset($v['_id']) ? $v['_id'] : NULL;
-
+            
             list($lat_2, $lng_2, $altitude, $precision)=explode(' ', $geopoint);
             try {
-                $req = $realisation->tempSave([
-                    'commune'       =>  @htmlentities($v['Commune'], ENT_QUOTES),
-                    'address'       =>  @htmlentities($v['Quartier'], ENT_QUOTES),
-                    'avenue'        =>  @htmlentities($v['Avenue'], ENT_QUOTES),
-                    'num_home'      =>  @htmlentities($v['Num_ro'], ENT_QUOTES),
-                    'phone'         =>  @htmlentities($v['T_l_phone'], ENT_QUOTES),
-                    'town'          =>  @htmlentities($v['Ville'], ENT_QUOTES),
-                    'type_branch'   =>  @htmlentities($v['Branchement_Social_ou_Appropri'], ENT_QUOTES),
-                    'water_given'   =>  "",
-                    'entreprise'    =>  @htmlentities($v['Entreprise_qui_a_r_alis_le_branchement'], ENT_QUOTES),
-                    'consultant'    =>  @htmlentities($v['Consultant_qui_a_suivi_l_ex_cution_KIN'], ENT_QUOTES),
-                    'geopoint'      =>  $geopoint,
-                    'lat'           =>  $lat_2,
-                    'lng'           =>  $lng_2,
-                    'altitude'      =>  $altitude, 
-                    'precision'     =>  $precision,
-                'comments'          =>  @htmlentities($v['Commentaires'], ENT_QUOTES),
-                'submission_time'   =>  @htmlentities($v['_submission_time'], ENT_QUOTES),
-                'ref_client'        =>  @htmlentities($v['num_site'], ENT_QUOTES),
-                'client'            =>  @htmlentities($v['Nom_du_Client'], ENT_QUOTES),
-                'date_export'       =>  $helper->ngonga(),
-                'lot'               =>  $lot,
-                'idkobo'            =>  $idkobo 
-            ]);
+            //     $req = $realisation->tempSave([
+            //         'commune'       =>  @htmlentities($v['Commune'], ENT_QUOTES),
+            //         'address'       =>  @htmlentities($v['Quartier'], ENT_QUOTES),
+            //         'avenue'        =>  @htmlentities($v['Avenue'], ENT_QUOTES),
+            //         'num_home'      =>  @htmlentities($v['Num_ro'], ENT_QUOTES),
+            //         'phone'         =>  @htmlentities($v['T_l_phone'], ENT_QUOTES),
+            //         'town'          =>  @htmlentities($v['Ville'], ENT_QUOTES),
+            //         'type_branch'   =>  @htmlentities($v['Branchement_Social_ou_Appropri'], ENT_QUOTES),
+            //         'water_given'   =>  "",
+            //         'entreprise'    =>  @htmlentities($v['Entreprise_qui_a_r_alis_le_branchement'], ENT_QUOTES),
+            //         'consultant'    =>  @htmlentities($v['Consultant_qui_a_suivi_l_ex_cution_KIN'], ENT_QUOTES),
+            //         'geopoint'      =>  $geopoint,
+            //         'lat'           =>  $lat_2,
+            //         'lng'           =>  $lng_2,
+            //         'altitude'      =>  $altitude, 
+            //         'precision'     =>  $precision,
+            //     'comments'          =>  @htmlentities($v['Commentaires'], ENT_QUOTES),
+            //     'submission_time'   =>  @htmlentities($v['_submission_time'], ENT_QUOTES),
+            //     'ref_client'        =>  @htmlentities($v['num_site'], ENT_QUOTES),
+            //     'client'            =>  @htmlentities($v['Nom_du_Client'], ENT_QUOTES),
+            //     'date_export'       =>  $helper->ngonga(),
+            //     'lot'               =>  $lot,
+            //     'idkobo'            =>  $idkobo 
+            // ]);
             } catch (\Throwable $th) {
-                echo json_encode($th->getMessage());
+                // echo json_encode($th->getMessage());
+                echo json_encode([$lot, "Error", $typeDonnee, $e->getMessage()]);
             }
             
         }
 
-        $json[] =array($lot, date('d/m/Y'), $typeDonnee);
+        if($idkobo == NULL)
+            $json[] =array($lot, date('d/m/Y'), $typeDonnee,$v);
+        else
+            $json[] =array($lot, date('d/m/Y'), $typeDonnee);
+
+        
 
         echo json_encode($json);
         
