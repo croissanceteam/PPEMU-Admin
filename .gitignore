@@ -1,7 +1,7 @@
 #composer.lock
 #vendor/
 #sync/*.*
-admin/Metier/sync/
+admin/Metier/sync/*.*
 admin/Metier/Database.php
 mobile/*.*
 /nbproject/private/

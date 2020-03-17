@@ -189,30 +189,30 @@ if(isset($_GET['traitement_api'])){
             
             list($lat_2, $lng_2, $altitude, $precision)=explode(' ', $geopoint);
             try {
-            //     $req = $realisation->tempSave([
-            //         'commune'       =>  @htmlentities($v['Commune'], ENT_QUOTES),
-            //         'address'       =>  @htmlentities($v['Quartier'], ENT_QUOTES),
-            //         'avenue'        =>  @htmlentities($v['Avenue'], ENT_QUOTES),
-            //         'num_home'      =>  @htmlentities($v['Num_ro'], ENT_QUOTES),
-            //         'phone'         =>  @htmlentities($v['T_l_phone'], ENT_QUOTES),
-            //         'town'          =>  @htmlentities($v['Ville'], ENT_QUOTES),
-            //         'type_branch'   =>  @htmlentities($v['Branchement_Social_ou_Appropri'], ENT_QUOTES),
-            //         'water_given'   =>  "",
-            //         'entreprise'    =>  @htmlentities($v['Entreprise_qui_a_r_alis_le_branchement'], ENT_QUOTES),
-            //         'consultant'    =>  @htmlentities($v['Consultant_qui_a_suivi_l_ex_cution_KIN'], ENT_QUOTES),
-            //         'geopoint'      =>  $geopoint,
-            //         'lat'           =>  $lat_2,
-            //         'lng'           =>  $lng_2,
-            //         'altitude'      =>  $altitude, 
-            //         'precision'     =>  $precision,
-            //     'comments'          =>  @htmlentities($v['Commentaires'], ENT_QUOTES),
-            //     'submission_time'   =>  @htmlentities($v['_submission_time'], ENT_QUOTES),
-            //     'ref_client'        =>  @htmlentities($v['num_site'], ENT_QUOTES),
-            //     'client'            =>  @htmlentities($v['Nom_du_Client'], ENT_QUOTES),
-            //     'date_export'       =>  $helper->ngonga(),
-            //     'lot'               =>  $lot,
-            //     'idkobo'            =>  $idkobo 
-            // ]);
+                $req = $realisation->tempSave([
+                    'commune'       =>  @htmlentities($v['Commune'], ENT_QUOTES),
+                    'address'       =>  @htmlentities($v['Quartier'], ENT_QUOTES),
+                    'avenue'        =>  @htmlentities($v['Avenue'], ENT_QUOTES),
+                    'num_home'      =>  @htmlentities($v['Num_ro'], ENT_QUOTES),
+                    'phone'         =>  @htmlentities($v['T_l_phone'], ENT_QUOTES),
+                    'town'          =>  @htmlentities($v['Ville'], ENT_QUOTES),
+                    'type_branch'   =>  @htmlentities($v['Branchement_Social_ou_Appropri'], ENT_QUOTES),
+                    'water_given'   =>  "",
+                    'entreprise'    =>  @htmlentities($v['Entreprise_qui_a_r_alis_le_branchement'], ENT_QUOTES),
+                    'consultant'    =>  @htmlentities($v['Consultant_qui_a_suivi_l_ex_cution_KIN'], ENT_QUOTES),
+                    'geopoint'      =>  $geopoint,
+                    'lat'           =>  $lat_2,
+                    'lng'           =>  $lng_2,
+                    'altitude'      =>  $altitude, 
+                    'precision'     =>  $precision,
+                'comments'          =>  @htmlentities($v['Commentaires'], ENT_QUOTES),
+                'submission_time'   =>  @htmlentities($v['_submission_time'], ENT_QUOTES),
+                'ref_client'        =>  @htmlentities($v['num_site'], ENT_QUOTES),
+                'client'            =>  @htmlentities($v['Nom_du_Client'], ENT_QUOTES),
+                'date_export'       =>  $helper->ngonga(),
+                'lot'               =>  $lot,
+                'idkobo'            =>  $idkobo 
+            ]);
             } catch (\Throwable $th) {
                 // echo json_encode($th->getMessage());
                 echo json_encode([$lot, "Error", $typeDonnee, $e->getMessage()]);
