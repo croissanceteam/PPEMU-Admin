@@ -8,7 +8,20 @@ Class Realisation {
         $this->dbLink = new Database();
     }
 
-    
+    /**
+     * Return the last export date to display on the import page at 'dernière date' column
+     * of the synchronisation table
+     *
+     * @param [type] $lot
+     * @return void
+     */
+    public function getLastDateExport($lot) {
+        $stmt = $this->dbLink->query("SELECT DATE_FORMAT(MAX(date_export),'%d/%m/%Y à %H:%i:%s') AS last_date_export FROM t_realised_import WHERE lot=?", [$lot]);
+        if ($stmt->rowCount() > 0)
+            return $stmt->fetch()->last_date_export;
+
+        return 0;
+    }
     
     /**
      * 
@@ -51,6 +64,14 @@ Class Realisation {
         return $this->dbLink->query($queryUpdate, ['issue_value' => NULL, 'clean_state' => 1, 'lot' => $lot]);
     }
 
+    /**
+     * Mark duplicates data according to whether they are absolute duplicates 
+     * or relative duplicates
+     *
+     * @param [type] $id
+     * @param [type] $issue
+     * @return void
+     */
     public function markDuplicate($id,$issue)
     {
         $this->dbLink->query("UPDATE t_realised_import SET issue=?,clean=? WHERE id = ?",[$issue,0,$id]);
@@ -86,7 +107,7 @@ Class Realisation {
     }
    
     /**
-     * this function save realisation from kobo into t_realised_import table
+     * Save realisation from kobo into t_realised_import table
      *
      * @param [type] $params
      * @return bool
@@ -110,6 +131,14 @@ Class Realisation {
         return 0;
     }
 
+    /**
+     * Return the last submission_time to compare with new data
+     * while synchronizing in order to not export data those were 
+     * previously exported
+     *
+     * @param [type] $lot
+     * @return void
+     */
     public function getLastSubmissionTime($lot) {
         $stmt = $this->dbLink->query("SELECT MAX(submission_time) as last_date FROM t_realised_import WHERE lot=?", [$lot]);
         if ($stmt->rowCount() > 0)
@@ -190,10 +219,9 @@ Class Realisation {
     }
 
     /**
-     * return the number of occurence that already exist in the reperage table
+     * insert data from realised_import table into the realised table
      *
      * @param [type] $params
-     * @param [type] $refclient
      * @return int
      */
     public function insert($params) {
@@ -259,6 +287,14 @@ Class Realisation {
         return $this->dbLink->query($req, [$lot]);
     }
 
+    /**
+     * Help to mark a record that has an issue by giving it 
+     * a number corresponding to its issue in order to find appropriate solution 
+     * for each case
+     *
+     * @param [type] $params
+     * @return void
+     */
     public function setIssue($params) {
         $req = "UPDATE t_realised_import SET `issue`=?, clean=? WHERE id = ?";
         return $this->dbLink->query($req, $params);

@@ -175,7 +175,7 @@
 
               <div class="row">
 
-                <div class="col-md-7">
+                <div class="col-md-7" style="display:none">
                     <button type="button" class="btn btn-warning grize" dir="" id="api_actualise" >
                         <i class="fa fa-refresh"></i>
                         Synchroniser
@@ -214,15 +214,10 @@
                                 <td class="lot_date"></td>
                                 <td class="lot_detail"> </td>
                                 <td>
-                                    <button name='<?php echo $i; ?>' class='btn btn-warning api_actualiseLot grize' dir='Realisation' value='Affiche' >
+                                    <button name='<?php echo $i; ?>' class='btn btn-warning api_synchroniseLot grize' dir='Realisation' value='Affiche' >
                                         <i class="fa fa-refresh"></i>
                                     </button>
-                                    <button name='<?php echo $i; ?>' class='btn btn-info api_affichLot grize btn_display' dir='Realisation' title="Affichage" >
-                                        <i class="fa fa-eye"></i>
-                                    </button>
-                                    <button name='<?php echo $i; ?>' class='btn btn-success api_TelechargeLot grize btn_display' dir='Realisation' >
-                                        <i class="fa fa-cloud-download"></i>
-                                    </button>
+                                    
                                 </td>
                             </tr>
                             <?php } ?>
