@@ -51,9 +51,6 @@
             color:red;
             display: none
         }
-        .btn_display{
-            display: none
-        }
     </style>
 
 </head>
@@ -175,15 +172,11 @@
 
               <div class="row">
 
-                <div class="col-md-7" style="display:none">
+                <div class="col-md-7">
                     <button type="button" class="btn btn-warning grize" dir="" id="api_actualise" >
                         <i class="fa fa-refresh"></i>
-                        Synchroniser
-                    </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <button type="button" class="btn btn-success grize btn_display" dir="" id="api_downAll_1" >
-                        <i class="fa fa-cloud-download"></i>
-                        Importer les données
-                    </button><br>
+                        Tout synchroniser
+                    </button>
                 </div>
                 <div class="col-md-5">
                     <div id="loadingImport02" style="display:none">
@@ -203,14 +196,18 @@
                           <th ></th>
                         </tr>
                         <tbody id="lotApi_realisation">
-                            <?php for($i=1;$i<=10; $i++){ ?>
-                            <tr class="lign_2<?php echo $i; ?>">
+                            <?php for($i=1;$i<=10; $i++): ?>
+                            <tr class="line<?= $i; ?>">
                                 <td>
-                                    <img src='./dist/img/ajax-loader.gif' class='ldTD' style='display:none'>
+                                    <div class="ldTD" style='display:none'>
+                                      <img src='./dist/img/ajax-loader.gif' >
+                                      synchronisation ...
+                                    </div>
+                                    
                                     <i class="okTD fa fa-check" ></i>
                                     <i class="failTD fa fa-remove" ></i>
                                 </td>
-                                <td>Lot <?php echo $i; ?></td>
+                                <td>Lot <?= $i; ?></td>
                                 <td class="lot_date"></td>
                                 <td class="lot_detail"> </td>
                                 <td>
@@ -220,7 +217,7 @@
                                     
                                 </td>
                             </tr>
-                            <?php } ?>
+                            <?php endfor; ?>
                         </tbody>
                       </table>
                        <br>

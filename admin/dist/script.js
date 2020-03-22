@@ -6,7 +6,7 @@ $(document).ready(function (e) {
     $(document).on('click', '.grize', function (e) {
         incr = 0;
         $('.grize').attr('disabled', 'on');
-        $(this).removeAttr('disabled');
+        // $(this).removeAttr('disabled');
     });
 
 
@@ -46,6 +46,97 @@ $(document).ready(function (e) {
 
     }));
 
+    $(document).on('click', '#api_actualise', function(e){
+        incr=0;
+        var lot=0;
+        var typeD='Realisation';
+        var line_class='.line';
+        
+        $("#loadingImport02").hide();
+        $('.tableau_affichage #lotApi_affichage').empty();
+        $('.tableau_affichage').hide();
+        
+        for (var i = 1; i < 11; i++) {
+            lot++;
+            
+            var ligne=$(line_class+lot);
+
+            ligne.find('.okTD').hide();
+            ligne.find('.failTD').hide();
+            ligne.find('.ldTD').show();
+            ligne.find('.lot_date').text('');
+            ligne.find('.lot_detail').text('');
+
+            $.ajax({
+                type:'get',
+                url:'dist/traitement_api.php',
+                data:'traitement_api' + '&btn=' + 'api_synchroniseLot' + '&lot=' + lot + '&typeDonnee=' + typeD,
+                dataType:'json',
+            })
+            .done(function(data) {
+                console.log(data);
+                
+                incr++;
+                var ligne1;
+                if(data[1]=="Error"){
+                    ligne1=$('.line'+data[0]);
+                    
+                    ligne1.find('.ldTD').hide();
+                    ligne1.find('.failTD').show();
+                    ligne1.find('.lot_detail').text(data[3]);
+                }
+                else {
+                    var nbrEnreg=0;
+                    $.each(data, function(index, value){
+                        ligne1=$('.line'+value[0]);
+                        ligne1.find('.lot_date').text(value[2]);
+                        ligne1.find('.lot_detail').text("Enregistrement(s) : "+value[1]);
+                        //jsonKobo[value[0]-1]=value[4];
+                        nbrEnreg=value[1];
+                    });
+                    
+                    ligne1.find('.ldTD').hide();
+                    ligne1.find('.failTD').hide();
+                    ligne1.find('.okTD').show();
+                }
+                if(incr==10){
+                    $('.grize').removeAttr('disabled');
+                } 
+            })
+            .fail(function(data) {
+                incr++;
+                var ligne1;
+                
+                ligne1=$('.line'+(incr));
+                
+                ligne1=$('.line'+data[0]);
+//                console.log(data);
+//                alert(JSON.stringify(data));
+                if(ligne1!==undefined){
+                    ligne1.find('.okTD').hide();
+                    ligne1.find('.ldTD').hide();
+                    ligne1.find('.failTD').show();
+                    ligne1.find('.lot_detail').html("<span style='color:red'>Echec Synchronisation !</span>");
+                    //ligne1.find('.grize').removeAttr('disabled');
+                    
+                }else if(incr==10) {
+                    $( ".ldTD" ).each(function() {
+                        if ($(this).is(':visible') === true){
+                            var ligne0=$(this).parent('td').parent('tr');;
+                            $(this).hide();
+                            ligne0.find('.failTD').show();
+                            ligne0.find('.okTD').hide();
+                            ligne0.find('.lot_detail').html("<span style='color:red'>Echec Synchronisation !</span>");
+                            ligne0.find('.grize').removeAttr('disabled');
+                            $('.grize').removeAttr('disabled');
+                            $('#api_downAll').removeAttr('disabled');
+                        }
+                    });
+                    
+                }
+            });
+        }
+    });
 
     //TODO:: Envoi + Reponse ACTUALISATION API QTE LIGNE PAR LOT
     $(document).on('click', '.api_synchroniseLot', function (e) {
@@ -56,10 +147,10 @@ $(document).ready(function (e) {
 
         $("#loadingImport02").hide();
 
-        ligne.find('.btn_display').hide();
         ligne.find('.okTD').hide();
         ligne.find('.failTD').hide();
         ligne.find('.ldTD').show();
+        ligne.find('.lot_date').text('');
         ligne.find('.lot_detail').text('');
 
         $('.tableau_affichage #lotApi_affichage').empty();
@@ -72,7 +163,6 @@ $(document).ready(function (e) {
             dataType: 'json',
             success: function (json) {
                 if (json[1] == "Error") {
-                    ligne.find('.btn_display').hide();
                     ligne.find('.ldTD').hide();
                     ligne.find('.okTD').hide();
                     ligne.find('.failTD').show();
@@ -80,7 +170,7 @@ $(document).ready(function (e) {
                 } else {
                    //console.log('Retour json : ',json[0][4][0]);
                    //console.log('Retour json : ',json);
-                   $.each
+                   
                     var nbrEnreg = 0;
                     $.each(json, function (index, value) {
                         if (value[3] == 'Realisation') {
@@ -92,7 +182,6 @@ $(document).ready(function (e) {
                     });
                     ligne.find('.ldTD').hide();
                     ligne.find('.okTD').show();
-                    //if (nbrEnreg > 0) ligne.find('.btn_display').show();
                 }
                 $('.grize').removeAttr('disabled');
             },

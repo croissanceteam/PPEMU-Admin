@@ -80,6 +80,8 @@ if(isset($_GET['traitement_api'])){
                     $idkobo = isset($v['_id']) ? $v['_id'] : NULL;
                     
                     list($lat_2, $lng_2, $altitude, $precision)=explode(' ', $geopoint);
+
+                    $controleur = $v['Consultant_qui_a_suivi_l_ex_cution_KIN'] == '' ? v['Consultant_qui_a_suivi_l_ex_cution'] : v['Consultant_qui_a_suivi_l_ex_cution_KIN'];
                     
                     $req = $realisation->tempSave([
                         'commune'       =>  $v['Commune'],
@@ -91,7 +93,7 @@ if(isset($_GET['traitement_api'])){
                         'type_branch'   =>  $v['Branchement_Social_ou_Appropri'],
                         'water_given'   =>  "",
                         'entreprise'    =>  $v['Entreprise_qui_a_r_alis_le_branchement'],
-                        'consultant'    =>  $v['Consultant_qui_a_suivi_l_ex_cution_KIN'],
+                        'consultant'    =>  $controleur,
                         'geopoint'      =>  $geopoint,
                         'lat'           =>  $lat_2,
                         'lng'           =>  $lng_2,
