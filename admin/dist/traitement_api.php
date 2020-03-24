@@ -81,7 +81,7 @@ if(isset($_GET['traitement_api'])){
                     
                     list($lat_2, $lng_2, $altitude, $precision)=explode(' ', $geopoint);
                     
-                    $controleur = $v['Consultant_qui_a_suivi_l_ex_cution_KIN'] == '' ? $v['Consultant_qui_a_suivi_l_ex_cution'] : v['Consultant_qui_a_suivi_l_ex_cution_KIN'];
+                    $controleur = $v['Consultant_qui_a_suivi_l_ex_cution_KIN'] == '' ? $v['Consultant_qui_a_suivi_l_ex_cution'] : $v['Consultant_qui_a_suivi_l_ex_cution_KIN'];
                     
                     $req = $realisation->tempSave([
                         'commune'       =>  $v['Commune'],
@@ -120,7 +120,7 @@ if(isset($_GET['traitement_api'])){
                     $idkobo = isset($v['_id']) ? $v['_id'] : NULL;
                     
                     list($lat_2, $lng_2, $altitude, $precision)=explode(' ', $geopoint);
-                    $controleur = $v['Consultant_qui_a_suivi_l_ex_cution_KIN'] == '' ? $v['Consultant_qui_a_suivi_l_ex_cution'] : v['Consultant_qui_a_suivi_l_ex_cution_KIN'];
+                    $controleur = $v['Consultant_qui_a_suivi_l_ex_cution_KIN'] == '' ? $v['Consultant_qui_a_suivi_l_ex_cution'] : $v['Consultant_qui_a_suivi_l_ex_cution_KIN'];
                     
                     if(strtotime($lastDate) < strtotime($submission_time)){
                         $req = $realisation->tempSave([
